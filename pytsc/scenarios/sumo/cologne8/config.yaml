@@ -1,0 +1,8 @@
+# https://github.com/Pi-Star-Lab/RESCO/tree/main
+# SUMO parameters
+sumo:
+  render: False
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)

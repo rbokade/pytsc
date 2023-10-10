@@ -1,0 +1,12 @@
+{
+    "dir": "/home/rohitbokade/repos/pytsc/pytsc/scenarios/hangzhou_4_4/",
+    "roadnetFile": "roadnet_4_4.json",
+    "flowFile": "anon_4_4_hangzhou_real_5816.json",
+    "interval": 1.0,
+    "rlTrafficLight": true,
+    "laneChange": false,
+    "seed": 42,
+    "saveReplay": false,
+    "replayLogFile": "frontend/web/replay_log_file.txt",
+    "roadnetLogFile": "frontend/web/roadnet_log_file.json"
+}

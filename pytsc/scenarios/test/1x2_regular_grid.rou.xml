@@ -1,0 +1,38 @@
+
+    <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+        <route id="route_ns_0_A" edges="top0A0 A0bottom0"/><vehicle id="ns_0_A" depart="0.0" route="route_ns_0_A" departSpeed="max"/>
+<route id="route_ns_0_B" edges="top1B0 B0bottom1"/><vehicle id="ns_0_B" depart="0.0" route="route_ns_0_B" departSpeed="max"/>
+<route id="route_ns_1_A" edges="top0A0 A0bottom0"/><vehicle id="ns_1_A" depart="10.0" route="route_ns_1_A" departSpeed="max"/>
+<route id="route_ns_1_B" edges="top1B0 B0bottom1"/><vehicle id="ns_1_B" depart="10.0" route="route_ns_1_B" departSpeed="max"/>
+<route id="route_ns_2_A" edges="top0A0 A0bottom0"/><vehicle id="ns_2_A" depart="20.0" route="route_ns_2_A" departSpeed="max"/>
+<route id="route_ns_2_B" edges="top1B0 B0bottom1"/><vehicle id="ns_2_B" depart="20.0" route="route_ns_2_B" departSpeed="max"/>
+<route id="route_platoon_0" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_0" depart="20" route="route_platoon_0" color="green" departSpeed="max"/>
+<route id="route_platoon_1" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_1" depart="21" route="route_platoon_1" color="green" departSpeed="max"/>
+<route id="route_platoon_2" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_2" depart="22" route="route_platoon_2" color="green" departSpeed="max"/>
+<route id="route_platoon_3" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_3" depart="23" route="route_platoon_3" color="green" departSpeed="max"/>
+<route id="route_platoon_4" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_4" depart="24" route="route_platoon_4" color="green" departSpeed="max"/>
+<route id="route_platoon_5" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_5" depart="25" route="route_platoon_5" color="green" departSpeed="max"/>
+<route id="route_platoon_6" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_6" depart="26" route="route_platoon_6" color="green" departSpeed="max"/>
+<route id="route_platoon_7" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_7" depart="27" route="route_platoon_7" color="green" departSpeed="max"/>
+<route id="route_platoon_8" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_8" depart="28" route="route_platoon_8" color="green" departSpeed="max"/>
+<route id="route_platoon_9" edges="left0A0 A0B0 B0right0"/><vehicle id="platoon_9" depart="29" route="route_platoon_9" color="green" departSpeed="max"/>
+<route id="route_ns_3_A" edges="top0A0 A0bottom0"/><vehicle id="ns_3_A" depart="30.0" route="route_ns_3_A" departSpeed="max"/>
+<route id="route_ns_3_B" edges="top1B0 B0bottom1"/><vehicle id="ns_3_B" depart="30.0" route="route_ns_3_B" departSpeed="max"/>
+<route id="route_ns_4_A" edges="top0A0 A0bottom0"/><vehicle id="ns_4_A" depart="40.0" route="route_ns_4_A" departSpeed="max"/>
+<route id="route_ns_4_B" edges="top1B0 B0bottom1"/><vehicle id="ns_4_B" depart="40.0" route="route_ns_4_B" departSpeed="max"/>
+<route id="route_ns_5_A" edges="top0A0 A0bottom0"/><vehicle id="ns_5_A" depart="50.0" route="route_ns_5_A" departSpeed="max"/>
+<route id="route_ns_5_B" edges="top1B0 B0bottom1"/><vehicle id="ns_5_B" depart="50.0" route="route_ns_5_B" departSpeed="max"/>
+<route id="route_ns_6_A" edges="top0A0 A0bottom0"/><vehicle id="ns_6_A" depart="60.0" route="route_ns_6_A" departSpeed="max"/>
+<route id="route_ns_6_B" edges="top1B0 B0bottom1"/><vehicle id="ns_6_B" depart="60.0" route="route_ns_6_B" departSpeed="max"/>
+<route id="route_ns_7_A" edges="top0A0 A0bottom0"/><vehicle id="ns_7_A" depart="70.0" route="route_ns_7_A" departSpeed="max"/>
+<route id="route_ns_7_B" edges="top1B0 B0bottom1"/><vehicle id="ns_7_B" depart="70.0" route="route_ns_7_B" departSpeed="max"/>
+<route id="route_ns_8_A" edges="top0A0 A0bottom0"/><vehicle id="ns_8_A" depart="80.0" route="route_ns_8_A" departSpeed="max"/>
+<route id="route_ns_8_B" edges="top1B0 B0bottom1"/><vehicle id="ns_8_B" depart="80.0" route="route_ns_8_B" departSpeed="max"/>
+<route id="route_ns_9_A" edges="top0A0 A0bottom0"/><vehicle id="ns_9_A" depart="90.0" route="route_ns_9_A" departSpeed="max"/>
+<route id="route_ns_9_B" edges="top1B0 B0bottom1"/><vehicle id="ns_9_B" depart="90.0" route="route_ns_9_B" departSpeed="max"/>
+<route id="route_ns_10_A" edges="top0A0 A0bottom0"/><vehicle id="ns_10_A" depart="100.0" route="route_ns_10_A" departSpeed="max"/>
+<route id="route_ns_10_B" edges="top1B0 B0bottom1"/><vehicle id="ns_10_B" depart="100.0" route="route_ns_10_B" departSpeed="max"/>
+<route id="route_ns_11_A" edges="top0A0 A0bottom0"/><vehicle id="ns_11_A" depart="110.0" route="route_ns_11_A" departSpeed="max"/>
+<route id="route_ns_11_B" edges="top1B0 B0bottom1"/><vehicle id="ns_11_B" depart="110.0" route="route_ns_11_B" departSpeed="max"/>
+    </routes>
+    

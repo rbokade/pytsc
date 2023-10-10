@@ -1,0 +1,89 @@
+<routes>
+  <vType id="car" length="5" accel="5" decel="10" speedDev="0.1"/>
+  <flow id="f0_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="0" end="300" vehsPerHour="325" type="car"/>
+  <flow id="f0_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="0" end="300" vehsPerHour="325" type="car"/>
+  <flow id="f0_2" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="0" end="300" vehsPerHour="325" type="car"/>
+  <flow id="f0_3" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="0" end="300" vehsPerHour="325" type="car"/>
+  <flow id="f1_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f1_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f1_2" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 gneE5 gneE18" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f1_3" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f1_4" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f1_5" departPos="random_free" from="-10095" to="-10071#3" via="10109 10106#3 10115#5 -10080#0" begin="300" end="600" vehsPerHour="325" type="car"/>
+  <flow id="f2_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_2" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 gneE5 gneE18" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_3" departPos="random_free" from="-10114#1" to="10076" via="-10114#0 10108#0 -10067#1 gneE9 gneE18" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_4" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_5" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_6" departPos="random_free" from="-10095" to="-10071#3" via="10109 10106#3 10115#5 -10080#0" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f2_7" departPos="random_free" from="-10185#1" to="-10071#3" via="gneE20 gneE13 -10046#0 -10090#1" begin="600" end="900" vehsPerHour="325" type="car"/>
+  <flow id="f3_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_2" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 gneE5 gneE18" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_3" departPos="random_free" from="-10114#1" to="10076" via="-10114#0 10108#0 -10067#1 gneE9 gneE18" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_4" departPos="random_free" from="-10114#1" to="10076" via="-10114#0 10107 10080#0 gneE12 10102" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_5" departPos="random_free" from="-10114#1" to="10180#1" via="-10114#0 10108#0 -10104 10115#5 -10090#1" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_6" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_7" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_8" departPos="random_free" from="-10095" to="-10071#3" via="10109 10106#3 10115#5 -10080#0" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_9" departPos="random_free" from="-10185#1" to="-10071#3" via="gneE20 gneE13 -10046#0 -10090#1" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_10" departPos="random_free" from="-10185#1" to="-10061#5" via="gneE19 -10046#5 10089#4 gneE12" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_11" departPos="random_free" from="10197#1" to="-10061#5" via="10089#3 -10049 10043 10053#0" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_12" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f3_13" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="900" end="1200" vehsPerHour="325" type="car"/>
+  <flow id="f4_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_2" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 gneE5 gneE18" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_3" departPos="random_free" from="-10114#1" to="10076" via="-10114#0 10108#0 -10067#1 gneE9 gneE18" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_4" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_5" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_6" departPos="random_free" from="-10095" to="-10071#3" via="10109 10106#3 10115#5 -10080#0" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_7" departPos="random_free" from="-10185#1" to="-10071#3" via="gneE20 gneE13 -10046#0 -10090#1" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_8" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_9" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_10" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f4_11" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="1200" end="1500" vehsPerHour="325" type="car"/>
+  <flow id="f5_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_1" departPos="random_free" from="-10114#1" to="-10079" via="-10114#0 10108#0 10108#5 -10090#1 gneE18" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_2" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_3" departPos="random_free" from="10096#1" to="10063" via="10089#3 gneE4 -10090#1 gneE10" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_4" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_5" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_6" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 10116 -10089#3 10109" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_7" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_8" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f5_9" departPos="random_free" from="-10064#9" to="-10086" via="-10064#4 10102 10031#1 10046#0" begin="1500" end="1800" vehsPerHour="325" type="car"/>
+  <flow id="f6_0" departPos="random_free" from="-10114#1" to="-10079" via="10115#2 -10109 10089#3 -10116" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_1" departPos="random_free" from="10096#1" to="10063" via="10089#3 10091 gneE12 -10065#2" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_2" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_3" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_4" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 10116 -10089#3 10109" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_5" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 -10089#4 gneE4 gneE7" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_6" departPos="random_free" from="-10051#2" to="-10110" via="-10051#0 10181#1 -10089#4 gneE4 -10115#5" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_7" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_8" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_9" departPos="random_free" from="-10064#9" to="-10086" via="-10064#4 10102 10031#1 10046#0" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_10" departPos="random_free" from="10061#4" to="-10085" via="10065#2 10102 10031#1 10046#0" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f6_11" departPos="random_free" from="10069#0" to="10085" via="10065#2 -10064#3 gneE5 10046#0" begin="1800" end="2100" vehsPerHour="325" type="car"/>
+  <flow id="f7_0" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_1" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_2" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 10116 -10089#3 10109" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_3" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 -10089#4 gneE4 gneE7" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_4" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_5" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_6" departPos="random_free" from="-10064#9" to="-10086" via="-10064#4 10102 10031#1 10046#0" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f7_7" departPos="random_free" from="10061#4" to="-10085" via="10065#2 10102 10031#1 10046#0" begin="2100" end="2400" vehsPerHour="325" type="car"/>
+  <flow id="f8_0" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f8_1" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f8_2" departPos="random_free" from="-10051#2" to="10043" via="10179 10181#1 10116 -10089#3 10109" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f8_3" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f8_4" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f8_5" departPos="random_free" from="-10064#9" to="-10086" via="-10064#4 10102 10031#1 10046#0" begin="2400" end="2700" vehsPerHour="325" type="car"/>
+  <flow id="f9_0" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="2700" end="3000" vehsPerHour="325" type="car"/>
+  <flow id="f9_1" departPos="random_free" from="10052#1" to="10104" via="10181#1 -10089#4 gneE4 gneE7" begin="2700" end="3000" vehsPerHour="325" type="car"/>
+  <flow id="f9_2" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="2700" end="3000" vehsPerHour="325" type="car"/>
+  <flow id="f9_3" departPos="random_free" from="-10064#9" to="10085" via="-10064#4 -10064#3 gneE5 10046#0" begin="2700" end="3000" vehsPerHour="325" type="car"/>
+  <flow id="f10_0" departPos="random_free" from="10052#1" to="10104" via="10181#1 10116 -10089#3 10109" begin="3000" end="3300" vehsPerHour="325" type="car"/>
+  <flow id="f10_1" departPos="random_free" from="-10064#9" to="-10085" via="-10068 -10064#3 gneE5 10046#0" begin="3000" end="3300" vehsPerHour="325" type="car"/>
+</routes>

@@ -1,0 +1,11 @@
+<configuration>
+  <input>
+    <net-file value="1x2_regular_grid.net.xml"/>
+    <route-files value="1x2_regular_grid.rou.xml"/>
+    <additional-files value="1x2_regular_grid_tls_offsets.add.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="120"/>
+  </time>
+</configuration>

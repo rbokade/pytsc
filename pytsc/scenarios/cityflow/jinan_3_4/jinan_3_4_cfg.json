@@ -1,0 +1,12 @@
+{
+    "dir": "/home/rohitbokade/repos/pytsc/pytsc/scenarios/jinan_3_4/",
+    "roadnetFile": "roadnet_3_4.json",
+    "flowFile": "anon_3_4_jinan_real.json",
+    "interval": 1.0,
+    "rlTrafficLight": true,
+    "laneChange": false,
+    "seed": 42,
+    "saveReplay": false,
+    "replayLogFile": "frontend/web/replay_log_file.txt",
+    "roadnetLogFile": "frontend/web/roadnet_log_file.json"
+}

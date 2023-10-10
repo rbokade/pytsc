@@ -1,0 +1,10 @@
+<configuration>
+  <input>
+    <net-file value="monaco.net.xml"/>
+    <route-files value="monaco.rou.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="3600"/>
+  </time>
+</configuration>

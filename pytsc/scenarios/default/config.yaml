@@ -1,0 +1,47 @@
+# Network parameters
+network:
+  network_type: synthetic # (synthetic, real)
+  # max_neighbor_distance: 450  # (meters)
+
+# Signal parameters
+# Time is given in simulation seconds
+signal:
+  yellow_time: 5
+  min_green_time: 5
+  max_green_time: 60
+  vision: 50  # range of vision in meters (not implemented)
+  round_robin: True  # if True, the signal cycles through the phases in order
+  cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
+
+# SUMO parameters
+sumo:
+  render: False
+  delta_time: 5  # simulation steps between consecutive agent actions
+  episode_limit: 360  # simulation seconds  n_steps = episode_limit / delta_time
+  max_depart_delay: 0  # vehicles are discared if they could not be inserted after max_depart_delay seconds
+  time_to_teleport: 10000  # time vehicles wait before they start teleporting
+  waiting_time_memory: 10000  # time SUMO maintains log of the simulation
+  initial_wait_time: 0  # sim seconds to wait to populate the network
+  veh_size_min_gap: 7.5  # vehicle size (5m) + minimum gap between vehicles (2.5m)
+
+cityflow:
+  seed: 42
+  thread_num: 1
+  interval: 1.0
+  rl_traffic_light: True
+  lane_change: False
+  delta_time: 5  # simulation steps between consecutive agent actions
+  episode_limit: 360  # simulation seconds  n_steps = episode_limit / delta_time
+  initial_wait_time: 0  # sim seconds to wait to populate the network
+  veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
+  save_replay: False
+
+
+# Misc
+misc:
+  max_wait_time: 1000  # (simulation seconds)
+  pad_value: 0
+  save_trip_info: False
+  flickering_coef: 0.0
+  max_hops: 1  # maximum number of hops for the rewards
+  reward_gamma: 0.5  # spatial discount factor for the rewards
