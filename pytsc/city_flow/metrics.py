@@ -103,7 +103,6 @@ class MetricsParser(BaseMetricsParser):
         reward = 0
         reward -= fc * self.flickering_signal
         reward -= self.norm_mean_queued_per_ts
-        print(reward)
         return reward
 
     @property
