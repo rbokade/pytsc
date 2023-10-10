@@ -14,7 +14,7 @@ class BaseActionSpace:
 
     def get_size(self):
         return max(
-            [ts.program.n_phases for ts in self.traffic_signals.values()]
+            [ts.controller.n_phases for ts in self.traffic_signals.values()]
         )
 
     def get_mask(self):

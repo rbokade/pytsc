@@ -101,10 +101,10 @@ class TrafficSignalNetwork:
         return self.observations.get_size()
 
     def get_reward(self):
-        self.metrics.reward
+        return self.metrics.reward
 
     def get_local_rewards(self):
-        self.metrics.rewards
+        return self.metrics.rewards
 
     def get_local_rewards_size(self):
         n_traffic_signals = len(self.traffic_signals)

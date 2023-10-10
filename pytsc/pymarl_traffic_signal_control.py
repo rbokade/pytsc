@@ -32,10 +32,6 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "state_shape": self.get_state_size(),
             "local_rewards_shape": self.get_local_rewards_size(),
             "outgoing_density_map_shape": self.get_local_rewards_size(),
-            "agent_positions": {
-                ts_id: ts.position
-                for ts_id, ts in self.tsc_env.traffic_signals.items()
-            },
             "norm_mean_incoming_queues": self.n_agents,
             "norm_mean_incoming_speeds": self.n_agents,
         }
