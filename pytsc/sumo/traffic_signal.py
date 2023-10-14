@@ -101,6 +101,7 @@ class TrafficSignal(BaseTrafficSignal):
         self.densities = densities
         self.mean_speeds = mean_speeds
         self.mean_wait_times = mean_wait_times
+        self.norm_densities = np.asarray(densities)
         self.norm_queue_lengths = np.asarray(norm_queue_lengths)
         self.norm_mean_speeds = np.asarray(norm_mean_speeds)
         self.norm_mean_wait_times = np.asarray(norm_mean_wait_times)
