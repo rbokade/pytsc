@@ -108,6 +108,7 @@ class TrafficSignal(BaseTrafficSignal):
         self.time_on_phase = self.controller.norm_time_on_phase
         self.time_on_cycle = self.controller.norm_time_on_cycle
         self.phase_id = np.asarray(self.controller.phase_one_hot)
+        self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, action):
         self.controller.switch_phase(action)
