@@ -1,3 +1,6 @@
+from pytsc.common.utils import pad_array
+
+
 class BaseActionSpace:
     """
     Actions are the phase index to switch to for each traffic signal.
@@ -21,6 +24,7 @@ class BaseActionSpace:
         masks = []
         for ts in self.traffic_signals.values():
             mask = ts.controller.get_allowable_phase_switches()
+            mask = pad_array(mask, self.get_size())
             masks.append(mask)
         return masks
 
