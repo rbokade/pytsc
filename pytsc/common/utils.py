@@ -43,3 +43,7 @@ def pad_array(array, size, pad_value=0):
         padded_arr = np.full(size, pad_value)
         padded_arr[: len(array)] = array
         return padded_arr
+
+
+def pad_list(inp_list, size, pad_value=0):
+    return pad_array(np.array(inp_list), size, pad_value).tolist()

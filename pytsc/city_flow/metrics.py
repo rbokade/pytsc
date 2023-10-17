@@ -98,6 +98,15 @@ class MetricsParser(BaseMetricsParser):
         return self.simulator.step_measurements["sim"]["average_travel_time"]
 
     @property
+    def mean_delay(self):
+        return 1 - np.mean(
+            [
+                np.mean(ts.norm_mean_speeds)
+                for ts in self.traffic_signals.values()
+            ]
+        )
+
+    @property
     def reward(self):
         fc = self.config.misc_config["flickering_coef"]
         reward = 0
@@ -139,6 +148,7 @@ class MetricsParser(BaseMetricsParser):
             "average_travel_time": self.average_travel_time,
             "n_queued": self.n_queued,
             "mean_speed": self.mean_speed,
+            "mean_delay": self.mean_delay,
             "density": self.density,
             "norm_mean_queued_per_ts": self.norm_mean_queued_per_ts,
         }

@@ -28,7 +28,12 @@ class Simulator(BaseSimulator):
 
     @property
     def sim_step(self):
-        return self.sim_time - self.config.sumo_config["initial_wait_time"]
+        sim_step = (
+            self.sim_time
+            - self.parsed_network.config.begin_time
+            - self.config.sumo_config["initial_wait_time"]
+        )
+        return sim_step
 
     def retrieve_step_measurements(self):
         self.step_measurements = {
