@@ -3,19 +3,19 @@ import logging
 import numpy as np
 
 from pytsc.common.traffic_signal import (
-    BaseTLSProgram,
-    BaseTLSController,
+    BaseTSProgram,
+    BaseTSController,
     BaseTrafficSignal,
 )
 
 logger = logging.getLogger(__name__)
 
 
-class TLSProgram(BaseTLSProgram):
+class TSProgram(BaseTSProgram):
     start_phase_index = 0
 
     def __init__(self, id, config, simulator):
-        super(TLSProgram, self).__init__(id, config, simulator)
+        super(TSProgram, self).__init__(id, config, simulator)
         self.traci = simulator.traci.trafficlight
         self._initialize_traffic_light_program()
 
@@ -58,10 +58,10 @@ class TLSProgram(BaseTLSProgram):
         self.traci.setProgramLogic(self.id, new_program)
 
 
-class TLSController(BaseTLSController):
+class TSController(BaseTSController):
     def __init__(self, id, config, simulator):
-        super(TLSController, self).__init__(id, config, simulator)
-        self.program = TLSProgram(id, config, simulator)
+        super(TSController, self).__init__(id, config, simulator)
+        self.program = TSProgram(id, config, simulator)
         self.traci = simulator.traci.trafficlight
         self._instantiate_traffic_light_logic()
 
@@ -76,7 +76,7 @@ class TLSController(BaseTLSController):
 class TrafficSignal(BaseTrafficSignal):
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
-        self.controller = TLSController(id, config, simulator)
+        self.controller = TSController(id, config, simulator)
 
     def update_stats(self, sub_results):
         (

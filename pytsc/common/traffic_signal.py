@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseTLSProgram(ABC):
+class BaseTSProgram(ABC):
     def __init__(self, id, config, simulator):
         for k, v in config.items():
             setattr(self, k, v)
@@ -19,7 +19,7 @@ class BaseTLSProgram(ABC):
         return f"{self.__class__} ({self.id})"
 
 
-class BaseTLSController(ABC):
+class BaseTSController(ABC):
     def __init__(self, id, config, simulator):
         for k, v in config.items():
             setattr(self, k, v)

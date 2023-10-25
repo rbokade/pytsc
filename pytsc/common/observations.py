@@ -4,6 +4,10 @@ from pytsc.common.utils import pad_array
 
 
 class BaseObservationSpace:
+    """
+    Standard observation space for traffic signal control.
+    """
+
     def __init__(
         self, config, parsed_network, traffic_signals, simulator_type
     ):
@@ -21,6 +25,16 @@ class BaseObservationSpace:
         self.pad_value = config.misc_config["pad_value"]
 
     def get_observations(self):
+        """
+        Returns a list of observations for each traffic signal in
+        traffic_signals. The observations are obtained by padding
+        and concatenating arrays of normalized queue lengths, densities,
+        mean speeds, and mean wait times for each traffic signal.
+
+        Returns:
+        - observations: A list of observations for each traffic signal in
+          traffic_signals.
+        """
         observations = []
         for ts in self.traffic_signals.values():
             obs = pad_array(
