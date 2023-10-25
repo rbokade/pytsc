@@ -1,0 +1,22 @@
+# SUMO parameters
+sumo:
+  render: False
+
+# Network parameters
+network:
+  network_type: synthetic # (synthetic, real)
+
+signal:
+  yellow_time: 5
+  min_green_time: 5
+  max_green_time: 60
+  vision: 50  # range of vision in meters (not implemented)
+  round_robin: True  # if True, the signal cycles through the phases in order
+  cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
+
+grid_generator:
+  grid_length: 300
+  grid_x_number: 2
+  grid_y_number: 2
+  grid_attach_length: 300
+  add_turn_lane: True

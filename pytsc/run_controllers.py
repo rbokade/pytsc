@@ -80,7 +80,7 @@ def evaluate_controllers(
 
 if __name__ == "__main__":
 
-    scenario = "cologne3"
+    scenario = "ingolstadt7"
     simulator_type = "sumo"
     controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
     # controllers = ["sotl"]

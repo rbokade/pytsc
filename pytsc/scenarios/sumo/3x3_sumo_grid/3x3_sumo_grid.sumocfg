@@ -1,0 +1,10 @@
+<configuration>
+  <input>
+    <net-file value="3x3_sumo_grid.net.xml"/>
+    <route-files value="3x3_sumo_grid.rou.alt.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="3600"/>
+  </time>
+</configuration>

@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 import sys
+import yaml
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -10,7 +11,7 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from pytsc.sumo.config import Config
+# from pytsc.sumo.config import Config
 
 CONFIG_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -19,7 +20,7 @@ CONFIG_DIR = os.path.join(
 )
 
 
-class GridGenerator:
+class SUMOGridGenerator:
     """
     Creates grid network using SUMO's netgenerate tool
 
@@ -30,24 +31,36 @@ class GridGenerator:
 
     def __init__(self, scenario):
         self.scenario = scenario
-        self.config = Config(scenario)
-        self.data_dir = os.path.join(CONFIG_DIR, scenario)
+        # self.config = Config(scenario, add_config={})
+        self.config = self._load_config()
+        self.data_dir = os.path.join(CONFIG_DIR, "sumo", scenario)
         self.netfile_dir = os.path.join(
             self.data_dir, f"{self.scenario}.net.xml"
         )
         self.cfg_file_dir = os.path.join(
             self.data_dir, f"{self.scenario}.sumocfg"
         )
-        grid_generator_config = self.config.grid_generator_config
+        grid_generator_config = self.config["grid_generator"]
+        signal_config = self.config["signal"]
+
         self.grid_length = grid_generator_config["grid_length"]
         self.grid_x_number = grid_generator_config["grid_x_number"]
         self.grid_y_number = grid_generator_config["grid_y_number"]
         self.grid_attach_length = grid_generator_config["grid_attach_length"]
         self.add_turn_lane = grid_generator_config["add_turn_lane"]
-        self.max_green_time = self.config.signal_config["max_green_time"]
-        self.yellow_time = self.config.signal_config["yellow_time"]
+        self.max_green_time = signal_config["max_green_time"]
+        self.yellow_time = signal_config["yellow_time"]
         self.turn_lane_length = max(self.grid_length, self.grid_attach_length)
-        self.vision = self.config.signal_config["vision"]
+        self.vision = signal_config["vision"]
+
+    def _load_config(self):
+        scenario_file_path = os.path.join(
+            CONFIG_DIR, "sumo", self.scenario, "config.yaml"
+        )
+        if os.path.exists(scenario_file_path):
+            with open(scenario_file_path, "r") as f:
+                scenario_config = yaml.safe_load(f)
+        return scenario_config
 
     def generate_grid(self, regular=True):
         gridgen = "netgenerate --grid"
@@ -57,6 +70,7 @@ class GridGenerator:
         gridgen += f" --grid.attach-length {self.grid_attach_length}"
         gridgen += f" --output-file {self.netfile_dir}"
         # gridgen += f" --save-configuration {self.cfg_file_dir}"
+        gridgen += " --default.lanenumber 2"
         gridgen += " --no-turnarounds"
         gridgen += " --tls.guess"
         gridgen += " --tls.guess.threshold 50"
@@ -128,5 +142,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    grid = GridGenerator(args.scenario)
+    grid = SUMOGridGenerator(args.scenario)
     grid.generate_grid()

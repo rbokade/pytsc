@@ -1,0 +1,7 @@
+# SUMO parameters
+sumo:
+  render: False
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)
