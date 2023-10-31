@@ -11,7 +11,7 @@ cityflow:
   veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
   roadnet_file: roadnet_3_4.json
   flow_file: anon_3_4_jinan_real.json
-  save_replay: False
+  save_replay: True
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
 
