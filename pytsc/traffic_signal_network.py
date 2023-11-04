@@ -1,11 +1,12 @@
 import logging
 
-from pytsc.common.actions import BaseActionSpace
+from pytsc.common.actions import BaseActionSpace, ActionSpaceWithOffset
 from pytsc.common.observations import BaseObservationSpace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+ACTION_SPACES = ('phase', 'phase_and_offset')
 
 class TrafficSignalNetwork:
     def __init__(self, scenario, simulator_type="sumo", add_config={}):
@@ -68,7 +69,14 @@ class TrafficSignalNetwork:
             self.simulator,
             self.traffic_signals,
         )
-        self.actions = BaseActionSpace(self.traffic_signals)
+        if self.config.signal_config["action_space"] == "phase":
+            self.actions = BaseActionSpace(self.traffic_signals)
+        elif self.config.signal_config["action_space"] == "phase_and_offset":
+            self.actions = ActionSpaceWithOffset(self.traffic_signals)
+        else:
+            raise ValueError(
+                f"Invalid action space. Allowed values are {ACTION_SPACES}."
+            )
 
     def _init_traffic_signals(self):
         TrafficSignal = import_traffic_signal_module(self.simulator_type)
@@ -105,6 +113,12 @@ class TrafficSignalNetwork:
 
     def get_local_rewards(self):
         return self.metrics.rewards
+
+    def get_kuramotos(self):
+        return self.metrics.kuramotos
+
+    def get_orders(self):
+        return self.metrics.orders
 
     def get_local_rewards_size(self):
         n_traffic_signals = len(self.traffic_signals)

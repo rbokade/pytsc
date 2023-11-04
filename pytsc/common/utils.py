@@ -47,3 +47,31 @@ def pad_array(array, size, pad_value=0):
 
 def pad_list(inp_list, size, pad_value=0):
     return pad_array(np.array(inp_list), size, pad_value).tolist()
+
+
+def map_to_phase_circle(phase_index, time_on_phase, phase_durations):
+    """
+    Maps the time on a given phase to its corresponding position on a
+    phase circle.
+    """
+    # Compute the starting angle of each phase on the phase circle
+    total_duration = sum(phase_durations)
+    start_angles = [
+        2 * np.pi * sum(phase_durations[:i]) / total_duration
+        for i in range(len(phase_durations))
+    ]
+    # Compute the angular span of the current phase
+    phase_span = 2 * np.pi * phase_durations[phase_index] / total_duration
+    # Compute the angular position within the current phase
+    phase_position = phase_span * (
+        time_on_phase / phase_durations[phase_index]
+    )
+    return start_angles[phase_index] + phase_position
+
+
+def compute_local_order_for_agent(agent_phase_angles, adj_row):
+    cos_values = np.cos(agent_phase_angles)
+    sin_values = np.sin(agent_phase_angles)
+    mean_cos = np.sum(cos_values * adj_row) / np.sum(adj_row)
+    mean_sin = np.sum(sin_values * adj_row) / np.sum(adj_row)
+    return np.sqrt(mean_cos**2 + mean_sin**2)

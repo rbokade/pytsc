@@ -43,6 +43,7 @@ class TrafficSignal(BaseTrafficSignal):
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
         self.controller = TSController(id, config, simulator)
+        self.offsets = []
 
     def update_stats(self, sub_results):
         (
@@ -75,3 +76,6 @@ class TrafficSignal(BaseTrafficSignal):
 
     def action_to_phase(self, action):
         self.controller.switch_phase(action)
+
+    def store_offset(self, offset):
+        self.offsets.append(offset)

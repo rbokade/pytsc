@@ -34,6 +34,8 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "outgoing_density_map_shape": self.get_local_rewards_size(),
             "norm_mean_incoming_queues": self.n_agents,
             "norm_mean_incoming_speeds": self.n_agents,
+            "kuramotos_shape": self.get_local_rewards_size(),
+            "orders_shape": self.get_local_rewards_size(),
         }
         return env_info
 
@@ -45,6 +47,12 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def get_local_rewards(self):
         return self.tsc_env.get_local_rewards()
+
+    def get_kuramotos(self):
+        return self.tsc_env.get_kuramotos()
+
+    def get_orders(self):
+        return self.tsc_env.get_orders()
 
     def get_local_rewards_size(self):
         return self.tsc_env.get_local_rewards_size()

@@ -30,6 +30,7 @@ class BaseTSController(ABC):
         self.norm_time_on_cycle = 0
         self.last_cycle_length = 0  # only applicable for round robin
         self.phase_changed = False
+        self.phase_history = []
         if getattr(self, "max_cycle_length", True):
             self.max_cycle_length = sum(
                 v["max_time"] for v in self.phases_min_max_times.values()
@@ -53,12 +54,14 @@ class BaseTSController(ABC):
         self.logic.update_current_phase_index(
             self.program.current_phase_index, self.time_on_phase
         )
+        self.phase_history.append(self.program.current_phase_index)
 
     def _update_cycle_time(self):
         self.time_on_cycle += self.yellow_time
         self.norm_time_on_cycle += self.yellow_time / self.max_cycle_length
 
     def _update_phase_time(self, phase_index):
+        self.phase_history.append(self.program.current_phase_index)
         if phase_index == self.program.current_phase_index:
             self.phase_changed = False
             self.time_on_phase += self.yellow_time

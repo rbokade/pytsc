@@ -275,6 +275,74 @@ class NetworkParser(BaseNetworkParser):
                 ]
         return ts_norm_coordinates
 
+    @property
+    @lru_cache(maxsize=None)
+    def directional_lanes(self):
+        """
+        Extracts a dictionary of directional lanes for each traffic signal.
+        """
+        # Extract directional lanes
+        directional_lanes_dict = {}
+        for intersection in self.intersections:
+            intersection_id = intersection["id"]
+            if not intersection["virtual"]:
+                incoming_lanes = get_incoming_lanes(
+                    intersection_id, self.roads
+                )
+                # Categorize lanes into east-west and north-south
+                east_west_bound = []
+                north_south_bound = []
+                for lane_id in incoming_lanes:
+                    road_id = "_".join(lane_id.split("_")[:-1])
+                    road = next(
+                        road for road in self.roads if road["id"] == road_id
+                    )
+                    orientation = get_road_orientation(road["points"])
+                    if orientation == "x":
+                        east_west_bound.append(lane_id)
+                    else:
+                        north_south_bound.append(lane_id)
+                directional_lanes_dict[intersection_id] = {
+                    "x": east_west_bound,
+                    "y": north_south_bound,
+                }
+        return directional_lanes_dict
+
+    @property
+    @lru_cache(maxsize=None)
+    def directional_neighbors(self):
+        """
+        Extracts a dictionary of directional neighbors for each traffic signal.
+        """
+        # Extract directional neighbors
+        directional_neighbors_dict = {}
+        for intersection in self.intersections:
+            intersection_id = intersection["id"]
+            if not intersection["virtual"]:
+                neighbors_dict = {}
+                for road in self.roads:
+                    # Ensure the neighboring intersection is also not virtual
+                    if (
+                        road["startIntersection"] == intersection_id
+                        and not self._id_to_intersection(
+                            road["endIntersection"]
+                        )["virtual"]
+                    ):
+                        end_intersection = road["endIntersection"]
+                        orientation = get_road_orientation(road["points"])
+                        neighbors_dict[end_intersection] = orientation
+                    elif (
+                        road["endIntersection"] == intersection_id
+                        and not self._id_to_intersection(
+                            road["startIntersection"]
+                        )["virtual"]
+                    ):
+                        start_intersection = road["startIntersection"]
+                        orientation = get_road_orientation(road["points"])
+                        neighbors_dict[start_intersection] = orientation
+                directional_neighbors_dict[intersection_id] = neighbors_dict
+        return directional_neighbors_dict
+
     def _id_to_intersection(self, intersection_id):
         for intersection in self.intersections:
             if intersection["id"] == intersection_id:
@@ -395,3 +463,27 @@ class NetworkParser(BaseNetworkParser):
             green_phase_indices,
             yellow_phase_indices,
         )
+
+
+def get_road_orientation(road_points):
+    """Determine the orientation of the road based on its start and end points."""
+    x_diff = abs(road_points[1]["x"] - road_points[0]["x"])
+    y_diff = abs(road_points[1]["y"] - road_points[0]["y"])
+    # If x difference is significant compared to y, it's an east-west road
+    if x_diff > y_diff:
+        return "x"
+    else:
+        return "y"
+
+
+def get_incoming_lanes(intersection_id, roads):
+    """Get all incoming lanes for a given intersection."""
+    incoming_lanes = []
+    for road in roads:
+        if road["endIntersection"] == intersection_id:
+            road_id = road["id"]
+            num_lanes = len(road["lanes"])
+            for i in range(num_lanes):
+                lane_id = f"{road_id}_{i}"
+                incoming_lanes.append(lane_id)
+    return incoming_lanes

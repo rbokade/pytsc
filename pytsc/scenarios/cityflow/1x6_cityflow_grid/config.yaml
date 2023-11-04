@@ -1,0 +1,28 @@
+cityflow:
+  seed: 42
+  thread_num: 1
+  interval: 1.0
+  rl_traffic_light: True
+  plan: [20, 5, 20, 5]
+  lane_change: False
+  delta_time: 5  # simulation steps between consecutive agent actions
+  episode_limit: 360  # simulation seconds  n_steps = episode_limit / delta_time
+  initial_wait_time: 0  # sim seconds to wait to populate the network
+  veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
+  roadnet_file: 1x6_roadnet.json
+  flow_file: 1x6_roadnet_600.json
+  flow_files: ["1x6_roadnet_500.json", "1x6_roadnet_600.json", "1x6_roadnet_700.json"]
+  flow_rate_type: "constant"
+  save_replay: False
+  roadnet_log_file: "frontend/web/roadnet_log_file.json"
+  replay_log_file: "frontend/web/replay_log_file.txt"
+
+signal:
+  action_space: "phase_and_offset"  # (phase, phase_and_offset)
+  yellow_time: 5
+  min_green_time: 5
+  max_green_time: 30
+  vision: 50  # range of vision in meters (not implemented)
+  round_robin: True
+  # cycle_length: 50
+  cycle_length: "adaptive"
