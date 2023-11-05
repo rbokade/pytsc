@@ -22,7 +22,7 @@
           "type": "turn_right",
           "startRoad": "A1A0",
           "endRoad": "A0left0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -72,7 +72,7 @@
           "type": "go_straight",
           "startRoad": "A1A0",
           "endRoad": "A0bottom0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -206,7 +206,7 @@
           "type": "turn_left",
           "startRoad": "A1A0",
           "endRoad": "A0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -256,7 +256,7 @@
           "type": "turn_right",
           "startRoad": "B0A0",
           "endRoad": "A0A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -306,7 +306,7 @@
           "type": "go_straight",
           "startRoad": "B0A0",
           "endRoad": "A0left0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -440,7 +440,7 @@
           "type": "turn_left",
           "startRoad": "B0A0",
           "endRoad": "A0bottom0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -490,7 +490,7 @@
           "type": "turn_right",
           "startRoad": "bottom0A0",
           "endRoad": "A0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -540,7 +540,7 @@
           "type": "go_straight",
           "startRoad": "bottom0A0",
           "endRoad": "A0A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -674,7 +674,7 @@
           "type": "turn_left",
           "startRoad": "bottom0A0",
           "endRoad": "A0left0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -724,7 +724,7 @@
           "type": "turn_right",
           "startRoad": "left0A0",
           "endRoad": "A0bottom0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -774,7 +774,7 @@
           "type": "go_straight",
           "startRoad": "left0A0",
           "endRoad": "A0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -908,7 +908,7 @@
           "type": "turn_left",
           "startRoad": "left0A0",
           "endRoad": "A0A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1027,7 +1027,7 @@
           "type": "turn_right",
           "startRoad": "A0A1",
           "endRoad": "A1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -1077,7 +1077,7 @@
           "type": "go_straight",
           "startRoad": "A0A1",
           "endRoad": "A1A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1211,7 +1211,7 @@
           "type": "turn_left",
           "startRoad": "A0A1",
           "endRoad": "A1left1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1261,7 +1261,7 @@
           "type": "turn_right",
           "startRoad": "A2A1",
           "endRoad": "A1left1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -1311,7 +1311,7 @@
           "type": "go_straight",
           "startRoad": "A2A1",
           "endRoad": "A1A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1445,7 +1445,7 @@
           "type": "turn_left",
           "startRoad": "A2A1",
           "endRoad": "A1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1495,7 +1495,7 @@
           "type": "turn_right",
           "startRoad": "B1A1",
           "endRoad": "A1A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -1545,7 +1545,7 @@
           "type": "go_straight",
           "startRoad": "B1A1",
           "endRoad": "A1left1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1679,7 +1679,7 @@
           "type": "turn_left",
           "startRoad": "B1A1",
           "endRoad": "A1A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1729,7 +1729,7 @@
           "type": "turn_right",
           "startRoad": "left1A1",
           "endRoad": "A1A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -1779,7 +1779,7 @@
           "type": "go_straight",
           "startRoad": "left1A1",
           "endRoad": "A1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -1913,7 +1913,7 @@
           "type": "turn_left",
           "startRoad": "left1A1",
           "endRoad": "A1A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2032,7 +2032,7 @@
           "type": "turn_right",
           "startRoad": "A1A2",
           "endRoad": "A2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -2082,7 +2082,7 @@
           "type": "go_straight",
           "startRoad": "A1A2",
           "endRoad": "A2top0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2216,7 +2216,7 @@
           "type": "turn_left",
           "startRoad": "A1A2",
           "endRoad": "A2left2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2266,7 +2266,7 @@
           "type": "turn_right",
           "startRoad": "B2A2",
           "endRoad": "A2top0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -2316,7 +2316,7 @@
           "type": "go_straight",
           "startRoad": "B2A2",
           "endRoad": "A2left2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2450,7 +2450,7 @@
           "type": "turn_left",
           "startRoad": "B2A2",
           "endRoad": "A2A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2500,7 +2500,7 @@
           "type": "turn_right",
           "startRoad": "left2A2",
           "endRoad": "A2A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -2550,7 +2550,7 @@
           "type": "go_straight",
           "startRoad": "left2A2",
           "endRoad": "A2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2684,7 +2684,7 @@
           "type": "turn_left",
           "startRoad": "left2A2",
           "endRoad": "A2top0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2734,7 +2734,7 @@
           "type": "turn_right",
           "startRoad": "top0A2",
           "endRoad": "A2left2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -2784,7 +2784,7 @@
           "type": "go_straight",
           "startRoad": "top0A2",
           "endRoad": "A2A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -2918,7 +2918,7 @@
           "type": "turn_left",
           "startRoad": "top0A2",
           "endRoad": "A2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3037,7 +3037,7 @@
           "type": "turn_right",
           "startRoad": "A0B0",
           "endRoad": "B0bottom1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -3087,7 +3087,7 @@
           "type": "go_straight",
           "startRoad": "A0B0",
           "endRoad": "B0C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3221,7 +3221,7 @@
           "type": "turn_left",
           "startRoad": "A0B0",
           "endRoad": "B0B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3271,7 +3271,7 @@
           "type": "turn_right",
           "startRoad": "B1B0",
           "endRoad": "B0A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -3321,7 +3321,7 @@
           "type": "go_straight",
           "startRoad": "B1B0",
           "endRoad": "B0bottom1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3455,7 +3455,7 @@
           "type": "turn_left",
           "startRoad": "B1B0",
           "endRoad": "B0C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3505,7 +3505,7 @@
           "type": "turn_right",
           "startRoad": "C0B0",
           "endRoad": "B0B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -3555,7 +3555,7 @@
           "type": "go_straight",
           "startRoad": "C0B0",
           "endRoad": "B0A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3689,7 +3689,7 @@
           "type": "turn_left",
           "startRoad": "C0B0",
           "endRoad": "B0bottom1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3739,7 +3739,7 @@
           "type": "turn_right",
           "startRoad": "bottom1B0",
           "endRoad": "B0C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -3789,7 +3789,7 @@
           "type": "go_straight",
           "startRoad": "bottom1B0",
           "endRoad": "B0B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -3923,7 +3923,7 @@
           "type": "turn_left",
           "startRoad": "bottom1B0",
           "endRoad": "B0A0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4042,7 +4042,7 @@
           "type": "turn_right",
           "startRoad": "A1B1",
           "endRoad": "B1B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -4092,7 +4092,7 @@
           "type": "go_straight",
           "startRoad": "A1B1",
           "endRoad": "B1C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4226,7 +4226,7 @@
           "type": "turn_left",
           "startRoad": "A1B1",
           "endRoad": "B1B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4276,7 +4276,7 @@
           "type": "turn_right",
           "startRoad": "B0B1",
           "endRoad": "B1C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -4326,7 +4326,7 @@
           "type": "go_straight",
           "startRoad": "B0B1",
           "endRoad": "B1B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4460,7 +4460,7 @@
           "type": "turn_left",
           "startRoad": "B0B1",
           "endRoad": "B1A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4510,7 +4510,7 @@
           "type": "turn_right",
           "startRoad": "B2B1",
           "endRoad": "B1A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -4560,7 +4560,7 @@
           "type": "go_straight",
           "startRoad": "B2B1",
           "endRoad": "B1B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4694,7 +4694,7 @@
           "type": "turn_left",
           "startRoad": "B2B1",
           "endRoad": "B1C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4744,7 +4744,7 @@
           "type": "turn_right",
           "startRoad": "C1B1",
           "endRoad": "B1B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -4794,7 +4794,7 @@
           "type": "go_straight",
           "startRoad": "C1B1",
           "endRoad": "B1A1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -4928,7 +4928,7 @@
           "type": "turn_left",
           "startRoad": "C1B1",
           "endRoad": "B1B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5047,7 +5047,7 @@
           "type": "turn_right",
           "startRoad": "A2B2",
           "endRoad": "B2B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -5097,7 +5097,7 @@
           "type": "go_straight",
           "startRoad": "A2B2",
           "endRoad": "B2C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5231,7 +5231,7 @@
           "type": "turn_left",
           "startRoad": "A2B2",
           "endRoad": "B2top1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5281,7 +5281,7 @@
           "type": "turn_right",
           "startRoad": "B1B2",
           "endRoad": "B2C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -5331,7 +5331,7 @@
           "type": "go_straight",
           "startRoad": "B1B2",
           "endRoad": "B2top1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5465,7 +5465,7 @@
           "type": "turn_left",
           "startRoad": "B1B2",
           "endRoad": "B2A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5515,7 +5515,7 @@
           "type": "turn_right",
           "startRoad": "C2B2",
           "endRoad": "B2top1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -5565,7 +5565,7 @@
           "type": "go_straight",
           "startRoad": "C2B2",
           "endRoad": "B2A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5699,7 +5699,7 @@
           "type": "turn_left",
           "startRoad": "C2B2",
           "endRoad": "B2B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5749,7 +5749,7 @@
           "type": "turn_right",
           "startRoad": "top1B2",
           "endRoad": "B2A2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -5799,7 +5799,7 @@
           "type": "go_straight",
           "startRoad": "top1B2",
           "endRoad": "B2B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -5933,7 +5933,7 @@
           "type": "turn_left",
           "startRoad": "top1B2",
           "endRoad": "B2C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6052,7 +6052,7 @@
           "type": "turn_right",
           "startRoad": "B0C0",
           "endRoad": "C0bottom2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -6102,7 +6102,7 @@
           "type": "go_straight",
           "startRoad": "B0C0",
           "endRoad": "C0right0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6236,7 +6236,7 @@
           "type": "turn_left",
           "startRoad": "B0C0",
           "endRoad": "C0C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6286,7 +6286,7 @@
           "type": "turn_right",
           "startRoad": "C1C0",
           "endRoad": "C0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -6336,7 +6336,7 @@
           "type": "go_straight",
           "startRoad": "C1C0",
           "endRoad": "C0bottom2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6470,7 +6470,7 @@
           "type": "turn_left",
           "startRoad": "C1C0",
           "endRoad": "C0right0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6520,7 +6520,7 @@
           "type": "turn_right",
           "startRoad": "bottom2C0",
           "endRoad": "C0right0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -6570,7 +6570,7 @@
           "type": "go_straight",
           "startRoad": "bottom2C0",
           "endRoad": "C0C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6704,7 +6704,7 @@
           "type": "turn_left",
           "startRoad": "bottom2C0",
           "endRoad": "C0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6754,7 +6754,7 @@
           "type": "turn_right",
           "startRoad": "right0C0",
           "endRoad": "C0C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -6804,7 +6804,7 @@
           "type": "go_straight",
           "startRoad": "right0C0",
           "endRoad": "C0B0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -6938,7 +6938,7 @@
           "type": "turn_left",
           "startRoad": "right0C0",
           "endRoad": "C0bottom2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7057,7 +7057,7 @@
           "type": "turn_right",
           "startRoad": "B1C1",
           "endRoad": "C1C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -7107,7 +7107,7 @@
           "type": "go_straight",
           "startRoad": "B1C1",
           "endRoad": "C1right1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7241,7 +7241,7 @@
           "type": "turn_left",
           "startRoad": "B1C1",
           "endRoad": "C1C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7291,7 +7291,7 @@
           "type": "turn_right",
           "startRoad": "C0C1",
           "endRoad": "C1right1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -7341,7 +7341,7 @@
           "type": "go_straight",
           "startRoad": "C0C1",
           "endRoad": "C1C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7475,7 +7475,7 @@
           "type": "turn_left",
           "startRoad": "C0C1",
           "endRoad": "C1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7525,7 +7525,7 @@
           "type": "turn_right",
           "startRoad": "C2C1",
           "endRoad": "C1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -7575,7 +7575,7 @@
           "type": "go_straight",
           "startRoad": "C2C1",
           "endRoad": "C1C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7709,7 +7709,7 @@
           "type": "turn_left",
           "startRoad": "C2C1",
           "endRoad": "C1right1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7759,7 +7759,7 @@
           "type": "turn_right",
           "startRoad": "right1C1",
           "endRoad": "C1C2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -7809,7 +7809,7 @@
           "type": "go_straight",
           "startRoad": "right1C1",
           "endRoad": "C1B1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -7943,7 +7943,7 @@
           "type": "turn_left",
           "startRoad": "right1C1",
           "endRoad": "C1C0",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8062,7 +8062,7 @@
           "type": "turn_right",
           "startRoad": "B2C2",
           "endRoad": "C2C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -8112,7 +8112,7 @@
           "type": "go_straight",
           "startRoad": "B2C2",
           "endRoad": "C2right2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8246,7 +8246,7 @@
           "type": "turn_left",
           "startRoad": "B2C2",
           "endRoad": "C2top2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8296,7 +8296,7 @@
           "type": "turn_right",
           "startRoad": "C1C2",
           "endRoad": "C2right2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -8346,7 +8346,7 @@
           "type": "go_straight",
           "startRoad": "C1C2",
           "endRoad": "C2top2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8480,7 +8480,7 @@
           "type": "turn_left",
           "startRoad": "C1C2",
           "endRoad": "C2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8530,7 +8530,7 @@
           "type": "turn_right",
           "startRoad": "right2C2",
           "endRoad": "C2top2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -8580,7 +8580,7 @@
           "type": "go_straight",
           "startRoad": "right2C2",
           "endRoad": "C2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8714,7 +8714,7 @@
           "type": "turn_left",
           "startRoad": "right2C2",
           "endRoad": "C2C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8764,7 +8764,7 @@
           "type": "turn_right",
           "startRoad": "top2C2",
           "endRoad": "C2B2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 2,
@@ -8814,7 +8814,7 @@
           "type": "go_straight",
           "startRoad": "top2C2",
           "endRoad": "C2C1",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
@@ -8948,7 +8948,7 @@
           "type": "turn_left",
           "startRoad": "top2C2",
           "endRoad": "C2right2",
-          "direction": 0,
+          "direction": 15,
           "laneLinks": [
             {
               "startLaneIndex": 0,
