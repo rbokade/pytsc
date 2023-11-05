@@ -10,7 +10,7 @@ cityflow:
   veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
   roadnet_file: 3x3_cityflow_grid.json
   flow_file: 3x3_cityflow_grid_flows.json
-  save_replay: True
+  save_replay: False
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
 
