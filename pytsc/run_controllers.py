@@ -79,11 +79,10 @@ def evaluate_controllers(
 
 
 if __name__ == "__main__":
-
-    scenario = "1x10_cityflow_grid"
+    scenario = "2x2_cityflow_grid"
     simulator_type = "cityflow"
     controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
-    # controllers = ["sotl"]
+    # controllers = ["max_pressure"]
     hours = 1
     add_args = {
         "fixed_time": {"green_time": 25},
