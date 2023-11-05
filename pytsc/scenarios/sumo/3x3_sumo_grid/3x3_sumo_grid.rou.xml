@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2023-11-04 20:32:02 by Eclipse SUMO jtrrouter Version v1_18_0+1767-2a5073732ae
-<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/jtrrouterConfiguration.xsd">
+<!-- generated on 2023-11-04 20:31:55.829827 by randomTrips.py v1_18_0+2252-856361c42b4
+<configuration>
+    <net-file value="3x3_sumo_grid.net.xml"/>
+    <output-trip-file value="3x3_sumo_grid.trips.xml"/>
+    <route-file value="3x3_sumo_grid.rou.xml"/>
+    <trip-attributes value="maxSpeed=&quot;max&quot;"/>
+    <fringe-factor value="100"/>
+    <remove-loops value="True"/>
+    <validate value="True"/>
+    <insertion-rate value="8412.0"/>
+</configuration>
+-->
+
+<!-- generated on 2023-11-04 20:31:55 by Eclipse SUMO duarouter Version v1_18_0+1767-2a5073732ae
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
         <net-file value="3x3_sumo_grid.net.xml"/>
-        <route-files value="3x3_sumo_grid.rou.xml"/>
+        <route-files value="3x3_sumo_grid.trips.xml"/>
     </input>
 
     <output>
-        <output-file value="3x3_sumo_grid.rou.alt.xml"/>
+        <output-file value="3x3_sumo_grid.rou.xml"/>
+        <alternatives-output value="NUL"/>
     </output>
 
     <processing>
         <remove-loops value="true"/>
-        <repair value="true"/>
-        <turn-defaults value="30,60,10"/>
     </processing>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
 
 </configuration>
 -->
