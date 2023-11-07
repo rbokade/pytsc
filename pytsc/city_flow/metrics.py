@@ -201,7 +201,7 @@ class MetricsParser(BaseMetricsParser):
                     kuramotos[i, j] = coupling_strength * np.sin(
                         offset_phase_angle - phase_angles[ts_id]
                     )
-        return kuramotos
+        return kuramotos.flatten().tolist()
 
     def get_step_stats(self):
         step_stats = {
@@ -212,7 +212,7 @@ class MetricsParser(BaseMetricsParser):
             "mean_delay": self.mean_delay,
             "density": self.density,
             "norm_mean_queued_per_ts": self.norm_mean_queued_per_ts,
-            "kuramoto": np.mean(np.abs(self.kuramotos)),
+            "kuramoto": np.sum(np.abs(self.kuramotos)) / np.sum(self.parsed_network.adjacency_matrix),
             "order": np.mean(self.orders),
         }
         phases = {
