@@ -18,10 +18,7 @@ class BaseActionSpace:
             try:
                 actions = actions.tolist()
             except:
-                print(
-                    "Actions must be list or numpy array."
-                    + f"Got {type(actions)}"
-                )
+                print("Actions must be list or numpy array." + f"Got {type(actions)}")
 
     def apply(self, actions):
         self._check_actions_type(actions)
@@ -29,9 +26,7 @@ class BaseActionSpace:
             ts.action_to_phase(actions[ts_idx])
 
     def get_size(self):
-        return max(
-            [ts.controller.n_phases for ts in self.traffic_signals.values()]
-        )
+        return max([ts.controller.n_phases for ts in self.traffic_signals.values()])
 
     def get_mask(self):
         masks = []
@@ -121,9 +116,7 @@ class ActionSpaceWithOffset(BinaryActionSpace):
                 mask[1] = 1
             extended_mask = []
             for phase_allowed in mask:
-                extended_mask.extend(
-                    [phase_allowed] * len(self.offset_actions)
-                )
+                extended_mask.extend([phase_allowed] * len(self.offset_actions))
             extended_masks.append(extended_mask)
         return extended_masks
 

@@ -105,36 +105,20 @@ class SOTLPhaseSelector(BasePhaseSelector):
         self.last_vehicle_time = {}
 
     def get_action(self, inp, action_mask):
-        if (
-            inp["current_phase_index"]
-            in self.traffic_signal.green_phase_indices
-        ):
+        if inp["current_phase_index"] in self.traffic_signal.green_phase_indices:
             if inp["time_on_phase"] > self.omega:
-                return self._get_next_phase(
-                    action_mask, inp["current_phase_index"]
-                )
-            max_gap = self._compute_max_gap_for_phase(
-                inp, inp["current_phase_index"]
-            )
+                return self._get_next_phase(action_mask, inp["current_phase_index"])
+            max_gap = self._compute_max_gap_for_phase(inp, inp["current_phase_index"])
             if max_gap > self.mu:
-                return self._get_next_phase(
-                    action_mask, inp["current_phase_index"]
-                )
-            if (
-                self._compute_flow_for_phase(inp, inp["current_phase_index"])
-                < self.phi
-            ):
-                return self._get_next_phase(
-                    action_mask, inp["current_phase_index"]
-                )
+                return self._get_next_phase(action_mask, inp["current_phase_index"])
+            if self._compute_flow_for_phase(inp, inp["current_phase_index"]) < self.phi:
+                return self._get_next_phase(action_mask, inp["current_phase_index"])
             return inp["current_phase_index"]
         else:
             return action_mask.index(1)
 
     def _get_next_phase(self, action_mask, current_phase_index):
-        available_phases = [
-            i for i, available in enumerate(action_mask) if available
-        ]
+        available_phases = [i for i, available in enumerate(action_mask) if available]
         if current_phase_index not in available_phases:
             return action_mask.index(1)
         current_index_position = available_phases.index(current_phase_index)
@@ -155,9 +139,7 @@ class SOTLPhaseSelector(BasePhaseSelector):
         phase_inc_out_lanes = self.traffic_signal.phase_to_inc_out_lanes[phase]
         current_time = inp["time"]
         for inc_lane, _ in phase_inc_out_lanes:
-            last_vehicle_time = self.last_vehicle_time.get(
-                inc_lane, current_time
-            )
+            last_vehicle_time = self.last_vehicle_time.get(inc_lane, current_time)
             gap = current_time - last_vehicle_time
             max_gap = max(max_gap, gap)
             if inp["lane"][inc_lane]["n_vehicles"] > 0:

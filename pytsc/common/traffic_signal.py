@@ -118,14 +118,13 @@ class TLSFreePhaseSelectLogic:
     """
 
     def __init__(self, controller):
+        self.id = controller.id
         self.phases = controller.phases
         self.n_phases = controller.n_phases
         self.green_phase_indices = controller.green_phase_indices
         self.yellow_phase_indices = controller.yellow_phase_indices
         self.phases_min_max_times = controller.phases_min_max_times
-        self.update_current_phase_index(
-            controller.program.start_phase_index, 0
-        )
+        self.update_current_phase_index(controller.program.start_phase_index, 0)
         max_total_duration = sum(
             v["max_time"] for v in self.phases_min_max_times.values()
         )
@@ -151,12 +150,8 @@ class TLSFreePhaseSelectLogic:
     def get_allowable_phase_switches(self, time_on_phase, **kwargs):
         mask = [0 for _ in range(self.n_phases)]
         if self.current_phase_index in self.green_phase_indices:
-            min_time = self.phases_min_max_times[self.current_phase][
-                "min_time"
-            ]
-            max_time = self.phases_min_max_times[self.current_phase][
-                "max_time"
-            ]
+            min_time = self.phases_min_max_times[self.current_phase]["min_time"]
+            max_time = self.phases_min_max_times[self.current_phase]["max_time"]
             if time_on_phase < min_time:  # stay on current phase
                 mask[self.current_phase_index] = 1
                 return mask
@@ -185,12 +180,8 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
     def get_allowable_phase_switches(self, time_on_phase, time_on_cycle):
         max_cycle_length_trimmed = self.max_cycle_length - self.yellow_time
         if self.current_phase_index in self.green_phase_indices:
-            min_time = self.phases_min_max_times[self.current_phase][
-                "min_time"
-            ]
-            max_time = self.phases_min_max_times[self.current_phase][
-                "max_time"
-            ]
+            min_time = self.phases_min_max_times[self.current_phase]["min_time"]
+            max_time = self.phases_min_max_times[self.current_phase]["max_time"]
             mask = [0 for _ in range(self.n_phases)]
             if time_on_phase < min_time:  # stay on current phase
                 mask[self.current_phase_index] = 1
@@ -203,8 +194,7 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
                 mask[self.current_phase_index] = 1
                 mask[self.current_phase_index + 1] = 1
             elif (
-                time_on_phase == max_time
-                or time_on_cycle == max_cycle_length_trimmed
+                time_on_phase == max_time or time_on_cycle == max_cycle_length_trimmed
             ):  # switch to corr. yellow phase
                 mask[self.current_phase_index + 1] = 1
             else:

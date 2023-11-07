@@ -37,14 +37,10 @@ class Evaluate:
             elif self.controller == "sotl":
                 controller = SOTLPhaseSelector
             else:
-                raise ValueError(
-                    f"Controller {self.controller} not supported."
-                )
+                raise ValueError(f"Controller {self.controller} not supported.")
             self.controllers[ts_id] = controller(ts, **self.kwargs)
 
-    def run(
-        self, hours, save_stats=False, plot_stats=False, output_folder=None
-    ):
+    def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
         output_folder = self._create_output_folder(output_folder)
         steps = int(hours * self.steps_per_hour)
         for step in range(1, steps + 1):
@@ -69,9 +65,7 @@ class Evaluate:
     def _get_actions(self):
         actions = []
         action_masks = self.network.get_action_mask()
-        for idx, (ts_id, ts) in enumerate(
-            self.network.traffic_signals.items()
-        ):
+        for idx, (ts_id, ts) in enumerate(self.network.traffic_signals.items()):
             inp = self._get_controller_input(ts)
             action_mask = action_masks[idx]
             action = self.controllers[ts_id].get_action(inp, action_mask)
