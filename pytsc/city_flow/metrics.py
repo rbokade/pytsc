@@ -38,31 +38,31 @@ class MetricsParser(BaseMetricsParser):
         norm_mean_queued = total_norm_queued / len(self.traffic_signals)
         return norm_mean_queued
 
-    @property
-    def norm_mean_queued_for_each_ts(self):
-        lane_measurements = self.simulator.step_measurements["lane"]
-        norm_mean_queued_for_each_tsc = []
-        for ts_id in self.traffic_signals.keys():
-            incoming_lanes = self.parsed_network.incoming_lanes_map[ts_id]
-            norm_queued = 0
-            for incoming_lane in incoming_lanes:
-                norm_queued += lane_measurements[incoming_lane]["norm_queue_length"]
-            norm_queued /= len(incoming_lanes)
-            norm_mean_queued_for_each_tsc.append(norm_queued)
-        return np.asarray(norm_mean_queued_for_each_tsc)
+    # @property
+    # def norm_mean_queued_for_each_ts(self):
+    #     lane_measurements = self.simulator.step_measurements["lane"]
+    #     norm_mean_queued_for_each_tsc = []
+    #     for ts_id in self.traffic_signals.keys():
+    #         incoming_lanes = self.parsed_network.incoming_lanes_map[ts_id]
+    #         norm_queued = 0
+    #         for incoming_lane in incoming_lanes:
+    #             norm_queued += lane_measurements[incoming_lane]["norm_queue_length"]
+    #         norm_queued /= len(incoming_lanes)
+    #         norm_mean_queued_for_each_tsc.append(norm_queued)
+    #     return np.asarray(norm_mean_queued_for_each_tsc)
 
-    @property
-    def norm_mean_speed_for_each_ts(self):
-        lane_measurements = self.simulator.step_measurements["lane"]
-        norm_mean_speed_for_each_tsc = []
-        for ts_id in self.traffic_signals.keys():
-            incoming_lanes = self.parsed_network.incoming_lanes_map[ts_id]
-            norm_speed = 0
-            for incoming_lane in incoming_lanes:
-                norm_speed += lane_measurements[incoming_lane]["norm_mean_speed"]
-            norm_speed /= len(incoming_lanes)
-            norm_mean_speed_for_each_tsc.append(norm_speed)
-        return norm_mean_speed_for_each_tsc
+    # @property
+    # def norm_mean_speed_for_each_ts(self):
+    #     lane_measurements = self.simulator.step_measurements["lane"]
+    #     norm_mean_speed_for_each_tsc = []
+    #     for ts_id in self.traffic_signals.keys():
+    #         incoming_lanes = self.parsed_network.incoming_lanes_map[ts_id]
+    #         norm_speed = 0
+    #         for incoming_lane in incoming_lanes:
+    #             norm_speed += lane_measurements[incoming_lane]["norm_mean_speed"]
+    #         norm_speed /= len(incoming_lanes)
+    #         norm_mean_speed_for_each_tsc.append(norm_speed)
+    #     return norm_mean_speed_for_each_tsc
 
     @property
     def mean_speed(self):
@@ -176,6 +176,9 @@ class MetricsParser(BaseMetricsParser):
         kuramotos = np.zeros((n_ts, n_ts))
         for i, (ts_id, _) in enumerate(self.traffic_signals.items()):
             neighbors = neighbors_lanes[ts_id]
+            incoming_lanes = self.parsed_network.traffic_signals[ts_id][
+                "incoming_lanes"
+            ]
             if not neighbors:
                 continue
             for j, (neigh_ts_id, neigh_ts) in enumerate(self.traffic_signals.items()):
@@ -196,11 +199,23 @@ class MetricsParser(BaseMetricsParser):
                     offset_phase_angle = offset_phase_index * 2 * np.pi
                     neigh_lanes = directional_lanes[ts_id][neigh_ts_id]
                     coupling_strength = sum(
-                        [lane_measurements[lane]["occupancy"] for lane in neigh_lanes]
+                        [
+                            lane_measurements[lane]["norm_queue_length"]
+                            for lane in neigh_lanes
+                        ]
                     ) / len(neigh_lanes)
-                    kuramotos[i, j] = coupling_strength * np.sin(
+                    res_lanes = [
+                        lane for lane in incoming_lanes if lane not in neigh_lanes
+                    ]
+                    residual = sum(
+                        lane_measurements[lane]["norm_queue_length"]
+                        for lane in res_lanes
+                    ) / len(res_lanes)
+                    residual *= 1 - coupling_strength
+                    kuramoto = coupling_strength * np.sin(
                         offset_phase_angle - phase_angles[ts_id]
                     )
+                    kuramotos[i, j] = residual + np.abs(kuramoto)
         return kuramotos.flatten().tolist()
 
     def get_step_stats(self):
@@ -212,7 +227,8 @@ class MetricsParser(BaseMetricsParser):
             "mean_delay": self.mean_delay,
             "density": self.density,
             "norm_mean_queued_per_ts": self.norm_mean_queued_per_ts,
-            "kuramoto": np.sum(np.abs(self.kuramotos)) / np.sum(self.parsed_network.adjacency_matrix),
+            "kuramoto": np.sum(np.abs(self.kuramotos))
+            / np.sum(self.parsed_network.adjacency_matrix),
             "order": np.mean(self.orders),
         }
         phases = {
