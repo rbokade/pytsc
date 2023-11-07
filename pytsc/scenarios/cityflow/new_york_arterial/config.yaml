@@ -12,7 +12,7 @@ cityflow:
   flow_file: 8th_ave.json
   flow_files: ["8th_ave.json", "9th_ave.json", "10th_ave.json", "11th_ave"]
   flow_rate_type: "constant"
-  save_replay: True
+  save_replay: False
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
 

@@ -13,7 +13,7 @@ cityflow:
   flow_file: 1x4_roadnet_600.json
   flow_files: ["1x4_roadnet_500.json", "1x4_roadnet_600.json", "1x4_roadnet_700.json"]
   flow_rate_type: "constant"
-  save_replay: True
+  save_replay: False
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
 
