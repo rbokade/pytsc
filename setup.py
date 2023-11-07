@@ -8,4 +8,14 @@ setup(
         "numpy",
         "pyyaml",
     ],
+    include_package_data=True,
+    package_data={
+        "pytsc": [
+            "scenarios/default/*.yaml",
+            "scenarios/cityflow/*.yaml",
+            "scenarios/sumo/*.yaml",
+            "scenarios/test/*.yaml",
+        ]
+    },
+
 )

@@ -1,0 +1,5 @@
+include scenarios/default/*.yaml
+include scenarios/cityflow/*.yaml
+include scenarios/sumo/*.yaml
+include scenarios/test/*.yaml
+
