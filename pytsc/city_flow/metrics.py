@@ -235,5 +235,10 @@ class MetricsParser(BaseMetricsParser):
             f"{ts_id}_phase": ts.controller.program.current_phase
             for ts_id, ts in self.traffic_signals.items()
         }
+        time_on_cycle = {
+            f"{ts_id}_time_on_cycle": ts.controller.time_on_cycle
+            for ts_id, ts in self.traffic_signals.items()
+        }
         step_stats.update(phases)
+        step_stats.update(time_on_cycle)
         return step_stats
