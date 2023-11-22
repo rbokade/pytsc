@@ -8,9 +8,7 @@ class BaseObservationSpace:
     Standard observation space for traffic signal control.
     """
 
-    def __init__(
-        self, config, parsed_network, traffic_signals, simulator_type
-    ):
+    def __init__(self, config, parsed_network, traffic_signals, simulator_type):
         self.config = config
         self.parsed_network = parsed_network
         self.n_agents = len(traffic_signals)
@@ -42,16 +40,11 @@ class BaseObservationSpace:
         time_on_phases = []
         time_on_cycles = []
         last_step_offsets = []
+        # offset_phases = []
         for ts in self.traffic_signals.values():
-            obs = pad_array(
-                ts.norm_queue_lengths, self.max_n_controlled_lane
-            ).tolist()
-            obs += pad_array(
-                ts.norm_densities, self.max_n_controlled_lane
-            ).tolist()
-            obs += pad_array(
-                ts.norm_mean_speeds, self.max_n_controlled_lane
-            ).tolist()
+            obs = pad_array(ts.norm_queue_lengths, self.max_n_controlled_lane).tolist()
+            obs += pad_array(ts.norm_densities, self.max_n_controlled_lane).tolist()
+            obs += pad_array(ts.norm_mean_speeds, self.max_n_controlled_lane).tolist()
             obs += pad_array(
                 ts.norm_mean_wait_times, self.max_n_controlled_lane
             ).tolist()
@@ -63,6 +56,13 @@ class BaseObservationSpace:
             phase_ids.extend(ts.phase_id)
             time_on_phases.append(ts.time_on_phase)
             time_on_cycles.append(ts.time_on_cycle)
+            # # Compute neighbor's phase angle
+            # offset = ts.neighbors_offsets.get(ts.id, 0)
+            # t = len(neights_ts.controller.phase_and_cycle_history) - 1
+            # offset_t = max(t - offset, 0)
+            # offset_phase = ts.controller.phase_and_cycle_history[offset_t][0]
+            # offset_phase /= ts.controller.n_phases
+            # offset_phases.append(offset_phase)
             if len(ts.offsets):
                 last_step_offsets.append(ts.offsets[-1])
             else:
@@ -74,6 +74,7 @@ class BaseObservationSpace:
             obs.extend(time_on_phases)
             obs.extend(time_on_cycles)
             obs.extend(last_step_offsets)
+            # obs.extend(offset_phases)
         return observations
 
     def get_size(self):

@@ -1,12 +1,18 @@
 import logging
 
-from pytsc.common.actions import BaseActionSpace, ActionSpaceWithOffset
+from pytsc.common.actions import (
+    BaseActionSpace,
+    ActionSpaceWithOffset,
+    KuramotoActionSpace,
+    PhaseAndCycleLengthActionSpace,
+)
 from pytsc.common.observations import BaseObservationSpace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-ACTION_SPACES = ('phase', 'phase_and_offset')
+ACTION_SPACES = ("phase", "phase_and_offset")
+
 
 class TrafficSignalNetwork:
     def __init__(self, scenario, simulator_type="sumo", add_config={}):
@@ -29,18 +35,13 @@ class TrafficSignalNetwork:
 
     @property
     def episode_limit(self):
-        return int(
-            self.env_config["episode_limit"] / self.env_config["delta_time"]
-        )
+        return int(self.env_config["episode_limit"] / self.env_config["delta_time"])
 
     @property
     def episode_over(self):
         return (
             self.simulator.sim_step
-            % (
-                self.env_config["episode_limit"]
-                / self.env_config["delta_time"]
-            )
+            % (self.env_config["episode_limit"] / self.env_config["delta_time"])
             == 0
         )
 
@@ -51,9 +52,7 @@ class TrafficSignalNetwork:
             self.env_config = self.config.cityflow_config
         else:
             raise ValueError(
-                "Simulator type {} is not supported".format(
-                    self.simulator_type
-                )
+                "Simulator type {} is not supported".format(self.simulator_type)
             )
 
     def _init_parsers(self):
@@ -70,13 +69,18 @@ class TrafficSignalNetwork:
             self.traffic_signals,
         )
         if self.config.signal_config["action_space"] == "phase":
-            self.actions = BaseActionSpace(self.traffic_signals)
+            action_space = BaseActionSpace
         elif self.config.signal_config["action_space"] == "phase_and_offset":
-            self.actions = ActionSpaceWithOffset(self.traffic_signals)
+            action_space = ActionSpaceWithOffset
+        elif self.config.signal_config["action_space"] == "kuramoto":
+            action_space = KuramotoActionSpace
+        elif self.config.signal_config["action_space"] == "cycle_length_and_phase":
+            action_space = PhaseAndCycleLengthActionSpace
         else:
             raise ValueError(
                 f"Invalid action space. Allowed values are {ACTION_SPACES}."
             )
+        self.actions = action_space(self.config, self.traffic_signals)
 
     def _init_traffic_signals(self):
         TrafficSignal = import_traffic_signal_module(self.simulator_type)
@@ -86,15 +90,11 @@ class TrafficSignalNetwork:
             self.traffic_signals[ts_id] = TrafficSignal(
                 ts_id, signal_config, self.simulator
             )
-            self.traffic_signals[ts_id].update_stats(
-                self.simulator.step_measurements
-            )
+            self.traffic_signals[ts_id].update_stats(self.simulator.step_measurements)
 
     def _update_ts_stats(self):
         for ts_id in self.traffic_signals.keys():
-            self.traffic_signals[ts_id].update_stats(
-                self.simulator.step_measurements
-            )
+            self.traffic_signals[ts_id].update_stats(self.simulator.step_measurements)
 
     def get_action_mask(self):
         return self.actions.get_mask()
@@ -165,9 +165,7 @@ def import_simulator_modules(simulator_type):
         from pytsc.city_flow.simulator import Simulator
         from pytsc.city_flow.network_parser import NetworkParser
     else:
-        raise ValueError(
-            "Invalid simulator type. Must be either 'sumo' or 'cityflow'."
-        )
+        raise ValueError("Invalid simulator type. Must be either 'sumo' or 'cityflow'.")
     return (
         Config,
         Simulator,
@@ -181,9 +179,7 @@ def import_traffic_signal_module(simulator_type):
     elif simulator_type == "cityflow":
         from pytsc.city_flow.traffic_signal import TrafficSignal
     else:
-        raise ValueError(
-            "Invalid simulator type. Must be either 'sumo' or 'cityflow'."
-        )
+        raise ValueError("Invalid simulator type. Must be either 'sumo' or 'cityflow'.")
     return TrafficSignal
 
 
@@ -193,7 +189,5 @@ def import_metrics_parser_module(simulator_type):
     elif simulator_type == "cityflow":
         from pytsc.city_flow.metrics import MetricsParser
     else:
-        raise ValueError(
-            "Invalid simulator type. Must be either 'sumo' or 'cityflow'."
-        )
+        raise ValueError("Invalid simulator type. Must be either 'sumo' or 'cityflow'.")
     return MetricsParser

@@ -1,5 +1,7 @@
 from itertools import product
 
+import numpy as np
+
 from pytsc.common.utils import pad_list
 
 
@@ -9,7 +11,8 @@ class BaseActionSpace:
     Assumes homogenous action spaces for all traffic signals.
     """
 
-    def __init__(self, traffic_signals):
+    def __init__(self, config, traffic_signals):
+        self.config = config
         self.traffic_signals = traffic_signals
         self.ts_ids = list(traffic_signals.keys())
 
@@ -44,8 +47,8 @@ class BinaryActionSpace(BaseActionSpace):
     1 for switch (move to the next phase in a round-robin manner).
     """
 
-    def __init__(self, traffic_signals):
-        super(BinaryActionSpace, self).__init__(traffic_signals)
+    def __init__(self, config, traffic_signals):
+        super(BinaryActionSpace, self).__init__(config, traffic_signals)
 
     def apply(self, actions):
         self._check_actions_type(actions)
@@ -76,11 +79,73 @@ class BinaryActionSpace(BaseActionSpace):
         return masks
 
 
+class PhaseAndCycleLengthActionSpace(BaseActionSpace):
+    """
+    Actions are (for each traffic signal)
+    (1) the phase index to switch to
+    (2) the cycle length to switch to
+    """
+
+    def __init__(self, config, traffic_signals):
+        super().__init__(config, traffic_signals)
+
+    @property
+    def network_max_cycle_length(self):
+        return max(
+            [len(ts.controller.cycle_lengths) for ts in self.traffic_signals.values()]
+        )
+
+    def apply(self, actions):
+        for ts_idx, ts in enumerate(self.traffic_signals.values()):
+            action = actions[ts_idx]
+            current_phase = ts.controller.program.current_phase_index
+            if action % 2:  # phase switch == 1
+                next_phase = (current_phase + 1) % ts.controller.n_phases
+                phase_idx = next_phase
+            else:
+                phase_idx = current_phase
+            cycle_length_idx = action // 2
+            ts.action_to_phase(phase_idx, cycle_length_idx=cycle_length_idx)
+
+    def get_size(self):
+        return 2 * self.network_max_cycle_length
+
+    def _get_phase_switch_mask(self, ts):
+        allowable_switches = ts.controller.get_allowable_phase_switches()
+        n_phases = ts.controller.n_phases
+        current_phase_index = ts.controller.program.current_phase_index
+        next_phase_index = (current_phase_index + 1) % n_phases
+        phase_switch_mask = [0, 0]
+        if allowable_switches[current_phase_index]:
+            phase_switch_mask[0] = 1
+        if allowable_switches[next_phase_index]:
+            phase_switch_mask[1] = 1
+        return phase_switch_mask
+
+    def _combine_masks(self, cycle_switch_mask, phase_switch_mask):
+        mask = []
+        for c in cycle_switch_mask:
+            for p in phase_switch_mask:
+                mask.append(p * c)
+        return mask
+
+    def get_mask(self):
+        mask = []
+        for ts in self.traffic_signals.values():
+            phase_switch_mask = self._get_phase_switch_mask(ts)
+            cycle_length_mask = ts.controller.get_allowable_cycle_length_switches()
+            combined_action_mask = self._combine_masks(
+                phase_switch_mask, cycle_length_mask
+            )
+            mask.append(combined_action_mask)
+        return mask
+
+
 class ActionSpaceWithOffset(BinaryActionSpace):
     offset_actions = [0, 1, 2, 3, 4, 5, 6]  # fixed for now
 
-    def __init__(self, traffic_signals):
-        super(ActionSpaceWithOffset, self).__init__(traffic_signals)
+    def __init__(self, config, traffic_signals):
+        super(ActionSpaceWithOffset, self).__init__(config, traffic_signals)
 
     def _split_actions(self, actions):
         phase_actions = [a // len(self.offset_actions) for a in actions]
@@ -170,3 +235,241 @@ class ActionSpaceWithOffset(BinaryActionSpace):
 #                 )
 #             extended_masks.append(extended_mask)
 #         return extended_masks
+
+
+# class KuramotoActionSpace(BaseActionSpace):
+#     """
+#     Action for each agent: coupling strength (0, 1) for each neighbor
+#     Size of the action space: 2**max(node_degrees)
+#     Action masking:
+#         - Convert the actions into NxN matrix and multiply by the adjacency matrix
+#     """
+
+#     def __init__(self, config, traffic_signals):
+#         super(KuramotoActionSpace, self).__init__(config, traffic_signals)
+#         self.n_agents = len(self.traffic_signals)
+#         self.threshold = self.config.misc_config.get("kuramoto_action_threshold", 0.0)
+
+#     @property
+#     def max_degree(self):
+#         """
+#         NOTE: ts.neighborhood_matrix: adjacency_matrix[ts_idx]
+#         """
+#         return max(
+#             [
+#                 int(ts.neighborhood_matrix.sum().item())
+#                 for ts in self.traffic_signals.values()
+#             ]
+#         )
+
+#     def get_mask(self):
+#         return [[1 for _ in range(2**self.max_degree)] for _ in range(self.n_agents)]
+
+#     def _index_to_binary_vector(self, index, length):
+#         binary_str = format(index, f"0{length}b")
+#         return [int(bit) for bit in binary_str]
+
+#     def _actions_to_coupling_strength(self, actions):
+#         """
+#         Returns a coupling strength matrix based on actions taken by the agents.
+#         args:
+#             actions: [n_agents]
+#         returns:
+#             coupling_strength_matrix: [n_agents, n_agents]
+#         """
+#         coupling_strength_matrix = np.zeros((self.n_agents, self.n_agents))
+#         for idx, (ts_id, action) in enumerate(
+#             zip(self.traffic_signals.keys(), actions)
+#         ):
+#             binary_vector = self._index_to_binary_vector(action, self.max_degree)
+#             neighbors = self.traffic_signals[ts_id].neighborhood_matrix
+#             # Extracting indices of neighbors
+#             neighbors_idx = [
+#                 i for i, is_neighbor in enumerate(neighbors) if is_neighbor
+#             ]
+#             # Assigning coupling strengths based on the binary vector
+#             for i, neigh_idx in enumerate(neighbors_idx):
+#                 coupling_strength_matrix[idx][neigh_idx] = binary_vector[i]
+#         return coupling_strength_matrix
+
+#     def _get_phase_difference(self, ts, neigh_ts):
+#         phase_angle = ts.controller.phase_and_cycle_history[-1][0]
+#         phase_angle /= ts.controller.n_phases
+#         phase_angle *= 2 * np.pi
+#         # Compute neighbor's phase angle
+#         offset = ts.neighbors_offsets[neigh_ts.id]
+#         t = len(neigh_ts.controller.phase_and_cycle_history) - 1
+#         offset_t = max(t - offset, 0)
+#         neigh_phase_angle = neigh_ts.controller.phase_and_cycle_history[offset_t][0]
+#         neigh_phase_angle /= neigh_ts.controller.n_phases
+#         neigh_phase_angle *= 2 * np.pi
+#         # Return phase difference
+#         return neigh_phase_angle - phase_angle
+
+#     def _compute_kuramotos_for_each_agent(self, coupling_strengths):
+#         """
+#         Returns a mean field kuramoto for each agent.
+#         args:
+#             coupling_strength: [n_agents, n_agents]
+#         returns:
+#             kuramotos: [n_agents]
+#         """
+#         kuramotos = np.zeros(self.n_agents)
+#         for i, ts in enumerate(self.traffic_signals.values()):
+#             total, count = 0, 0
+#             for j, neigh_ts in enumerate(self.traffic_signals.values()):
+#                 if coupling_strengths[i][j] > 0:
+#                     phase_diff = self._get_phase_difference(ts, neigh_ts)
+#                     total += coupling_strengths[i][j] * np.sin(phase_diff)
+#                     count += 1
+#             kuramotos[i] = total / count if count > 0 else 0
+#         return kuramotos
+
+#     def _kuramoto_to_phase_switch(self, kuramotos):
+#         """
+#         If the agent is lagging behind the mean phase then it should
+#         switch to the next phase, otherwise it should stay at the
+#         current phase.
+#         """
+#         for ts_idx, ts in enumerate(self.traffic_signals.values()):
+#             allowable_switches = ts.controller.get_allowable_phase_switches()
+#             n_phases = ts.controller.n_phases
+#             current_phase_index = ts.controller.program.current_phase_index
+#             next_phase_index = (current_phase_index + 1) % n_phases
+#             # if allowable_switches[current_phase_index]:
+#             # if allowable_switches[next_phase_index]:
+#             if (
+#                 kuramotos[ts_idx] >= self.threshold
+#                 and allowable_switches[next_phase_index]
+#             ) or not allowable_switches[
+#                 current_phase_index
+#             ]:  # switch to the next phase
+#                 next_phase = (current_phase_index + 1) % ts.controller.n_phases
+#                 ts.action_to_phase(next_phase)
+#             else:  # stay on the current phase
+#                 ts.action_to_phase(current_phase_index)
+
+#     def apply(self, actions):
+#         coupling_strengths = self._actions_to_coupling_strength(actions)
+#         kuramotos = self._compute_kuramotos_for_each_agent(coupling_strengths)
+#         self._kuramoto_to_phase_switch(kuramotos)
+
+#     def get_size(self):
+#         return 2**self.max_degree
+
+
+class KuramotoActionSpace(BaseActionSpace):
+    """
+    Action for each agent: coupling strength (0, 1) for each neighbor
+    Size of the action space: 2**max(node_degrees)
+    Action masking:
+        - Convert the actions into NxN matrix and multiply by the adjacency matrix
+    """
+
+    def __init__(self, config, traffic_signals):
+        super(KuramotoActionSpace, self).__init__(config, traffic_signals)
+        self.n_agents = len(self.traffic_signals)
+        self.threshold = self.config.misc_config.get("kuramoto_action_threshold", 0.0)
+
+    @property
+    def max_degree(self):
+        """
+        NOTE: ts.neighborhood_matrix: adjacency_matrix[ts_idx]
+        """
+        return max(
+            [
+                int(ts.neighborhood_matrix.sum().item())
+                for ts in self.traffic_signals.values()
+            ]
+        )
+
+    def get_mask(self):
+        masks = []
+        for ts in self.traffic_signals.values():
+            n_neighbors = int(ts.neighborhood_matrix.sum().item())
+            ts_mask = [0] * self.get_size()
+            for i in range(n_neighbors):
+                ts_mask[i] = 1
+            masks.append(ts_mask)
+        return masks
+
+    def _actions_to_coupling_strength(self, actions):
+        coupling_strength_matrix = np.zeros((self.n_agents, self.n_agents))
+        for idx, (ts_id, action) in enumerate(
+            zip(self.traffic_signals.keys(), actions)
+        ):
+            neighbors = self.traffic_signals[ts_id].neighborhood_matrix
+            neighbors_idx = [
+                i for i, is_neighbor in enumerate(neighbors) if is_neighbor
+            ]
+
+            # Check if action corresponds to a valid neighbor
+            if action < len(neighbors_idx):
+                selected_neighbor_idx = neighbors_idx[action]
+                coupling_strength_matrix[idx][selected_neighbor_idx] = 1
+        return coupling_strength_matrix
+
+    def _get_phase_difference(self, ts, neigh_ts):
+        phase_angle = ts.controller.phase_and_cycle_history[-1][0]
+        phase_angle /= ts.controller.n_phases
+        phase_angle *= 2 * np.pi
+        # Compute neighbor's phase angle
+        offset = ts.neighbors_offsets[neigh_ts.id]
+        t = len(neigh_ts.controller.phase_and_cycle_history) - 1
+        offset_t = max(t - offset, 0)
+        neigh_phase_angle = neigh_ts.controller.phase_and_cycle_history[offset_t][0]
+        neigh_phase_angle /= neigh_ts.controller.n_phases
+        neigh_phase_angle *= 2 * np.pi
+        # Return phase difference
+        return neigh_phase_angle - phase_angle
+
+    def _compute_kuramotos_for_each_agent(self, coupling_strengths):
+        """
+        Returns a mean field kuramoto for each agent.
+        args:
+            coupling_strength: [n_agents, n_agents]
+        returns:
+            kuramotos: [n_agents]
+        """
+        kuramotos = np.zeros(self.n_agents)
+        for i, ts in enumerate(self.traffic_signals.values()):
+            total, count = 0, 0
+            for j, neigh_ts in enumerate(self.traffic_signals.values()):
+                if coupling_strengths[i][j] > 0:
+                    phase_diff = self._get_phase_difference(ts, neigh_ts)
+                    total += coupling_strengths[i][j] * np.sin(phase_diff)
+                    count += 1
+            kuramotos[i] = total / count if count > 0 else 0
+        return kuramotos
+
+    def _kuramoto_to_phase_switch(self, kuramotos):
+        """
+        If the agent is lagging behind the mean phase then it should
+        switch to the next phase, otherwise it should stay at the
+        current phase.
+        """
+        for ts_idx, ts in enumerate(self.traffic_signals.values()):
+            allowable_switches = ts.controller.get_allowable_phase_switches()
+            n_phases = ts.controller.n_phases
+            current_phase_index = ts.controller.program.current_phase_index
+            next_phase_index = (current_phase_index + 1) % n_phases
+            # if allowable_switches[current_phase_index]:
+            # if allowable_switches[next_phase_index]:
+            if (
+                kuramotos[ts_idx] >= self.threshold
+                and allowable_switches[next_phase_index]
+            ) or not allowable_switches[
+                current_phase_index
+            ]:  # switch to the next phase
+                next_phase = (current_phase_index + 1) % ts.controller.n_phases
+                ts.action_to_phase(next_phase)
+            else:  # stay on the current phase
+                ts.action_to_phase(current_phase_index)
+
+    def apply(self, actions):
+        coupling_strengths = self._actions_to_coupling_strength(actions)
+        kuramotos = self._compute_kuramotos_for_each_agent(coupling_strengths)
+        self._kuramoto_to_phase_switch(kuramotos)
+
+    def get_size(self):
+        return self.max_degree

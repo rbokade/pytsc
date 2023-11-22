@@ -30,11 +30,27 @@ class BaseTSController(ABC):
         self.norm_time_on_cycle = 0
         self.last_cycle_length = 0  # only applicable for round robin
         self.phase_changed = False
-        self.phase_history = []
-        if getattr(self, "max_cycle_length", True):
-            self.max_cycle_length = sum(
-                v["max_time"] for v in self.phases_min_max_times.values()
-            )
+        self.phase_and_cycle_history = []
+        self.max_cycle_length = sum(
+            v["max_time"] for v in self.phases_min_max_times.values()
+        )
+        self.min_cycle_length = sum(
+            v["min_time"] for v in self.phases_min_max_times.values()
+        )
+        if "cycle_length" in getattr(self, "action_space"):
+            self.controllable_cycle_length = True
+            self.cycle_lengths = [
+                i for i in range(self.min_cycle_length, self.max_cycle_length + 5, 5)
+            ]
+            # self.current_cycle_length = 0
+            self.cycle_length_changed = False
+        else:
+            self.controllable_cycle_length = False
+        self.current_cycle_length = self.max_cycle_length
+
+    @property
+    def norm_step_size(self):
+        return self.yellow_time / self.current_cycle_length
 
     @property
     def phase(self):
@@ -54,31 +70,50 @@ class BaseTSController(ABC):
         self.logic.update_current_phase_index(
             self.program.current_phase_index, self.time_on_phase
         )
-        self.phase_history.append(self.program.current_phase_index)
+        self.phase_and_cycle_history.append(
+            (self.program.current_phase_index, self.time_on_cycle)
+        )
 
-    def _update_cycle_time(self):
+    def _update_cycle_info(self, **kwargs):
         self.time_on_cycle += self.yellow_time
-        self.norm_time_on_cycle += self.yellow_time / self.max_cycle_length
+        self.norm_time_on_cycle += self.norm_step_size
+        cycle_length_index = kwargs.get("cycle_length_index", None)
+        if cycle_length_index is not None:
+            self.current_cycle_length = self.cycle_lengths[cycle_length_index]
 
     def _update_phase_time(self, phase_index):
-        self.phase_history.append(self.program.current_phase_index)
+        self.phase_and_cycle_history.append(
+            (self.program.current_phase_index, self.time_on_cycle)
+        )
         if phase_index == self.program.current_phase_index:
             self.phase_changed = False
             self.time_on_phase += self.yellow_time
-            self.norm_time_on_phase += self.yellow_time / self.max_cycle_length
+            self.norm_time_on_phase += self.norm_step_size
         else:
-            if phase_index == 0:
+            if phase_index == self.green_phase_indices[0]:
                 self.last_cycle_length = self.time_on_cycle
                 self.time_on_cycle = 0
                 self.norm_time_on_cycle = 0
             self.phase_changed = True
             self.time_on_phase = self.yellow_time
-            self.norm_time_on_phase = self.yellow_time / self.max_cycle_length
+            self.norm_time_on_phase = self.norm_step_size
 
     def get_allowable_phase_switches(self):
         return self.logic.get_allowable_phase_switches(
-            self.time_on_phase, time_on_cycle=self.time_on_cycle
+            self.time_on_phase,
+            time_on_cycle=self.time_on_cycle,
+            max_cycle_length=self.current_cycle_length,
         )
+
+    def get_allowable_cycle_length_switches(self):
+        if self.time_on_cycle < self.current_cycle_length:
+            mask = [0] * len(self.cycle_lengths)
+            mask[self.cycle_lengths.index(self.current_cycle_length)] = 1
+        elif self.time_on_cycle == self.current_cycle_length:
+            mask = [1] * len(self.cycle_lengths)
+        else:
+            breakpoint()
+        return mask
 
     @abstractmethod
     def switch_phase(self):
@@ -177,8 +212,10 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
         super(TLSRoundRobinPhaseSelectLogic, self).__init__(controller)
         self.yellow_time = controller.yellow_time
 
-    def get_allowable_phase_switches(self, time_on_phase, time_on_cycle):
-        max_cycle_length_trimmed = self.max_cycle_length - self.yellow_time
+    def get_allowable_phase_switches(
+        self, time_on_phase, time_on_cycle, max_cycle_length
+    ):
+        max_cycle_length_trimmed = max_cycle_length - self.yellow_time
         if self.current_phase_index in self.green_phase_indices:
             min_time = self.phases_min_max_times[self.current_phase]["min_time"]
             max_time = self.phases_min_max_times[self.current_phase]["max_time"]

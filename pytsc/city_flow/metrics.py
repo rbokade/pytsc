@@ -31,12 +31,15 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def norm_mean_queued_per_ts(self):
-        lane_measurements = self.simulator.step_measurements["lane"]
-        total_norm_queued = sum(
-            data["norm_queue_length"] for data in lane_measurements.values()
+        # lane_measurements = self.simulator.step_measurements["lane"]
+        # total_norm_queued = sum(
+        #     data["norm_queue_length"] for data in lane_measurements.values()
+        # )
+        # norm_mean_queued = total_norm_queued / len(self.traffic_signals)
+        # return norm_mean_queued
+        return np.mean(
+            [ts.norm_queue_lengths.mean() for ts in self.traffic_signals.values()]
         )
-        norm_mean_queued = total_norm_queued / len(self.traffic_signals)
-        return norm_mean_queued
 
     # @property
     # def norm_mean_queued_for_each_ts(self):
@@ -126,9 +129,33 @@ class MetricsParser(BaseMetricsParser):
     def phase_angles(self):
         phase_angles = {}
         for ts_id, ts in self.traffic_signals.items():
-            phase_angles[ts_id] = ts.controller.phase / ts.controller.n_phases
+            phase_angles[ts_id] = (
+                ts.controller.logic.current_phase_index / ts.controller.n_phases
+            )
             phase_angles[ts_id] *= 2 * np.pi
         return phase_angles
+
+    @property
+    def inc_queue_map(self):
+        neighbors_lanes = self.parsed_network.neighbors_lanes
+        ts_ids = list(self.traffic_signals.keys())
+        inc_queue_map_dict = {}
+        lane_measurements = self.simulator.step_measurements["lane"]
+        for i, ts in enumerate(ts_ids):
+            neighbors = neighbors_lanes[ts]
+            if not neighbors:
+                continue
+            for j, n_ts_id in enumerate(ts_ids):
+                if n_ts_id in neighbors:
+                    lanes = neighbors_lanes[ts][n_ts_id]
+                    total_queued = 0
+                    for lane in lanes:
+                        total_queued += lane_measurements[lane]["n_queued"]
+                    mean_queued = total_queued / len(lanes)
+                    inc_queue_map_dict[
+                        f"inc_queue_to_{ts}_from_{n_ts_id}"
+                    ] = mean_queued
+        return inc_queue_map_dict
 
     @property
     def orders(self):
@@ -151,11 +178,19 @@ class MetricsParser(BaseMetricsParser):
                     offset_t = travel_time / len(lanes)
                     offset_t /= self.config.cityflow_config["delta_time"]
                     offset_t = int(offset_t)
-                    t = len(neigh_ts.controller.phase_history) - 1
+                    t = len(neigh_ts.controller.phase_and_cycle_history) - 1
                     offset_idx = max(t - offset_t, 0)
-                    offset_phase_index_t = neigh_ts.controller.phase_history[offset_idx]
+                    offset_phase_index_t = neigh_ts.controller.phase_and_cycle_history[
+                        offset_idx
+                    ][0]
                     offset_phase_index_t /= neigh_ts.controller.n_phases
-                    offset_phase_angle = offset_phase_index_t * 2 * np.pi
+                    time_on_cycle_t = (
+                        neigh_ts.controller.phase_and_cycle_history[offset_idx][1]
+                        / neigh_ts.controller.max_cycle_length
+                    )
+                    offset_phase_angle = (
+                        offset_phase_index_t + time_on_cycle_t
+                    ) * np.pi
                     phase_angles_matrix[i, j] = offset_phase_angle
         # Compute local orders
         local_orders = np.zeros(n_ts)
@@ -168,17 +203,17 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def kuramotos(self):
-        lane_measurements = self.simulator.step_measurements["lane"]
-        directional_lanes = self.parsed_network.directional_lanes
+        # lane_measurements = self.simulator.step_measurements["lane"]
+        # directional_lanes = self.parsed_network.directional_lanes
         neighbors_lanes = self.parsed_network.neighbors_lanes
         phase_angles = self.phase_angles
         n_ts = len(self.traffic_signals.items())
         kuramotos = np.zeros((n_ts, n_ts))
         for i, (ts_id, _) in enumerate(self.traffic_signals.items()):
             neighbors = neighbors_lanes[ts_id]
-            incoming_lanes = self.parsed_network.traffic_signals[ts_id][
-                "incoming_lanes"
-            ]
+            # incoming_lanes = self.parsed_network.traffic_signals[ts_id][
+            #     "incoming_lanes"
+            # ]
             if not neighbors:
                 continue
             for j, (neigh_ts_id, neigh_ts) in enumerate(self.traffic_signals.items()):
@@ -192,30 +227,40 @@ class MetricsParser(BaseMetricsParser):
                     offset_t = travel_time / len(lanes)
                     offset_t /= self.config.cityflow_config["delta_time"]
                     offset_t = int(offset_t)
-                    t = len(neigh_ts.controller.phase_history) - 1
+                    t = len(neigh_ts.controller.phase_and_cycle_history) - 1
                     offset_idx = max(t - offset_t, 0)
-                    offset_phase_index = neigh_ts.controller.phase_history[offset_idx]
+                    offset_phase_index = neigh_ts.controller.phase_and_cycle_history[
+                        offset_idx
+                    ][0]
                     offset_phase_index /= neigh_ts.controller.n_phases
-                    offset_phase_angle = offset_phase_index * 2 * np.pi
-                    neigh_lanes = directional_lanes[ts_id][neigh_ts_id]
-                    coupling_strength = sum(
-                        [
-                            lane_measurements[lane]["norm_queue_length"]
-                            for lane in neigh_lanes
-                        ]
-                    ) / len(neigh_lanes)
-                    res_lanes = [
-                        lane for lane in incoming_lanes if lane not in neigh_lanes
-                    ]
-                    residual = sum(
-                        lane_measurements[lane]["norm_queue_length"]
-                        for lane in res_lanes
-                    ) / len(res_lanes)
-                    residual *= 1 - coupling_strength
-                    kuramoto = coupling_strength * np.sin(
-                        offset_phase_angle - phase_angles[ts_id]
+                    time_on_cycle_t = (
+                        neigh_ts.controller.phase_and_cycle_history[offset_idx][1]
+                        / neigh_ts.controller.max_cycle_length
                     )
-                    kuramotos[i, j] = residual + np.abs(kuramoto)
+                    offset_phase_angle = (offset_phase_index + time_on_cycle_t) * np.pi
+                    # neigh_lanes = directional_lanes[ts_id][neigh_ts_id]
+                    # coupling_strength = sum(
+                    #     [
+                    #         lane_measurements[lane]["norm_queue_length"]
+                    #         for lane in neigh_lanes
+                    #     ]
+                    # ) / len(neigh_lanes)
+                    # res_lanes = [
+                    #     lane for lane in incoming_lanes if lane not in neigh_lanes
+                    # ]
+                    # residual = sum(
+                    #     [
+                    #         lane_measurements[lane]["norm_queue_length"]
+                    #         for lane in res_lanes
+                    #     ]
+                    # ) / len(res_lanes)
+                    # residual *= 1 - coupling_strength
+                    # kuramoto = coupling_strength * np.sin(
+                    #     offset_phase_angle - phase_angles[ts_id]
+                    # )
+                    # kuramotos[i, j] = residual + np.abs(kuramoto)
+                    kuramoto = np.sin(offset_phase_angle - phase_angles[ts_id])
+                    kuramotos[i, j] = kuramoto
         return kuramotos.flatten().tolist()
 
     def get_step_stats(self):
@@ -236,9 +281,15 @@ class MetricsParser(BaseMetricsParser):
             for ts_id, ts in self.traffic_signals.items()
         }
         time_on_cycle = {
-            f"{ts_id}_time_on_cycle": ts.controller.time_on_cycle
+            f"{ts_id}_cycle_length": ts.controller.last_cycle_length
             for ts_id, ts in self.traffic_signals.items()
+        }
+        orders = {
+            f"{ts_id}_order": self.orders[ts_idx]
+            for ts_idx, ts_id in enumerate(self.traffic_signals.keys())
         }
         step_stats.update(phases)
         step_stats.update(time_on_cycle)
+        step_stats.update(orders)
+        step_stats.update(self.inc_queue_map)
         return step_stats

@@ -31,9 +31,11 @@ class TSController(BaseTSController):
         self.engine = simulator.engine
         self._instantiate_traffic_light_logic()
 
-    def switch_phase(self, phase_index):
+    def switch_phase(self, phase_index, **kwargs):
         self._update_phase_time(phase_index)
-        self._update_cycle_time()
+        self._update_cycle_info(
+            cycle_length_index=kwargs.get("cycle_length_index", None)
+        )
         self.engine.set_tl_phase(self.id, self.phases[phase_index])
         self.program.update_current_phase(phase_index)
         self.logic.update_current_phase_index(phase_index, self.time_on_phase)
@@ -43,6 +45,10 @@ class TrafficSignal(BaseTrafficSignal):
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
         self.controller = TSController(id, config, simulator)
+        self.neighborhood_matrix = self.simulator.parsed_network.adjacency_matrix[
+            self.simulator.parsed_network.traffic_signal_ids.index(id)
+        ]
+        self.neighbors_offsets = self.simulator.parsed_network.neighbors_offsets[id]
         self.offsets = []
 
     def update_stats(self, sub_results):
@@ -74,8 +80,8 @@ class TrafficSignal(BaseTrafficSignal):
         self.phase_id = np.asarray(self.controller.phase_one_hot)
         self.sim_step = self.simulator.sim_step / 3600
 
-    def action_to_phase(self, action):
-        self.controller.switch_phase(action)
+    def action_to_phase(self, action, **kwargs):
+        self.controller.switch_phase(action, **kwargs)
 
     def store_offset(self, offset):
         self.offsets.append(offset)

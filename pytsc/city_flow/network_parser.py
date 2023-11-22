@@ -199,6 +199,28 @@ class NetworkParser(BaseNetworkParser):
 
     @property
     @lru_cache(maxsize=None)
+    def neighbors_offsets(self):
+        neighbors_offsets = {ts_id: {} for ts_id in self.traffic_signal_ids}
+        for i, ts_id in enumerate(self.traffic_signal_ids):
+            neighbors_lanes = self.neighbors_lanes[ts_id]
+            if not neighbors_lanes:
+                continue
+            for j, neigh_ts_id in enumerate(self.traffic_signal_ids):
+                if neigh_ts_id in neighbors_lanes.keys():
+                    travel_time = sum(
+                        [
+                            self.lane_lengths[lane] / self.lane_max_speeds[lane]
+                            for lane in neighbors_lanes[neigh_ts_id]
+                        ]
+                    )
+                    offset_t = travel_time / len(neighbors_lanes[neigh_ts_id])
+                    offset_t /= self.config.cityflow_config["delta_time"]
+                    offset_t = int(offset_t)
+                    neighbors_offsets[ts_id][neigh_ts_id] = offset_t
+        return neighbors_offsets
+
+    @property
+    @lru_cache(maxsize=None)
     def lane_lengths(self):
         lane_lengths = {}
         for road in self.roads:
