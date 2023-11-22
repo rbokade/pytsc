@@ -96,16 +96,16 @@ class PhaseAndCycleLengthActionSpace(BaseActionSpace):
         )
 
     def apply(self, actions):
-        for ts_idx, ts in enumerate(self.traffic_signals.values()):
+        for ts_idx, (ts_id, ts) in enumerate(self.traffic_signals.items()):
             action = actions[ts_idx]
             current_phase = ts.controller.program.current_phase_index
             if action % 2:  # phase switch == 1
                 next_phase = (current_phase + 1) % ts.controller.n_phases
-                phase_idx = next_phase
+                phase_index = next_phase
             else:
-                phase_idx = current_phase
-            cycle_length_idx = action // 2
-            ts.action_to_phase(phase_idx, cycle_length_idx=cycle_length_idx)
+                phase_index = current_phase
+            cycle_length_index = action // 2
+            ts.action_to_phase(phase_index, cycle_length_index=cycle_length_index)
 
     def get_size(self):
         return 2 * self.network_max_cycle_length
@@ -122,22 +122,17 @@ class PhaseAndCycleLengthActionSpace(BaseActionSpace):
             phase_switch_mask[1] = 1
         return phase_switch_mask
 
-    def _combine_masks(self, cycle_switch_mask, phase_switch_mask):
-        mask = []
-        for c in cycle_switch_mask:
-            for p in phase_switch_mask:
-                mask.append(p * c)
-        return mask
-
     def get_mask(self):
         mask = []
-        for ts in self.traffic_signals.values():
+        for ts_id, ts in self.traffic_signals.items():
             phase_switch_mask = self._get_phase_switch_mask(ts)
             cycle_length_mask = ts.controller.get_allowable_cycle_length_switches()
-            combined_action_mask = self._combine_masks(
-                phase_switch_mask, cycle_length_mask
+            mask.append(
+                [
+                    int(cycle and phase)
+                    for cycle, phase in product(cycle_length_mask, phase_switch_mask)
+                ]
             )
-            mask.append(combined_action_mask)
         return mask
 
 

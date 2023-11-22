@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+from sympy import cycle_length
 
 from pytsc.common.traffic_signal import (
     BaseTSProgram,
@@ -81,7 +82,8 @@ class TrafficSignal(BaseTrafficSignal):
         self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, action, **kwargs):
-        self.controller.switch_phase(action, **kwargs)
+        cycle_length_index = kwargs.get("cycle_length_index", None)
+        self.controller.switch_phase(action, cycle_length_index=cycle_length_index)
 
     def store_offset(self, offset):
         self.offsets.append(offset)

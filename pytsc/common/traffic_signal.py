@@ -28,7 +28,6 @@ class BaseTSController(ABC):
         self.norm_time_on_phase = 0
         self.time_on_cycle = 0  # only applicable for round robin
         self.norm_time_on_cycle = 0
-        self.last_cycle_length = 0  # only applicable for round robin
         self.phase_changed = False
         self.phase_and_cycle_history = []
         self.max_cycle_length = sum(
@@ -46,7 +45,8 @@ class BaseTSController(ABC):
             self.cycle_length_changed = False
         else:
             self.controllable_cycle_length = False
-        self.current_cycle_length = self.max_cycle_length
+        self.last_cycle_length = 0  # only applicable for round robin
+        self.current_cycle_length = self.cycle_lengths[0]
 
     @property
     def norm_step_size(self):
@@ -81,7 +81,7 @@ class BaseTSController(ABC):
         if cycle_length_index is not None:
             self.current_cycle_length = self.cycle_lengths[cycle_length_index]
 
-    def _update_phase_time(self, phase_index):
+    def _update_phase_time(self, phase_index, **kwargs):
         self.phase_and_cycle_history.append(
             (self.program.current_phase_index, self.time_on_cycle)
         )
@@ -97,6 +97,8 @@ class BaseTSController(ABC):
             self.phase_changed = True
             self.time_on_phase = self.yellow_time
             self.norm_time_on_phase = self.norm_step_size
+        if self.time_on_cycle > self.current_cycle_length:
+            breakpoint()
 
     def get_allowable_phase_switches(self):
         return self.logic.get_allowable_phase_switches(
@@ -106,6 +108,8 @@ class BaseTSController(ABC):
         )
 
     def get_allowable_cycle_length_switches(self):
+        # if self.id == "intersection_1_1":
+        #     print((self.id, self.time_on_cycle, self.current_cycle_length))
         if self.time_on_cycle < self.current_cycle_length:
             mask = [0] * len(self.cycle_lengths)
             mask[self.cycle_lengths.index(self.current_cycle_length)] = 1
@@ -156,6 +160,7 @@ class TLSFreePhaseSelectLogic:
         self.id = controller.id
         self.phases = controller.phases
         self.n_phases = controller.n_phases
+        self.phase_indices = controller.phase_indices
         self.green_phase_indices = controller.green_phase_indices
         self.yellow_phase_indices = controller.yellow_phase_indices
         self.phases_min_max_times = controller.phases_min_max_times
@@ -231,9 +236,12 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
                 mask[self.current_phase_index] = 1
                 mask[self.current_phase_index + 1] = 1
             elif (
-                time_on_phase == max_time or time_on_cycle == max_cycle_length_trimmed
+                time_on_phase == max_time
+                or time_on_cycle == max_cycle_length_trimmed
             ):  # switch to corr. yellow phase
                 mask[self.current_phase_index + 1] = 1
+            elif time_on_cycle == max_cycle_length:  # switch to the next green phase
+                mask[(self.current_phase_index + 1) % self.n_phases] = 1
             else:
                 breakpoint()  # should never reach here
         else:
