@@ -14,11 +14,17 @@ class MetricsParser(BaseMetricsParser):
         self.simulator = simulator
         self.parsed_network = parsed_network
         self.traffic_signals = traffic_signals
+        self.max_n_controlled_phases = np.max(
+            [ts.n_phases for ts in traffic_signals.values()]
+        ).item()
 
     @property
     def flickering_signal(self):
         return np.mean(
-            [ts.controller.phase_changed for ts in self.traffic_signals.values()]
+            [
+                ts.controller.program.phase_changed
+                for ts in self.traffic_signals.values()
+            ]
         )
 
     @property
@@ -38,7 +44,7 @@ class MetricsParser(BaseMetricsParser):
         # norm_mean_queued = total_norm_queued / len(self.traffic_signals)
         # return norm_mean_queued
         return np.mean(
-            [ts.norm_queue_lengths.mean() for ts in self.traffic_signals.values()]
+            [ts.queue_lengths.sum() for ts in self.traffic_signals.values()]
         )
 
     # @property
@@ -70,7 +76,9 @@ class MetricsParser(BaseMetricsParser):
     @property
     def mean_speed(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        total_vehicles = sum(data["n_vehicles"] for data in lane_measurements.values())
+        total_vehicles = sum(
+            data["n_vehicles"] for data in lane_measurements.values()
+        )
         if total_vehicles == 0:
             return 0.0
         else:
@@ -83,7 +91,9 @@ class MetricsParser(BaseMetricsParser):
     @property
     def density(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        total_occupancy = sum(data["occupancy"] for data in lane_measurements.values())
+        total_occupancy = sum(
+            data["occupancy"] for data in lane_measurements.values()
+        )
         return total_occupancy / len(lane_measurements)
 
     @property
@@ -93,8 +103,38 @@ class MetricsParser(BaseMetricsParser):
     @property
     def mean_delay(self):
         return 1 - np.mean(
-            [np.mean(ts.norm_mean_speeds) for ts in self.traffic_signals.values()]
+            [
+                np.mean(ts.norm_mean_speeds)
+                for ts in self.traffic_signals.values()
+            ]
         )
+
+    @property
+    def speed_matrix(self):
+        ts_ids = list(self.traffic_signals.keys())
+        speed_matrix = np.zeros((len(ts_ids), len(ts_ids)))
+        for i, ts in enumerate(self.traffic_signals.values()):
+            for j, n_ts_id in enumerate(self.traffic_signals.keys()):
+                if n_ts_id in ts.incoming_lane_speeds.keys():
+                    speed_matrix[i, j] = np.mean(
+                        ts.incoming_lane_speeds[n_ts_id], axis=0
+                    )
+        speed_matrix = (speed_matrix + speed_matrix.T) / 2
+        speed_matrix += 1e-6
+        speed_matrix *= self.parsed_network.adjacency_matrix
+        return speed_matrix.tolist()
+
+    @property
+    def phase_splits(self):
+        phase_splits = np.zeros(
+            (
+                len(self.traffic_signals.keys()),
+                len(self.max_n_controlled_phases),
+            )
+        )
+        for i, ts in enumerate(self.traffic_signals.values()):
+            phase_splits[i, :] = np.mean(ts.phase_ids, axis=0)
+        return phase_splits.tolist()
 
     @property
     def reward(self):
@@ -111,7 +151,7 @@ class MetricsParser(BaseMetricsParser):
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {ts_id: 0 for ts_id in self.traffic_signals.keys()}
         for ts_id, ts in self.traffic_signals.items():
-            local_rewards[ts_id] -= fc * ts.controller.phase_changed
+            local_rewards[ts_id] -= fc * ts.controller.program.phase_changed
             local_rewards[ts_id] -= np.mean(ts.norm_queue_lengths)
             for k in range(1, len(self.traffic_signals.keys())):
                 neighbors_k = k_hop_neighbors[ts_id].get(k, [])
@@ -119,7 +159,8 @@ class MetricsParser(BaseMetricsParser):
                 mean_neighbors_reward = 0
                 if n_neighbors > 0:
                     total_neigh_reward = sum(
-                        local_rewards[neighbor_ts_id] for neighbor_ts_id in neighbors_k
+                        local_rewards[neighbor_ts_id]
+                        for neighbor_ts_id in neighbors_k
                     )
                     mean_neighbors_reward = total_neigh_reward / n_neighbors
                 local_rewards[ts_id] += (gamma**k) * mean_neighbors_reward
@@ -130,7 +171,7 @@ class MetricsParser(BaseMetricsParser):
         phase_angles = {}
         for ts_id, ts in self.traffic_signals.items():
             phase_angles[ts_id] = (
-                ts.controller.logic.current_phase_index / ts.controller.n_phases
+                ts.controller.current_phase_index / ts.controller.n_phases
             )
             phase_angles[ts_id] *= 2 * np.pi
         return phase_angles
@@ -167,7 +208,9 @@ class MetricsParser(BaseMetricsParser):
             neighbors = neighbors_lanes[ts_id]
             if not neighbors:
                 continue
-            for j, (neigh_ts_id, neigh_ts) in enumerate(self.traffic_signals.items()):
+            for j, (neigh_ts_id, neigh_ts) in enumerate(
+                self.traffic_signals.items()
+            ):
                 if neigh_ts_id in neighbors:
                     lanes = neighbors_lanes[ts_id][neigh_ts_id]
                     travel_time = sum(
@@ -178,19 +221,23 @@ class MetricsParser(BaseMetricsParser):
                     offset_t = travel_time / len(lanes)
                     offset_t /= self.config.cityflow_config["delta_time"]
                     offset_t = int(offset_t)
-                    t = len(neigh_ts.controller.phase_and_cycle_history) - 1
+                    t = len(neigh_ts.controller.program.phase_history) - 1
                     offset_idx = max(t - offset_t, 0)
-                    offset_phase_index_t = neigh_ts.controller.phase_and_cycle_history[
-                        offset_idx
-                    ][0]
-                    offset_phase_index_t /= neigh_ts.controller.n_phases
-                    time_on_cycle_t = (
-                        neigh_ts.controller.phase_and_cycle_history[offset_idx][1]
-                        / neigh_ts.controller.max_cycle_length
+                    offset_phase_index_t = float(
+                        neigh_ts.controller.program.phase_history[offset_idx]
                     )
-                    offset_phase_angle = (
-                        offset_phase_index_t + time_on_cycle_t
-                    ) * np.pi
+                    offset_phase_index_t /= neigh_ts.controller.n_phases
+                    if (
+                        len(neigh_ts.controller.program.cycle_length_history)
+                        > 1
+                    ):
+                        offset_phase_index_t += (
+                            neigh_ts.controller.program.cycle_length_history[
+                                offset_idx
+                            ]
+                            / neigh_ts.controller.program.current_cycle_length
+                        )
+                    offset_phase_angle = offset_phase_index_t * np.pi
                     phase_angles_matrix[i, j] = offset_phase_angle
         # Compute local orders
         local_orders = np.zeros(n_ts)
@@ -216,7 +263,9 @@ class MetricsParser(BaseMetricsParser):
             # ]
             if not neighbors:
                 continue
-            for j, (neigh_ts_id, neigh_ts) in enumerate(self.traffic_signals.items()):
+            for j, (neigh_ts_id, neigh_ts) in enumerate(
+                self.traffic_signals.items()
+            ):
                 if neigh_ts_id in neighbors:
                     lanes = neighbors_lanes[ts_id][neigh_ts_id]
                     travel_time = sum(
@@ -227,17 +276,23 @@ class MetricsParser(BaseMetricsParser):
                     offset_t = travel_time / len(lanes)
                     offset_t /= self.config.cityflow_config["delta_time"]
                     offset_t = int(offset_t)
-                    t = len(neigh_ts.controller.phase_and_cycle_history) - 1
+                    t = len(neigh_ts.controller.program.phase_history) - 1
                     offset_idx = max(t - offset_t, 0)
-                    offset_phase_index = neigh_ts.controller.phase_and_cycle_history[
-                        offset_idx
-                    ][0]
-                    offset_phase_index /= neigh_ts.controller.n_phases
-                    time_on_cycle_t = (
-                        neigh_ts.controller.phase_and_cycle_history[offset_idx][1]
-                        / neigh_ts.controller.max_cycle_length
+                    offset_phase_index = float(
+                        neigh_ts.controller.program.phase_history[offset_idx]
                     )
-                    offset_phase_angle = (offset_phase_index + time_on_cycle_t) * np.pi
+                    offset_phase_index /= neigh_ts.controller.n_phases
+                    if (
+                        len(neigh_ts.controller.program.cycle_length_history)
+                        > 1
+                    ):
+                        offset_phase_index += (
+                            neigh_ts.controller.program.cycle_length_history[
+                                offset_idx
+                            ]
+                            / neigh_ts.controller.program.current_cycle_length
+                        )
+                    offset_phase_angle = offset_phase_index * np.pi
                     # neigh_lanes = directional_lanes[ts_id][neigh_ts_id]
                     # coupling_strength = sum(
                     #     [
@@ -281,7 +336,7 @@ class MetricsParser(BaseMetricsParser):
             for ts_id, ts in self.traffic_signals.items()
         }
         time_on_cycle = {
-            f"{ts_id}_cycle_length": ts.controller.last_cycle_length
+            f"{ts_id}_cycle_length": ts.controller.program.current_cycle_length
             for ts_id, ts in self.traffic_signals.items()
         }
         orders = {

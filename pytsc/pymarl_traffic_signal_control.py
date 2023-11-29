@@ -26,7 +26,7 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "agents": list(self.tsc_env.traffic_signals.keys()),
             "episode_limit": self.episode_limit,
             "n_actions": self.get_total_actions(),
-            "neighbors_graph": self.tsc_env.parsed_network.adjacency_matrix,
+            "adjacency_matrix": self.tsc_env.parsed_network.adjacency_matrix,
             "n_agents": self.n_agents,
             "obs_shape": self.get_obs_size(),
             "state_shape": self.get_state_size(),
@@ -34,8 +34,10 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "outgoing_density_map_shape": self.get_local_rewards_size(),
             "norm_mean_incoming_queues": self.n_agents,
             "norm_mean_incoming_speeds": self.n_agents,
-            "kuramotos_shape": self.get_local_rewards_size() ** 2,
-            "orders_shape": self.get_local_rewards_size(),
+            # "kuramotos_shape": self.get_local_rewards_size() ** 2,
+            # "orders_shape": self.get_local_rewards_size(),
+            # "node_feats_shape": self.tsc_env.metrics.max_n_controlled_phases,
+            "edge_feats": self.n_agents,
         }
         return env_info
 
@@ -57,8 +59,11 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
     def get_local_rewards_size(self):
         return self.tsc_env.get_local_rewards_size()
 
-    def get_outgoing_density_map(self):
-        return self.tsc_env.get_outgoing_density_map()
+    def get_edge_features(self):
+        return self.tsc_env.get_speed_matrix()
+
+    def get_node_features(self):
+        return self.tsc_env.get_phase_splits()
 
     def get_obs(self):
         return self.tsc_env.get_observations()

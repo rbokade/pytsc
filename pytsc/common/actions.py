@@ -20,8 +20,11 @@ class BaseActionSpace:
         if not isinstance(actions, list):
             try:
                 actions = actions.tolist()
-            except:
-                print("Actions must be list or numpy array." + f"Got {type(actions)}")
+            except Exception:
+                print(
+                    "Actions must be list or numpy array."
+                    + f"Got {type(actions)}"
+                )
 
     def apply(self, actions):
         self._check_actions_type(actions)
@@ -29,7 +32,9 @@ class BaseActionSpace:
             ts.action_to_phase(actions[ts_idx])
 
     def get_size(self):
-        return max([ts.controller.n_phases for ts in self.traffic_signals.values()])
+        return max(
+            [ts.controller.n_phases for ts in self.traffic_signals.values()]
+        )
 
     def get_mask(self):
         masks = []
@@ -88,24 +93,37 @@ class PhaseAndCycleLengthActionSpace(BaseActionSpace):
 
     def __init__(self, config, traffic_signals):
         super().__init__(config, traffic_signals)
+        self.combined_action_indices = list(
+            product(
+                range(self.network_max_cycle_length),
+                range(2),
+            )
+        )
 
     @property
     def network_max_cycle_length(self):
         return max(
-            [len(ts.controller.cycle_lengths) for ts in self.traffic_signals.values()]
+            [
+                len(ts.controller.program.cycle_lengths)
+                for ts in self.traffic_signals.values()
+            ]
         )
 
     def apply(self, actions):
         for ts_idx, (ts_id, ts) in enumerate(self.traffic_signals.items()):
             action = actions[ts_idx]
+            (
+                cycle_length_index,
+                phase_switch_index,
+            ) = self.combined_action_indices[action]
             current_phase = ts.controller.program.current_phase_index
-            if action % 2:  # phase switch == 1
+            if phase_switch_index:
                 next_phase = (current_phase + 1) % ts.controller.n_phases
                 phase_index = next_phase
             else:
                 phase_index = current_phase
-            cycle_length_index = action // 2
-            ts.action_to_phase(phase_index, cycle_length_index=cycle_length_index)
+            ts.action_to_phase(phase_index)
+            ts.action_to_cycle_length(cycle_length_index)
 
     def get_size(self):
         return 2 * self.network_max_cycle_length
@@ -123,17 +141,25 @@ class PhaseAndCycleLengthActionSpace(BaseActionSpace):
         return phase_switch_mask
 
     def get_mask(self):
-        mask = []
+        masks = []
         for ts_id, ts in self.traffic_signals.items():
+            mask = [0 for _ in range(self.get_size())]
             phase_switch_mask = self._get_phase_switch_mask(ts)
-            cycle_length_mask = ts.controller.get_allowable_cycle_length_switches()
-            mask.append(
-                [
-                    int(cycle and phase)
-                    for cycle, phase in product(cycle_length_mask, phase_switch_mask)
-                ]
+            cycle_length_mask = (
+                ts.controller.get_allowable_cycle_length_switches()
             )
-        return mask
+            for cycle_length_idx, is_cycle_length_switch_allowed in enumerate(
+                cycle_length_mask
+            ):
+                if is_cycle_length_switch_allowed:
+                    cycle_length_idx = int(cycle_length_idx * 2)
+                    for phase_switch_idx, is_phase_switch_allowed in enumerate(
+                        phase_switch_mask
+                    ):
+                        action_index = cycle_length_idx + phase_switch_idx
+                        mask[action_index] = is_phase_switch_allowed
+            masks.append(mask)
+        return masks
 
 
 class ActionSpaceWithOffset(BinaryActionSpace):
@@ -176,7 +202,9 @@ class ActionSpaceWithOffset(BinaryActionSpace):
                 mask[1] = 1
             extended_mask = []
             for phase_allowed in mask:
-                extended_mask.extend([phase_allowed] * len(self.offset_actions))
+                extended_mask.extend(
+                    [phase_allowed] * len(self.offset_actions)
+                )
             extended_masks.append(extended_mask)
         return extended_masks
 
@@ -364,7 +392,9 @@ class KuramotoActionSpace(BaseActionSpace):
     def __init__(self, config, traffic_signals):
         super(KuramotoActionSpace, self).__init__(config, traffic_signals)
         self.n_agents = len(self.traffic_signals)
-        self.threshold = self.config.misc_config.get("kuramoto_action_threshold", 0.0)
+        self.threshold = self.config.misc_config.get(
+            "kuramoto_action_threshold", 0.0
+        )
 
     @property
     def max_degree(self):
@@ -412,7 +442,9 @@ class KuramotoActionSpace(BaseActionSpace):
         offset = ts.neighbors_offsets[neigh_ts.id]
         t = len(neigh_ts.controller.phase_and_cycle_history) - 1
         offset_t = max(t - offset, 0)
-        neigh_phase_angle = neigh_ts.controller.phase_and_cycle_history[offset_t][0]
+        neigh_phase_angle = neigh_ts.controller.phase_and_cycle_history[
+            offset_t
+        ][0]
         neigh_phase_angle /= neigh_ts.controller.n_phases
         neigh_phase_angle *= 2 * np.pi
         # Return phase difference

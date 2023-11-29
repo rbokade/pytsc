@@ -47,7 +47,9 @@ class NetworkParser(BaseNetworkParser):
                     "incoming_lanes": inc_lane_map[ts_id],
                     "outgoing_lanes": out_lane_map[ts_id],
                     "inc_to_out_lanes": inc_to_out_lane_map[ts_id],
-                    "phase_to_inc_out_lanes": self.ts_phase_to_inc_out_lanes[ts_id],
+                    "phase_to_inc_out_lanes": self.ts_phase_to_inc_out_lanes[
+                        ts_id
+                    ],
                     "phases": phases[ts_id],
                     "n_phases": len(phases[ts_id]),
                     "phases_min_max_times": phases_min_max_times[ts_id],
@@ -120,7 +122,9 @@ class NetworkParser(BaseNetworkParser):
         for ts_id in self.traffic_signal_ids:
             k_hop_neighbors[ts_id] = {}
             for k in range(1, max_hops + 1):
-                k_hop_neighbors[ts_id][k] = self._get_k_hop_neighbors_for_ts(ts_id, k)
+                k_hop_neighbors[ts_id][k] = self._get_k_hop_neighbors_for_ts(
+                    ts_id, k
+                )
         return k_hop_neighbors
 
     @property
@@ -151,7 +155,9 @@ class NetworkParser(BaseNetworkParser):
                             + str(lanelink["startLaneIndex"])
                         )
                         endlane = (
-                            roadlink["endRoad"] + "_" + str(lanelink["endLaneIndex"])
+                            roadlink["endRoad"]
+                            + "_"
+                            + str(lanelink["endLaneIndex"])
                         )
                         lanelinks.append((startlane, endlane))
                     roadlink_to_lanelink.append(lanelinks)
@@ -160,7 +166,9 @@ class NetworkParser(BaseNetworkParser):
                     available_road_links = phase["availableRoadLinks"]
                     phase_lanelinks = []
                     for roadlink_index in available_road_links:
-                        phase_lanelinks.extend(roadlink_to_lanelink[roadlink_index])
+                        phase_lanelinks.extend(
+                            roadlink_to_lanelink[roadlink_index]
+                        )
                     if intersection_id not in ts_phase_to_inc_out_lanes:
                         ts_phase_to_inc_out_lanes[intersection_id] = {}
                     if i not in ts_phase_to_inc_out_lanes[intersection_id]:
@@ -178,9 +186,12 @@ class NetworkParser(BaseNetworkParser):
             for ts_id in self.traffic_signal_ids:
                 neighbors_lanes[ts_id] = {}
                 ts_index = self.traffic_signal_ids.index(ts_id)
-                neighbor_indices = np.where(self.adjacency_matrix[ts_index] > 0)[0]
+                neighbor_indices = np.where(
+                    self.adjacency_matrix[ts_index] > 0
+                )[0]
                 neighbor_ids = [
-                    self.traffic_signal_ids[index] for index in neighbor_indices
+                    self.traffic_signal_ids[index]
+                    for index in neighbor_indices
                 ]
                 for neighbor in neighbor_ids:
                     connecting_lanes = []
@@ -191,7 +202,9 @@ class NetworkParser(BaseNetworkParser):
                         ):
                             road_id = road["id"]
                             for lane_index, _ in enumerate(road["lanes"]):
-                                connecting_lanes.append(f"{road_id}_{lane_index}")
+                                connecting_lanes.append(
+                                    f"{road_id}_{lane_index}"
+                                )
                     neighbors_lanes[ts_id][neighbor] = connecting_lanes
             return neighbors_lanes
         else:
@@ -209,7 +222,8 @@ class NetworkParser(BaseNetworkParser):
                 if neigh_ts_id in neighbors_lanes.keys():
                     travel_time = sum(
                         [
-                            self.lane_lengths[lane] / self.lane_max_speeds[lane]
+                            self.lane_lengths[lane]
+                            / self.lane_max_speeds[lane]
                             for lane in neighbors_lanes[neigh_ts_id]
                         ]
                     )
@@ -224,8 +238,12 @@ class NetworkParser(BaseNetworkParser):
     def lane_lengths(self):
         lane_lengths = {}
         for road in self.roads:
-            start_intersection = self._id_to_intersection(road["startIntersection"])
-            end_intersection = self._id_to_intersection(road["endIntersection"])
+            start_intersection = self._id_to_intersection(
+                road["startIntersection"]
+            )
+            end_intersection = self._id_to_intersection(
+                road["endIntersection"]
+            )
             for i in range(len(road["lanes"])):
                 lane_id = f"{road['id']}_{i}"
                 lane_lengths[lane_id] = np.linalg.norm(
@@ -295,22 +313,34 @@ class NetworkParser(BaseNetworkParser):
                         start_road_id = road_link["startRoad"]
                         end_road_id = road_link["endRoad"]
                         end_road = next(
-                            (road for road in self.roads if road["id"] == end_road_id),
+                            (
+                                road
+                                for road in self.roads
+                                if road["id"] == end_road_id
+                            ),
                             None,
                         )
                         if (
                             end_road
-                            and end_road["endIntersection"] in self.traffic_signal_ids
+                            and end_road["endIntersection"]
+                            in self.traffic_signal_ids
                         ):
                             end_intersection_id = end_road["endIntersection"]
-                            if end_intersection_id not in directional_lanes[ts_id]:
-                                directional_lanes[ts_id][end_intersection_id] = []
+                            if (
+                                end_intersection_id
+                                not in directional_lanes[ts_id]
+                            ):
+                                directional_lanes[ts_id][
+                                    end_intersection_id
+                                ] = []
                             for lane_link in road_link["laneLinks"]:
                                 start_lane_index = lane_link["startLaneIndex"]
                                 lane_id = f"{start_road_id}_{start_lane_index}"
                                 if (
                                     lane_id
-                                    not in directional_lanes[ts_id][end_intersection_id]
+                                    not in directional_lanes[ts_id][
+                                        end_intersection_id
+                                    ]
                                 ):
                                     directional_lanes[ts_id][
                                         end_intersection_id
@@ -324,9 +354,13 @@ class NetworkParser(BaseNetworkParser):
         raise ValueError(f"Intersection {intersection_id} not found")
 
     def _get_k_hop_neighbors_for_ts(self, ts_id, k):
-        adjacency_matrix_power = np.linalg.matrix_power(self.adjacency_matrix, k)
+        adjacency_matrix_power = np.linalg.matrix_power(
+            self.adjacency_matrix, k
+        )
         ts_index = self.traffic_signal_ids.index(ts_id)
-        k_hop_neighbors_indices = np.where(adjacency_matrix_power[ts_index] > 0)[0]
+        k_hop_neighbors_indices = np.where(
+            adjacency_matrix_power[ts_index] > 0
+        )[0]
         k_hop_neighbors_ids = [
             self.traffic_signal_ids[index] for index in k_hop_neighbors_indices
         ]
@@ -351,8 +385,12 @@ class NetworkParser(BaseNetworkParser):
                         if inc_lane not in mapping:
                             mapping[inc_lane] = []
                         mapping[inc_lane].append(out_lane)
-                incoming_lane_map[intersection_id] = sorted(list(set(incoming_lanes)))
-                outgoing_lane_map[intersection_id] = sorted(list(set(outgoing_lanes)))
+                incoming_lane_map[intersection_id] = sorted(
+                    list(set(incoming_lanes))
+                )
+                outgoing_lane_map[intersection_id] = sorted(
+                    list(set(outgoing_lanes))
+                )
                 inc_to_out_lane_map[intersection_id] = mapping
         return incoming_lane_map, outgoing_lane_map, inc_to_out_lane_map
 
@@ -376,14 +414,22 @@ class NetworkParser(BaseNetworkParser):
                     if len(p["availableRoadLinks"]) and p["time"] > 5:
                         green_phases.append(i)
                         phases_min_max_times[ts_id][i] = {
-                            "min_time": self.config.signal_config["min_green_time"],
-                            "max_time": self.config.signal_config["max_green_time"],
+                            "min_time": self.config.signal_config[
+                                "min_green_time"
+                            ],
+                            "max_time": self.config.signal_config[
+                                "max_green_time"
+                            ],
                         }
                     else:
                         yellow_phases.append(i)
                         phases_min_max_times[ts_id][i] = {
-                            "min_time": self.config.signal_config["yellow_time"],
-                            "max_time": self.config.signal_config["yellow_time"],
+                            "min_time": self.config.signal_config[
+                                "yellow_time"
+                            ],
+                            "max_time": self.config.signal_config[
+                                "yellow_time"
+                            ],
                         }
                 if len(yellow_phases) == 1:  # common yellow for all
                     yellow_phase = yellow_phases[0]

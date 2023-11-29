@@ -15,7 +15,9 @@ def run_evaluation(scenario, simulator_type, controller, hours=1, add_args={}):
     return stats
 
 
-def save_stats_to_file(all_stats, simulator_type, scenario, output_folder=None):
+def save_stats_to_file(
+    all_stats, simulator_type, scenario, output_folder=None
+):
     fname = os.path.join(output_folder, "stats.csv")
     all_stats.to_csv(fname, index=False)
 
