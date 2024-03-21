@@ -11,8 +11,6 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-# from pytsc.sumo.config import Config
-
 CONFIG_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "..",
@@ -31,7 +29,7 @@ class SUMOGridGenerator:
 
     def __init__(self, scenario):
         self.scenario = scenario
-        # self.config = Config(scenario, add_config={})
+        # self.config = Config(scenario, additional_config={})
         self.config = self._load_config()
         self.data_dir = os.path.join(CONFIG_DIR, "sumo", scenario)
         self.netfile_dir = os.path.join(
@@ -51,7 +49,7 @@ class SUMOGridGenerator:
         self.max_green_time = signal_config["max_green_time"]
         self.yellow_time = signal_config["yellow_time"]
         self.turn_lane_length = max(self.grid_length, self.grid_attach_length)
-        self.vision = signal_config["vision"]
+        self.visibility = signal_config["visibility"]
 
     def _load_config(self):
         scenario_file_path = os.path.join(
@@ -96,7 +94,7 @@ class SUMOGridGenerator:
         ladgen = f"python {script}"
         ladgen += f" --net-file {self.netfile_dir}"
         ladgen += f" --output {additional_files_dir}"
-        ladgen += f" --detector-length {self.vision}"
+        ladgen += f" --detector-length {self.visibility}"
         ladgen += " --frequency 1"
         print(ladgen)
         os.system(ladgen)

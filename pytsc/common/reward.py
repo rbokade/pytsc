@@ -1,2 +1,0 @@
-class BaseRewardFunction:
-    raise NotImplementedError

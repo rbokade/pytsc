@@ -1,70 +1,70 @@
-from pytsc.common.actions import BaseActionSpace
-from pytsc.common.config import SUMOConfig
-from pytsc.common.network_parser import NetworkParser
+from pytsc import TrafficSignalNetwork
+from smac.env import MultiAgentEnv
 
 
-class MultiAgentEnv(object):
-    """
-    https://github.com/oxwhirl/pymarl/blob/master/src/envs/multiagentenv.py
-    """
+class PyMARLTrafficSignalNetwork(MultiAgentEnv):
+    step_stats = None
 
-    def step(self, actions):
-        """Returns reward, terminated, info"""
-        raise NotImplementedError
+    def __init__(self, map_name="monaco", simulator_backend="sumo", **kwargs):
+        self.tsc_env = TrafficSignalNetwork(
+            map_name,
+            simulator_backend=simulator_backend,
+            additional_config=kwargs,
+        )
+        self.episode_limit = self.tsc_env.episode_limit
+        self.n_agents = len(self.tsc_env.traffic_signals)
 
-    def get_obs(self):
-        """Returns all agent observations in a list"""
-        raise NotImplementedError
-
-    def get_obs_agent(self, agent_id):
-        """Returns observation for agent_id"""
-        raise NotImplementedError
-
-    def get_obs_size(self):
-        """Returns the shape of the observation"""
-        raise NotImplementedError
-
-    def get_state(self):
-        raise NotImplementedError
-
-    def get_state_size(self):
-        """Returns the shape of the state"""
-        raise NotImplementedError
-
-    def get_avail_actions(self):
-        raise NotImplementedError
-
-    def get_avail_agent_actions(self, agent_id):
-        """Returns the available actions for agent_id"""
-        raise NotImplementedError
-
-    def get_total_actions(self):
-        """Returns the total number of actions an agent could ever take"""
-        # TODO: This is only suitable for a discrete 1 dimensional action space for each agent
-        raise NotImplementedError
-
-    def reset(self):
-        """Returns initial observations and states"""
-        raise NotImplementedError
-
-    def render(self):
-        raise NotImplementedError
+    def apply_actions(self, actions):
+        self.tsc_env.action_space.apply(actions)
 
     def close(self):
-        raise NotImplementedError
+        pass
 
-    def seed(self):
-        raise NotImplementedError
-
-    def save_replay(self):
-        raise NotImplementedError
+    def get_avail_actions(self):
+        return self.tsc_env.get_action_mask()
 
     def get_env_info(self):
         env_info = {
-            "state_shape": self.get_state_size(),
-            "obs_shape": self.get_obs_size(),
-            "n_actions": self.get_total_actions(),
-            "n_agents": self.n_agents,
+            "agents": list(self.tsc_env.traffic_signals.keys()),
             "episode_limit": self.episode_limit,
+            "n_actions": self.get_total_actions(),
+            "adjacency_matrix": self.tsc_env.parsed_network.adjacency_matrix,
+            "n_agents": self.n_agents,
+            "obs_shape": self.get_obs_size(),
+            "state_shape": self.get_state_size(),
         }
         return env_info
+
+    def get_obs(self):
+        return self.tsc_env.get_observations()
+
+    def get_obs_size(self):
+        return self.tsc_env.get_observation_size()
+
+    def get_state(self):
+        observations = self.tsc_env.get_observations()
+        state = []
+        for obs in observations:
+            state.extend(obs)
+        return state
+
+    def get_state_size(self):
+        return int(
+            self.tsc_env.get_observation_size()
+            * len(self.tsc_env.traffic_signals)
+        )
+
+    def get_stats(self):
+        return self.tsc_env.get_env_stats()
+
+    def get_total_actions(self):
+        return self.tsc_env.get_action_size()
+
+    def reset(self):
+        self.tsc_env.episode_count += 1
+        if self.tsc_env.episode_over:
+            self.tsc_env.restart()
+        return self.get_obs(), self.get_state()
+
+    def step(self, actions):
+        return self.tsc_env.step(actions)

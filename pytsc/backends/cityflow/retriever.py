@@ -1,4 +1,5 @@
 from pytsc.common.retriever import BaseRetriever
+from pytsc.common.utils import calculate_bin_index
 
 
 class Retriever(BaseRetriever):
@@ -6,11 +7,33 @@ class Retriever(BaseRetriever):
         super().__init__(simulator)
         self.engine = simulator.engine
 
+    def _get_lane_vehicles_bin_idxs(self):
+        vehicles = self.engine.get_vehicles(include_waiting=True)
+        lane_lengths = self.simulator.parsed_network.lane_lengths
+        lane_vehicles_bin_idxs = {lane: [] for lane in lane_lengths.keys()}
+        if len(vehicles):
+            for vehicle in vehicles:
+                vehicle_info = self.engine.get_vehicle_info(vehicle)
+                vehicle_lane = vehicle_info.get(
+                    "drivable", "NO_LANE_AVAILABLE"
+                )
+                if vehicle_lane in lane_lengths.keys():
+                    bin_idx = calculate_bin_index(
+                        n_bins=self.config.signal["visibility"],
+                        bin_size=self.config.simulator["veh_size_min_gap"],
+                        lane_length=lane_lengths[vehicle_lane],
+                        lane_position=float(vehicle_info["distance"]),
+                    )
+                    if bin_idx is not None:
+                        lane_vehicles_bin_idxs[vehicle_lane].append(bin_idx)
+        return lane_vehicles_bin_idxs
+
     def _compute_lane_measurements(self):
-        v_size = self.config.cityflow_config["veh_size_min_gap"]
+        v_size = self.config.simulator["veh_size_min_gap"]
         lane_n_queued = self.engine.get_lane_waiting_vehicle_count()
         lane_vehicles = self.engine.get_lane_vehicles()
         vehicle_speeds = self.engine.get_vehicle_speed()
+        lane_vehicles_bin_idxs = self._get_lane_vehicles_bin_idxs()
         lane_measurements = {}
         for lane_id, vehicles_on_lane in lane_vehicles.items():
             n_queued = lane_n_queued[lane_id]
@@ -34,6 +57,7 @@ class Retriever(BaseRetriever):
                 "occupancy": occupancy,
                 "norm_queue_length": norm_queue_length,
                 "norm_mean_speed": norm_mean_speed,
+                "vehicles_bin_idxs": lane_vehicles_bin_idxs[lane_id],
             }
         return lane_measurements
 
@@ -44,7 +68,7 @@ class Retriever(BaseRetriever):
         return {
             "n_vehicles": self.engine.get_vehicle_count(),
             "average_travel_time": self.engine.get_average_travel_time(),
-            "time": self.engine.get_current_time(),
+            "time_step": self.engine.get_current_time(),
         }
 
     def retrieve_ts_measurements(self):

@@ -13,8 +13,6 @@ class NetworkParser(BaseNetworkParser):
     and stores it in the config
     """
 
-    vehicle_length = 5  # meters
-
     def __init__(self, config):
         super().__init__(config)
         self._load_network()
@@ -41,6 +39,18 @@ class NetworkParser(BaseNetworkParser):
         for intersection in self.intersections:
             if not intersection["virtual"]:
                 ts_id = intersection["id"]
+                if "phase_sequence" in self.config.simulator.keys():
+                    ts_phases = self.config.simulator["phase_sequence"]
+                    ts_n_phases = len(ts_phases)
+                    ts_phase_indices = list(range(ts_n_phases))
+                    ts_green_phase_indices = ts_phase_indices[0::2]
+                    ts_yellow_phase_indices = ts_phase_indices[1::2]
+                else:
+                    ts_phases = phases[ts_id]
+                    ts_n_phases = len(phases[ts_id])
+                    ts_phase_indices = phase_indices[ts_id]
+                    ts_green_phase_indices = green_phase_indices[ts_id]
+                    ts_yellow_phase_indices = yellow_phase_indices[ts_id]
                 self.traffic_signals[ts_id] = {
                     "coordinates": self.ts_coordinates[ts_id],
                     "norm_coordinates": self.ts_norm_coordinates[ts_id],
@@ -50,14 +60,14 @@ class NetworkParser(BaseNetworkParser):
                     "phase_to_inc_out_lanes": self.ts_phase_to_inc_out_lanes[
                         ts_id
                     ],
-                    "phases": phases[ts_id],
-                    "n_phases": len(phases[ts_id]),
+                    "phases": ts_phases,
+                    "n_phases": ts_n_phases,
                     "phases_min_max_times": phases_min_max_times[ts_id],
-                    "phase_indices": phase_indices[ts_id],
-                    "green_phase_indices": green_phase_indices[ts_id],
-                    "yellow_phase_indices": yellow_phase_indices[ts_id],
+                    "phase_indices": ts_phase_indices,
+                    "green_phase_indices": ts_green_phase_indices,
+                    "yellow_phase_indices": ts_yellow_phase_indices,
                 }
-                self.traffic_signals[ts_id].update(self.config.signal_config)
+                self.traffic_signals[ts_id].update(self.config.signal)
 
     @property
     @lru_cache(maxsize=None)
@@ -94,7 +104,7 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def adjacency_matrix(self):
-        if "neighbors" not in self.config.network_config.keys():
+        if "neighbors" not in self.config.network.keys():
             n_traffic_signals = len(self.traffic_signal_ids)
             adjacency_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
             for road in self.roads:
@@ -107,9 +117,9 @@ class NetworkParser(BaseNetworkParser):
                     start_index = self.traffic_signal_ids.index(start_tl)
                     end_index = self.traffic_signal_ids.index(end_tl)
                     adjacency_matrix[start_index, end_index] = 1.0
-                    adjacency_matrix[
-                        end_index, start_index
-                    ] = 1.0  # assuming undirected graph
+                    adjacency_matrix[end_index, start_index] = (
+                        1.0  # assuming undirected graph
+                    )
             return adjacency_matrix
         else:
             return super(NetworkParser, self)._get_adjacency_matrix()
@@ -118,7 +128,7 @@ class NetworkParser(BaseNetworkParser):
     @lru_cache(maxsize=None)
     def k_hop_neighbors(self):
         k_hop_neighbors = {}
-        max_hops = self.config.misc_config["max_hops"]
+        max_hops = self.config.misc["max_hops"]
         for ts_id in self.traffic_signal_ids:
             k_hop_neighbors[ts_id] = {}
             for k in range(1, max_hops + 1):
@@ -172,16 +182,26 @@ class NetworkParser(BaseNetworkParser):
                     if intersection_id not in ts_phase_to_inc_out_lanes:
                         ts_phase_to_inc_out_lanes[intersection_id] = {}
                     if i not in ts_phase_to_inc_out_lanes[intersection_id]:
-                        ts_phase_to_inc_out_lanes[intersection_id][i] = []
-                    ts_phase_to_inc_out_lanes[intersection_id][i] = list(
-                        sorted(phase_lanelinks)
-                    )
+                        ts_phase_to_inc_out_lanes[intersection_id][i] = {}
+                    for inc_lane, out_lane in phase_lanelinks:
+                        if (
+                            inc_lane
+                            not in ts_phase_to_inc_out_lanes[intersection_id][
+                                i
+                            ].keys()
+                        ):
+                            ts_phase_to_inc_out_lanes[intersection_id][i][
+                                inc_lane
+                            ] = []
+                        ts_phase_to_inc_out_lanes[intersection_id][i][
+                            inc_lane
+                        ].append(out_lane)
         return ts_phase_to_inc_out_lanes
 
     @property
     @lru_cache(maxsize=None)
     def neighbors_lanes(self):
-        if "neighbors_lanes" not in self.config.network_config.keys():
+        if "neighbors_lanes" not in self.config.network.keys():
             neighbors_lanes = {}
             for ts_id in self.traffic_signal_ids:
                 neighbors_lanes[ts_id] = {}
@@ -208,7 +228,7 @@ class NetworkParser(BaseNetworkParser):
                     neighbors_lanes[ts_id][neighbor] = connecting_lanes
             return neighbors_lanes
         else:
-            return self.config.network_config["neighbors_lanes"]
+            return self.config.network["neighbors_lanes"]
 
     @property
     @lru_cache(maxsize=None)
@@ -228,7 +248,7 @@ class NetworkParser(BaseNetworkParser):
                         ]
                     )
                     offset_t = travel_time / len(neighbors_lanes[neigh_ts_id])
-                    offset_t /= self.config.cityflow_config["delta_time"]
+                    offset_t /= self.config.simulator["delta_time"]
                     offset_t = int(offset_t)
                     neighbors_offsets[ts_id][neigh_ts_id] = offset_t
         return neighbors_offsets
@@ -414,22 +434,14 @@ class NetworkParser(BaseNetworkParser):
                     if len(p["availableRoadLinks"]) and p["time"] > 5:
                         green_phases.append(i)
                         phases_min_max_times[ts_id][i] = {
-                            "min_time": self.config.signal_config[
-                                "min_green_time"
-                            ],
-                            "max_time": self.config.signal_config[
-                                "max_green_time"
-                            ],
+                            "min_time": self.config.signal["min_green_time"],
+                            "max_time": self.config.signal["max_green_time"],
                         }
                     else:
                         yellow_phases.append(i)
                         phases_min_max_times[ts_id][i] = {
-                            "min_time": self.config.signal_config[
-                                "yellow_time"
-                            ],
-                            "max_time": self.config.signal_config[
-                                "yellow_time"
-                            ],
+                            "min_time": self.config.signal["yellow_time"],
+                            "max_time": self.config.signal["yellow_time"],
                         }
                 if len(yellow_phases) == 1:  # common yellow for all
                     yellow_phase = yellow_phases[0]

@@ -1,4 +1,4 @@
-import logging
+from collections import deque
 
 import numpy as np
 
@@ -8,25 +8,21 @@ from pytsc.common.traffic_signal import (
     BaseTrafficSignal,
 )
 
-logger = logging.getLogger(__name__)
-
 
 class TSProgram(BaseTSProgram):
     start_phase_index = 0
 
     def __init__(self, id, config, simulator):
         super(TSProgram, self).__init__(id, config, simulator)
+        self.max_green_time = config["max_green_time"]
+        self.min_green_time = config["min_green_time"]
         self.traci = simulator.traci.trafficlight
         self._initialize_traffic_light_program()
 
-    @property
-    def program(self):
-        return self.traci.getAllProgramLogics(self.id)[0]
-
     def _initialize_traffic_light_program(self):
-        self._set_caps_on_current_program(self.program)
+        # self._set_caps_on_current_program(self.program)
         self.traci.setPhase(self.id, self.phases[self.start_phase_index])
-        self.update_current_phase(self.start_phase_index)
+        self.set_initial_phase(self.start_phase_index)
 
     def _set_caps_on_current_program(self, current_program):
         phase_definitions = []
@@ -66,19 +62,31 @@ class TSController(BaseTSController):
         self._instantiate_traffic_light_logic()
 
     def switch_phase(self, phase_index):
-        self._update_phase_time(phase_index)
-        self._update_cycle_time()
-        self.traci.setPhase(self.id, self.program.phases[phase_index])
+        self.traci.setPhase(self.id, self.config["phases"][phase_index])
         self.program.update_current_phase(phase_index)
-        self.logic.update_current_phase_index(phase_index, self.time_on_phase)
 
 
 class TrafficSignal(BaseTrafficSignal):
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
         self.controller = TSController(id, config, simulator)
+        self.incoming_lanes = config["incoming_lanes"]
+        self.position_matrices = deque(maxlen=self.config["input_n_avg"])
+        # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
+        pos_mat = []
+        for lane in self.incoming_lanes:
+            lane_results = sub_results["lane"][lane]
+            lane_pos_mat = np.zeros(
+                self.config["visibility"], dtype=np.float32
+            )
+            vehicle_bin_idxs = lane_results["vehicles_bin_idxs"]
+            if len(vehicle_bin_idxs):
+                for i in vehicle_bin_idxs:
+                    lane_pos_mat[i] = 1.0
+            pos_mat.append(lane_pos_mat)
+        self.position_matrices.append(np.concatenate(pos_mat, axis=0))
         (
             queue_lengths,
             densities,
@@ -106,9 +114,8 @@ class TrafficSignal(BaseTrafficSignal):
         self.norm_mean_speeds = np.asarray(norm_mean_speeds)
         self.norm_mean_wait_times = np.asarray(norm_mean_wait_times)
         self.time_on_phase = self.controller.norm_time_on_phase
-        self.time_on_cycle = self.controller.norm_time_on_cycle
         self.phase_id = np.asarray(self.controller.phase_one_hot)
         self.sim_step = self.simulator.sim_step / 3600
 
-    def action_to_phase(self, action):
-        self.controller.switch_phase(action)
+    def action_to_phase(self, phase_index):
+        self.controller.switch_phase(phase_index)

@@ -9,6 +9,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 from pytsc.common.retriever import BaseRetriever
+from pytsc.common.utils import calculate_bin_index
 
 
 class Retriever(BaseRetriever):
@@ -31,6 +32,7 @@ class Retriever(BaseRetriever):
         "n_colliding": tc.VAR_COLLIDING_VEHICLES_NUMBER,
         "n_emergency_brakes": tc.VAR_EMERGENCYSTOPPING_VEHICLES_NUMBER,
         "phase": tc.TL_CURRENT_PHASE,
+        "vehicle_id": tc.LAST_STEP_VEHICLE_ID_LIST,
     }
 
     def __init__(self, simulator):
@@ -52,6 +54,8 @@ class Retriever(BaseRetriever):
                     self.tc["occupancy"],
                     self.tc["wait_time"],
                     self.tc["average_travel_time"],
+                    self.tc["vehicle_id"],
+                    # self.tc["position"],
                 ],
             )
 
@@ -84,13 +88,28 @@ class Retriever(BaseRetriever):
         lane_measurements = {}
         for lane in self.parsed_network.lanes:
             results = self.traci.lane.getSubscriptionResults(lane)
-            lane_measurements[lane] = {
-                "n_vehicles": results[self.tc["n_vehicles"]] + 1e-6,
-                "n_queued": results[self.tc["n_queued"]] + 1e-6,
-                "mean_speed": results[self.tc["mean_speed"]] + 1e-6,
-                "occupancy": results[self.tc["occupancy"]] + 1e-6,
-                "wait_time": results[self.tc["wait_time"]] + 1e-6,
-            }
+            lane_vehicles_bin_idxs = []
+            for v in results[self.tc["vehicle_id"]]:
+                lane_position = self.traci.vehicle.getLanePosition(v)
+                bin_idx = calculate_bin_index(
+                    n_bins=self.config.signal["visibility"],
+                    bin_size=self.config.simulator["veh_size_min_gap"],
+                    lane_length=self.parsed_network.lane_lengths[lane],
+                    lane_position=lane_position,
+                )
+                if bin_idx is not None:
+                    lane_vehicles_bin_idxs.append(bin_idx)
+            lane_measurements[lane] = {}
+            lane_measurements[lane].update(
+                {
+                    "n_vehicles": results[self.tc["n_vehicles"]] + 1e-6,
+                    "n_queued": results[self.tc["n_queued"]] + 1e-6,
+                    "mean_speed": results[self.tc["mean_speed"]] + 1e-6,
+                    "occupancy": results[self.tc["occupancy"]] + 1e-6,
+                    "wait_time": results[self.tc["wait_time"]] + 1e-6,
+                    "vehicles_bin_idxs": lane_vehicles_bin_idxs,
+                }
+            )
             lane_measurements[lane].update(
                 {
                     "average_travel_time": (
@@ -119,7 +138,7 @@ class Retriever(BaseRetriever):
                     ),
                     "norm_mean_wait_time": (
                         lane_measurements[lane]["mean_wait_time"]
-                        / self.config.misc_config["max_wait_time"]
+                        / self.config.misc["max_wait_time"]
                     ),
                 }
             )

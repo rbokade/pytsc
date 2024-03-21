@@ -1,7 +1,47 @@
-import itertools
+import logging
 import re
 
 import numpy as np
+
+
+class EnvLogger:
+
+    @staticmethod
+    def _ensure_handler(logger):
+        if not logger.hasHandlers():
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter(
+                "%(asctime)s - %(levelname)s - %(message)s"
+            )
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+        # Set the logger level here
+        logger.setLevel(logging.INFO)
+
+    @staticmethod
+    def get_logger(name=__name__):
+        logger = logging.getLogger(name)
+        EnvLogger._ensure_handler(logger)
+        return logger
+
+    @staticmethod
+    def log(level, msg):
+        logger = EnvLogger.get_logger()
+        logger.log(level, msg)
+
+    @staticmethod
+    def log_info(msg):
+        EnvLogger.log(logging.INFO, msg)
+
+    @staticmethod
+    def log_warning(msg):
+        EnvLogger.log(logging.WARNING, msg)
+
+
+def validate_input_against_allowed(inp_cfg_str, allowed_cfg_strs):
+    assert (
+        inp_cfg_str in allowed_cfg_strs
+    ), f"Invalid action space `{inp_cfg_str}`. Allowed values are {allowed_cfg_strs}."
 
 
 def sort_alphanumeric_ids(ids):
@@ -49,29 +89,27 @@ def pad_list(inp_list, size, pad_value=0):
     return pad_array(np.array(inp_list), size, pad_value).tolist()
 
 
-def map_to_phase_circle(phase_index, time_on_phase, phase_durations):
-    """
-    Maps the time on a given phase to its corresponding position on a
-    phase circle.
-    """
-    # Compute the starting angle of each phase on the phase circle
-    total_duration = sum(phase_durations)
-    start_angles = [
-        2 * np.pi * sum(phase_durations[:i]) / total_duration
-        for i in range(len(phase_durations))
-    ]
-    # Compute the angular span of the current phase
-    phase_span = 2 * np.pi * phase_durations[phase_index] / total_duration
-    # Compute the angular position within the current phase
-    phase_position = phase_span * (
-        time_on_phase / phase_durations[phase_index]
-    )
-    return start_angles[phase_index] + phase_position
+def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
+    visibility_length = n_bins * bin_size
+    distance_from_intersection = lane_length - lane_position
+    if distance_from_intersection > visibility_length:
+        return None  # The vehicle is not within the visible section
+    # Calculate the bin index
+    # NOTE: Bins are indexed from the intersection backwards
+    bin_index = (visibility_length - distance_from_intersection) // bin_size
+    # Ensure the bin index is within the expected range [0, 9] for 10 bins
+    bin_index = min(max(bin_index, 0), 9)
+    return int(bin_index)
 
 
-def compute_local_order_for_agent(agent_phase_angles, adj_row):
-    cos_values = np.cos(agent_phase_angles)
-    sin_values = np.sin(agent_phase_angles)
-    mean_cos = np.sum(cos_values * adj_row) / np.sum(adj_row)
-    mean_sin = np.sum(sin_values * adj_row) / np.sum(adj_row)
-    return np.sqrt(mean_cos**2 + mean_sin**2)
+def compute_linearly_weighted_average(position_matrices):
+    """
+    position_matrices: dequeue
+    """
+    n = len(position_matrices)
+    lwma = np.zeros_like(position_matrices[0])
+    normalization_factor = n * (n + 1) / 2
+    for i, matrix in enumerate(reversed(position_matrices)):
+        weight = (n - i) / normalization_factor
+        lwma += weight * matrix
+    return lwma

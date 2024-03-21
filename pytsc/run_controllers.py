@@ -1,23 +1,23 @@
+import argparse
 import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from pytsc.traffic_signal_network import TrafficSignalNetwork
 from pytsc.controllers.evaluate import Evaluate
 
 
-def run_evaluation(scenario, simulator_type, controller, hours=1, add_args={}):
-    traffic_signal_network = TrafficSignalNetwork(scenario, simulator_type)
-    evaluate = Evaluate(traffic_signal_network, controller, **add_args)
+def run_evaluation(
+    scenario, simulator_backend, controller, hours=1, add_args={}
+):
+    evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
     evaluate.run(hours, save_stats=True, plot_stats=True)
     stats = pd.DataFrame(evaluate.log)
     stats["controller"] = controller
     return stats
 
 
-def save_stats_to_file(
-    all_stats, simulator_type, scenario, output_folder=None
-):
+def save_stats_to_file(all_stats, simulator_backend, scenario, output_folder):
     fname = os.path.join(output_folder, "stats.csv")
     all_stats.to_csv(fname, index=False)
 
@@ -32,7 +32,7 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
     if nrows == 1:
         axes = [axes]
     for idx, stat_name in enumerate(stat_names):
-        ax = axes[idx // ncols, idx % ncols]
+        ax = axes[idx // ncols][idx % ncols]
         for controller in controllers:
             controller_stats = all_stats.loc[
                 all_stats.controller == controller, stat_name
@@ -42,9 +42,9 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
         ax.legend()
         ax.set_xlabel("Time")
         ax.set_ylabel(stat_name.replace("_", " ").capitalize())
-        ax.grid(linestyle="--")
+        ax.grid(linestyle=":")
     for idx in range(num_stats, nrows * ncols):
-        axes[idx // ncols, idx % ncols].axis("off")
+        axes[idx // ncols][idx % ncols].axis("off")
     fname = os.path.join(output_folder, f"{scenario}_stats.png")
     plt.tight_layout()
     plt.savefig(fname)
@@ -53,7 +53,7 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
 
 def evaluate_controllers(
     scenario,
-    simulator_type,
+    simulator_backend,
     controllers,
     hours=1,
     output_folder=None,
@@ -61,36 +61,57 @@ def evaluate_controllers(
 ):
     if output_folder is None:
         output_folder = "pytsc/results"
-    output_folder = os.path.join(output_folder, simulator_type, scenario)
+    output_folder = os.path.join(output_folder, simulator_backend, scenario)
     os.makedirs(output_folder, exist_ok=True)
     all_stats = []
     for controller in controllers:
         stats = run_evaluation(
             scenario,
-            simulator_type,
+            simulator_backend,
             controller,
             hours=hours,
             add_args=add_args.get(controller, {}),
         )
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
-    save_stats_to_file(all_stats, simulator_type, scenario, output_folder)
+    save_stats_to_file(all_stats, simulator_backend, scenario, output_folder)
     plot_stats(all_stats, controllers, scenario, output_folder)
 
 
 if __name__ == "__main__":
-    scenario = "new_york_arterial"
-    simulator_type = "cityflow"
-    # controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
-    controllers = ["max_pressure"]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--scenario",
+        type=str,
+        help="Name of the scenario",
+    )
+    parser.add_argument(
+        "--simulator-backend",
+        dest="simulator_backend",
+        type=str,
+        help="`cityflow` or `sumo`",
+    )
+    parser.add_argument(
+        "--controllers",
+        default="all",
+        type=str,
+        help="`fixed_time`, `sotl`, `max_pressure`, `greedy`, `all`",
+    )
+    args = parser.parse_args()
+
+    if args.controllers == "all":
+        controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
+    else:
+        controllers = args.controllers
     hours = 1
     add_args = {
         "fixed_time": {"green_time": 25},
-        "sotl": {"phi": 1, "mu": 3, "omega": 30},
+        "sotl": {"mu": 1, "theta": 4, "phi_min": 5},
     }
     evaluate_controllers(
-        scenario,
-        simulator_type,
+        args.scenario,
+        args.simulator_backend,
         controllers,
         output_folder="pytsc/results",
         hours=hours,

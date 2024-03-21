@@ -3,8 +3,8 @@ import os
 import random
 import xml.etree.ElementTree as ET
 
-from pytsc.sumo.config import Config
-from pytsc.sumo.network_parser import NetworkParser
+from pytsc.backends.sumo.config import Config
+from pytsc.backends.sumo.network_parser import NetworkParser
 
 CONFIG_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),

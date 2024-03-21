@@ -12,14 +12,14 @@ from pytsc.common.config import BaseConfig
 
 # Set the path to the config.yaml file
 CONFIG_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "scenarios", "sumo"
+    os.path.dirname(os.path.abspath(__file__)), "../..", "scenarios", "sumo"
 )
 
 
 class Config(BaseConfig):
-    def __init__(self, scenario, add_config):
-        super().__init__(scenario, add_config)
-        self._update_with_scenario_config("sumo")
+    def __init__(self, scenario, **kwargs):
+        super().__init__(scenario, **kwargs)
+        self._load_config("sumo")
         # Simulator files
         self.sumo_cfg_dir = os.path.join(
             CONFIG_DIR, scenario, f"{scenario}.sumocfg"
@@ -32,7 +32,7 @@ class Config(BaseConfig):
 
     def _check_assertions(self):
         assert (
-            self.signal_config["yellow_time"] == self.sumo_config["delta_time"]
+            self.signal["yellow_time"] == self.simulator["delta_time"]
         ), "Delta time and yellow times must be fixed to 5 seconds."
 
     def _get_start_and_end_times(self):

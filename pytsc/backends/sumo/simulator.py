@@ -13,7 +13,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 from pytsc.common.simulator import BaseSimulator
-from pytsc.sumo.retriever import Retriever
+from pytsc.backends.sumo.retriever import Retriever
 
 
 class Simulator(BaseSimulator):
@@ -23,17 +23,24 @@ class Simulator(BaseSimulator):
         self.port = getFreeSocketPort()
 
     @property
-    def sim_time(self):
-        return self.traci.simulation.getTime()
+    def is_terminated(self):
+        if self.sim_step == 3600:
+            return True
+        else:
+            return False
 
     @property
     def sim_step(self):
         sim_step = (
             self.sim_time
             - self.parsed_network.config.begin_time
-            - self.config.sumo_config["initial_wait_time"]
+            - self.config.simulator["initial_wait_time"]
         )
         return sim_step
+
+    @property
+    def sim_time(self):
+        return self.traci.simulation.getTime()
 
     def retrieve_step_measurements(self):
         self.step_measurements = {
@@ -43,7 +50,7 @@ class Simulator(BaseSimulator):
         }
 
     def start_simulator(self):
-        if self.config.sumo_config["render"]:
+        if self.config.simulator["render"]:
             sumo_binary = checkBinary("sumo-gui")
         else:
             sumo_binary = checkBinary("sumo")
@@ -52,7 +59,7 @@ class Simulator(BaseSimulator):
         cmd += ["--no-warnings", "True"]
         cmd += [
             "--time-to-teleport",
-            str(self.config.sumo_config["time_to_teleport"]),
+            str(self.config.simulator["time_to_teleport"]),
         ]
         cmd += ["--quit-on-end", "True"]
         cmd += ["--no-step-log", "True"]
@@ -63,14 +70,14 @@ class Simulator(BaseSimulator):
         self.traci = traci.connect(self.port)
         self.traci_retriever = Retriever(self)
         self.traci_retriever.subscribe()
-        if self.config.sumo_config["initial_wait_time"]:
-            for _ in range(self.config.sumo_config["initial_wait_time"]):
+        if self.config.simulator["initial_wait_time"]:
+            for _ in range(self.config.simulator["initial_wait_time"]):
                 self.traci.simulationStep()
         self.retrieve_step_measurements()
 
     def simulator_step(self, n_steps):
         if n_steps is None:
-            n_steps = self.config.sumo_config["delta_time"]
+            n_steps = self.config.simulator["delta_time"]
         if n_steps:
             for _ in range(n_steps):
                 self.traci.simulationStep()
@@ -79,10 +86,3 @@ class Simulator(BaseSimulator):
     def close_simulator(self):
         if self.traci is not None:
             self.traci.close()
-
-    @property
-    def is_terminated(self):
-        if self.sim_step == 3600:
-            return True
-        else:
-            return False

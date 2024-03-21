@@ -58,12 +58,32 @@ class NetworkParser(BaseNetworkParser):
                 "green_phase_indices": green_phase_indices[ts_id],
                 "yellow_phase_indices": yellow_phase_indices[ts_id],
             }
-            self.traffic_signals[ts_id].update(self.config.signal_config)
+            self.traffic_signals[ts_id].update(self.config.signal)
 
     @property
     @lru_cache(maxsize=None)
     def adjacency_matrix(self):
-        return super()._get_adjacency_matrix()
+        if "neighbors" not in self.config.network.keys():
+            nodes_with_tl = [
+                node
+                for node in self.net.getNodes()
+                if node.getType() == "traffic_light"
+            ]
+            n_traffic_signals = len(nodes_with_tl)
+            node_to_index = {
+                node: idx for idx, node in enumerate(nodes_with_tl)
+            }
+            adjacency_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
+            for node in nodes_with_tl:
+                i = node_to_index[node]
+                for edge in node.getOutgoing():
+                    dest_node = edge.getToNode()
+                    if dest_node in nodes_with_tl:
+                        j = node_to_index[dest_node]
+                        adjacency_matrix[i, j] = 1
+            return adjacency_matrix
+        else:
+            return super(NetworkParser, self)._get_adjacency_matrix()
 
     @property
     @lru_cache(maxsize=None)
@@ -141,16 +161,30 @@ class NetworkParser(BaseNetworkParser):
                                     phase_inc_out_lanes.append(
                                         (inc_lane.getID(), out_lane)
                                     )
-                    ts_phase_to_inc_out_lanes[ts_id][phase_idx] = list(
-                        set(phase_inc_out_lanes)
-                    )
+                    # ts_phase_to_inc_out_lanes[ts_id][phase_idx] = list(
+                    #     set(phase_inc_out_lanes)
+                    # )
+                    ts_phase_to_inc_out_lanes[ts_id][phase_idx] = {}
+                    for inc_lane, out_lane in phase_inc_out_lanes:
+                        if (
+                            inc_lane
+                            not in ts_phase_to_inc_out_lanes[ts_id][
+                                phase_idx
+                            ].keys()
+                        ):
+                            ts_phase_to_inc_out_lanes[ts_id][phase_idx][
+                                inc_lane
+                            ] = []
+                        ts_phase_to_inc_out_lanes[ts_id][phase_idx][
+                            inc_lane
+                        ].append(out_lane)
         return ts_phase_to_inc_out_lanes
 
     @property
     @lru_cache(maxsize=None)
     def k_hop_neighbors(self):
         k_hop_neighbors = {}
-        max_hops = self.config.misc_config["max_hops"]
+        max_hops = self.config.misc["max_hops"]
         for ts_id in self.traffic_signal_ids:
             k_hop_neighbors[ts_id] = {}
             for k in range(1, max_hops + 1):
@@ -254,12 +288,12 @@ class NetworkParser(BaseNetworkParser):
                     phase_indices[ts_id].append(phase_idx)
                     if "G" in phase.state:  # green phase
                         green_phase_indices[ts_id].append(phase_idx)
-                        min_time = self.config.signal_config["min_green_time"]
-                        max_time = self.config.signal_config["max_green_time"]
+                        min_time = self.config.signal["min_green_time"]
+                        max_time = self.config.signal["max_green_time"]
                     elif "y" in phase.state:  # yellow phase
                         yellow_phase_indices[ts_id].append(phase_idx)
-                        min_time = self.config.signal_config["yellow_time"]
-                        max_time = self.config.signal_config["yellow_time"]
+                        min_time = self.config.signal["yellow_time"]
+                        max_time = self.config.signal["yellow_time"]
                     else:  # all red phase (remove for now)
                         breakpoint()
                     phases_min_max_times[ts_id][phase_idx] = {

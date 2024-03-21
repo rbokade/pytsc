@@ -5,7 +5,7 @@ from pytsc.common.metrics import BaseMetricsParser
 
 class MetricsParser(BaseMetricsParser):
     """
-    Retrieve performance metrics from subscriptions.
+    Network wide metrics
     """
 
     def __init__(self, parsed_network, simulator, traffic_signals):
@@ -18,7 +18,7 @@ class MetricsParser(BaseMetricsParser):
     def flickering_signal(self):
         return np.mean(
             [
-                ts.controller.phase_changed
+                ts.controller.program.phase_changed
                 for ts in self.traffic_signals.values()
             ]
         )
@@ -44,40 +44,16 @@ class MetricsParser(BaseMetricsParser):
         return self.simulator.step_measurements["sim"]["n_departed"]
 
     @property
-    def norm_mean_queued(self):
-        """
-        mean queued per lane per ts (normalized by lane length)
-        """
-        return np.mean(
-            [
-                np.mean(ts.norm_queue_lengths)
-                for ts in self.traffic_signals.values()
-            ]
-        )
-
-    @property
-    def mean_queued(self):
-        """
-        mean queued per lane per ts
-        """
-        return np.mean(
-            [np.mean(ts.queue_lengths) for ts in self.traffic_signals.values()]
-        )
-
-    @property
     def n_queued(self):
-        return np.sum(
-            [np.sum(ts.queue_lengths) for ts in self.traffic_signals.values()]
-        )
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(data["n_queued"] for data in lane_measurements.values())
 
     @property
     def mean_wait_time(self):
-        return np.mean(
-            [
-                np.mean(ts.mean_wait_times)
-                for ts in self.traffic_signals.values()
-            ]
-        )
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(
+            data["mean_wait_time"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
 
     @property
     def average_travel_time(self):
@@ -88,52 +64,47 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_speed(self):
-        return np.mean(
-            [np.mean(ts.mean_speeds) for ts in self.traffic_signals.values()]
-        )
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(
+            data["mean_speed"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
 
     @property
     def density(self):
-        return np.mean(
-            [np.mean(ts.densities) for ts in self.traffic_signals.values()]
-        )
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(
+            data["occupancy"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
 
     @property
     def mean_delay(self):
-        return 1 - np.mean(
-            [
-                np.mean(ts.norm_mean_speeds)
-                for ts in self.traffic_signals.values()
-            ]
-        )
+        return 1 - self.mean_speed
 
     @property
     def reward(self):
-        fc = self.config.misc_config["flickering_coef"]
+        fc = self.config.misc["flickering_coef"]
         reward = 0
         reward -= fc * self.flickering_signal
-        reward -= self.norm_mean_queued
+        reward -= self.n_queued
         return reward
 
     @property
     def rewards(self):
-        fc = self.config.misc_config["flickering_coef"]
-        gamma = self.config.misc_config["reward_gamma"]
+        fc = self.config.misc["flickering_coef"]
+        gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {
             ts_id: -fc * ts.controller.phase_changed
-            - np.mean(ts.norm_queue_lengths)
+            - np.mean(ts.queue_lengths)
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}
-        for ts_id, ts in self.traffic_signals.items():
+        for ts_id in self.traffic_signals.keys():
             rewards[ts_id] = local_rewards[ts_id]
             for k in range(1, len(self.traffic_signals.keys())):
                 neighbors_k = k_hop_neighbors[ts_id].get(k, [])
                 for neighbor_ts_id in neighbors_k:
-                    rewards[ts_id] += (
-                        gamma**k * local_rewards[neighbor_ts_id]
-                    )
+                    rewards[ts_id] += gamma**k * local_rewards[neighbor_ts_id]
         return list(rewards.values())
 
     def get_step_stats(self):
