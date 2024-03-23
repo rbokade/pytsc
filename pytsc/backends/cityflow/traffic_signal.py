@@ -36,6 +36,8 @@ class TSController(BaseTSController):
 
 
 class TrafficSignal(BaseTrafficSignal):
+    debug = False
+
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
         self.config = config
@@ -46,6 +48,7 @@ class TrafficSignal(BaseTrafficSignal):
 
     def update_stats(self, sub_results):
         pos_mat = []
+        self.lane_pos_mats = {}
         for lane in self.incoming_lanes:
             lane_results = sub_results["lane"][lane]
             lane_pos_mat = np.zeros(
@@ -56,6 +59,7 @@ class TrafficSignal(BaseTrafficSignal):
                 for i in vehicle_bin_idxs:
                     lane_pos_mat[i] = 1.0
             pos_mat.append(lane_pos_mat)
+            self.lane_pos_mats[lane] = lane_pos_mat
         self.position_matrices.append(np.concatenate(pos_mat, axis=0))
         (
             queue_lengths,

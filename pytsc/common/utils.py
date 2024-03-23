@@ -112,4 +112,4 @@ def compute_linearly_weighted_average(position_matrices):
     for i, matrix in enumerate(reversed(position_matrices)):
         weight = (n - i) / normalization_factor
         lwma += weight * matrix
-    return lwma
+    return np.round(lwma, 3)
