@@ -14,16 +14,16 @@ CITYFLOW_GRID_GEN_SCRIPT = (
 
 
 class GridNetwork:
-    col_distance = 300
-    row_distance = 300
+    col_distance = 400
+    row_distance = 400
     intersection_width = 20
     n_left_lanes = 1
     n_right_lanes = 1
     n_straight_lanes = 1
-    lane_max_speed = 13.89
-    veh_max_speed = 13.89
-    veh_min_gap = 2.5
-    veh_headway_time = 2
+    lane_max_speed = 13.89  # m/s
+    veh_max_speed = 13.89  # m/s
+    veh_min_gap = 2.5  # meters
+    veh_headway_time = 2  # meters
 
     def __init__(self, nrows, ncols, mean_flow_rates=(500, 600, 700)):
         self.nrows = nrows
@@ -72,6 +72,7 @@ class GridNetwork:
 
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--nrows",

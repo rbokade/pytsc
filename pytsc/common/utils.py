@@ -98,7 +98,7 @@ def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
     # NOTE: Bins are indexed from the intersection backwards
     bin_index = (visibility_length - distance_from_intersection) // bin_size
     # Ensure the bin index is within the expected range [0, 9] for 10 bins
-    bin_index = min(max(bin_index, 0), 9)
+    bin_index = min(max(bin_index, 0), n_bins - 1)
     return int(bin_index)
 
 

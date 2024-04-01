@@ -1,6 +1,6 @@
 cityflow:
   plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
-  phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
+  # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
   roadnet_file: roadnet_16_3.json
   flow_file: anon_16_3_newyork_real.json
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
