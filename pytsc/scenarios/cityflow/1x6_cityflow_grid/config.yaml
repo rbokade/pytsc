@@ -1,9 +1,0 @@
-cityflow:
-  plan: [25, 5, 25, 5]
-  roadnet_file: 1x6_roadnet.json
-  flow_rate_type: "constant"
-  flow_file: 1x6_roadnet_600.json
-  flow_files: ["1x6_roadnet_500.json", "1x6_roadnet_600.json", "1x6_roadnet_700.json"]
-  roadnet_log_file: "frontend/web/roadnet_log_file.json"
-  replay_log_file: "frontend/web/replay_log_file.txt"
-  save_replay: False
