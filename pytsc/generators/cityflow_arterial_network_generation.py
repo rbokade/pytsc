@@ -102,7 +102,7 @@ if __name__ == "__main__":
         "--mean_flow_rates",
         type=int,
         nargs="+",
-        default=[500, 600, 700],
+        default=(500, 600, 700, 800, 900, 1000, 1100, 1200),
         help="Mean flow rates for the arterial and side streets",
     )
     args = parser.parse_args()

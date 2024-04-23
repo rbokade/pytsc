@@ -6,13 +6,11 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
     step_stats = None
 
     def __init__(self, map_name="monaco", simulator_backend="sumo", **kwargs):
+        kwargs.pop("scenario", None)
         self.tsc_env = TrafficSignalNetwork(
-            map_name,
-            simulator_backend=simulator_backend,
-            additional_config=kwargs,
+            map_name, simulator_backend=simulator_backend, **kwargs
         )
         self.episode_limit = self.tsc_env.episode_limit
-        self.n_agents = len(self.tsc_env.traffic_signals)
 
     def apply_actions(self, actions):
         self.tsc_env.action_space.apply(actions)
@@ -29,30 +27,29 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "episode_limit": self.episode_limit,
             "n_actions": self.get_total_actions(),
             "adjacency_matrix": self.tsc_env.parsed_network.adjacency_matrix,
-            "n_agents": self.n_agents,
+            "n_agents": self.tsc_env.n_agents,
             "obs_shape": self.get_obs_size(),
             "state_shape": self.get_state_size(),
         }
         return env_info
 
     def get_obs(self):
-        return self.tsc_env.get_observations()
+        if self.tsc_env.config.network["control_scheme"] == "decentralized":
+            return self.tsc_env.get_observations()
+        else:
+            return self.tsc_env.get_state()
 
     def get_obs_size(self):
-        return self.tsc_env.get_observation_size()
+        if self.tsc_env.config.network["control_scheme"] == "decentralized":
+            return self.tsc_env.get_observation_size()
+        else:
+            return self.tsc_env.get_state_size()
 
     def get_state(self):
-        observations = self.tsc_env.get_observations()
-        state = []
-        for obs in observations:
-            state.extend(obs)
-        return state
+        return self.tsc_env.get_state()
 
     def get_state_size(self):
-        return int(
-            self.tsc_env.get_observation_size()
-            * len(self.tsc_env.traffic_signals)
-        )
+        return self.tsc_env.get_state_size()
 
     def get_stats(self):
         return self.tsc_env.get_env_stats()

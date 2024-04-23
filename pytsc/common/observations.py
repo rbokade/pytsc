@@ -1,4 +1,5 @@
 from abc import ABC
+from turtle import position
 
 import numpy as np
 
@@ -36,7 +37,62 @@ class BaseObservationSpace(ABC):
         return 0
 
 
-class PositionMatrix(BaseObservationSpace):
+class LaneFeatures(BaseObservationSpace):
+    def __init__(
+        self, config, parsed_network, traffic_signals, simulator_backend
+    ):
+        super(LaneFeatures, self).__init__(
+            config, parsed_network, traffic_signals, simulator_backend
+        )
+
+    def get_observations(self):
+        """
+        Returns a list of observations for each traffic signal in
+        traffic_signals. The observations are obtained by padding
+        and concatenating arrays of normalized queue lengths, densities,
+        mean speeds, and mean wait times for each traffic signal.
+
+        Returns:
+        - observations: A list of observations for each traffic signal in
+          traffic_signals.
+        """
+        observations = []
+        for ts in self.traffic_signals.values():
+            obs = pad_array(
+                ts.norm_queue_lengths, self.max_n_controlled_lanes
+            ).tolist()
+            obs += pad_array(
+                ts.norm_densities, self.max_n_controlled_lanes
+            ).tolist()
+            obs += pad_array(
+                ts.norm_mean_speeds, self.max_n_controlled_lanes
+            ).tolist()
+            obs += pad_array(
+                ts.norm_mean_wait_times, self.max_n_controlled_lanes
+            ).tolist()
+            obs += pad_array(
+                ts.phase_id, self.max_n_controlled_phases
+            ).tolist()
+            observations.append(obs)
+        return observations
+
+    def get_size(self):
+        return int(
+            (4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases
+        )
+
+    def get_state(self):
+        observations = self.get_observations()
+        state = []
+        for obs in observations:
+            state.extend(obs)
+        return state
+
+    def get_state_size(self):
+        return self.get_size() * len(self.traffic_signals)
+
+
+class PositionMatrix(LaneFeatures):
     def __init__(
         self, config, parsed_network, traffic_signals, simulator_backend
     ):
@@ -62,48 +118,14 @@ class PositionMatrix(BaseObservationSpace):
             + self.max_n_controlled_phases
         )
 
+    def get_state(self):
+        lane_features = super(PositionMatrix, self).get_observations()
+        position_matrix = self.get_observations()
+        return np.concatenate(lane_features + position_matrix).tolist()
 
-class LaneFeatures(BaseObservationSpace):
-    def __init__(
-        self, config, parsed_network, traffic_signals, simulator_backend
-    ):
-        super(LaneFeatures, self).__init__(
-            config, parsed_network, traffic_signals, simulator_backend
-        )
-
-    def get_observations(self):
-        """
-        Returns a list of observations for each traffic signal in
-        traffic_signals. The observations are obtained by padding
-        and concatenating arrays of normalized queue lengths, densities,
-        mean speeds, and mean wait times for each traffic signal.
-
-        Returns:
-        - observations: A list of observations for each traffic signal in
-          traffic_signals.
-        """
-        observations = []
-
-        for ts in self.traffic_signals.values():
-            obs = pad_array(
-                ts.norm_queue_lengths, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.norm_densities, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.norm_mean_speeds, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.norm_mean_wait_times, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.phase_id, self.max_n_controlled_phases
-            ).tolist()
-            observations.append(obs)
-        return observations
-
-    def get_size(self):
-        return int(
+    def get_state_size(self):
+        lane_features_size = int(
             (4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases
-        )
+        ) * len(self.traffic_signals)
+        pos_mat_size = self.get_size() * len(self.traffic_signals)
+        return lane_features_size + pos_mat_size

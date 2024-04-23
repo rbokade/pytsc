@@ -33,13 +33,29 @@ class Config(BaseConfig):
         self.dir = os.path.join(os.path.abspath(scenario_path), "")
         self.temp_dir = tempfile.mkdtemp()
         self.cityflow_cfg_file = None
-        self._set_flow_file()
+        self.flow_files_cycle = cycle(self.simulator.get("flow_files", []))
+        # self._set_flow_file()
         self._check_assertions()
 
     def _check_assertions(self):
         assert (
             self.signal["yellow_time"] == self.simulator["delta_time"]
         ), "Delta time and yellow times must be fixed to 5 seconds."
+
+    def _set_flow_file(self):
+        # Get the flow file structure
+        self.flow_rate_type = self.simulator.get("flow_rate_type", "constant")
+        if self.flow_rate_type == "constant":
+            self.flow_file = self.simulator["flow_file"]
+        elif self.flow_rate_type == "random":
+            self.flow_file = random.choice(self.simulator["flow_files"])
+        elif self.flow_rate_type == "sequential":
+            self.flow_file = next(self.flow_files_cycle)
+        else:
+            raise ValueError(
+                "Flow files order is not supported. "
+                + "Flow files order must be `random` or `constant`"
+            )
 
     def create_and_save_cityflow_cfg(self):
         self._set_flow_file()
@@ -67,18 +83,3 @@ class Config(BaseConfig):
         with open(self.cityflow_cfg_file, "w") as f:
             json.dump(cityflow_cfg, f, indent=4)
         EnvLogger.log_info(f"Loaded flow file: {self.flow_file}")
-
-    def _set_flow_file(self):
-        # Get the flow file structure
-        self.flow_rate_type = getattr(self, "flow_rate_type", "constant")
-        if self.flow_rate_type == "constant":
-            self.flow_file = self.simulator["flow_file"]
-        elif self.flow_rate_type == "random":
-            self.flows = random.choice(self.simulator["flow_files"])
-        elif self.flow_rate_type == "sequential":
-            self.flows = cycle(self.simulator["flow_files"])
-        else:
-            raise ValueError(
-                "Flow files order is not supported. "
-                + "Flow files order must be `random` or `constant`"
-            )

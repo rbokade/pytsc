@@ -11,7 +11,8 @@ NETWORK_INFO = {
         "simulator_backend": "cityflow",
         "controller": "greedy",
         "n_lanes_per_side": 3,
-        "intersection_1_1_lane_map": {
+        "ts_id": "intersection_1_1",
+        "lane_map": {
             "road_0_1_0_0": {"orientation": "EB", "pos": 0},
             "road_0_1_0_1": {"orientation": "EB", "pos": 1},
             "road_0_1_0_2": {"orientation": "EB", "pos": 2},
@@ -25,7 +26,27 @@ NETWORK_INFO = {
             "road_2_1_2_1": {"orientation": "WB", "pos": 1},
             "road_2_1_2_2": {"orientation": "WB", "pos": 2},
         },
-    }
+    },
+    "2x2_sumo_grid": {
+        "simulator_backend": "sumo",
+        "controller": "greedy",
+        "n_lanes_per_side": 3,
+        "ts_id": "A0",
+        "lane_map": {
+            "A1A0_0": {"orientation": "SB", "pos": 0},
+            "A1A0_1": {"orientation": "SB", "pos": 1},
+            "A1A0_2": {"orientation": "SB", "pos": 2},
+            "B0A0_0": {"orientation": "WB", "pos": 0},
+            "B0A0_1": {"orientation": "WB", "pos": 1},
+            "B0A0_2": {"orientation": "WB", "pos": 2},
+            "bottom0A0_0": {"orientation": "NB", "pos": 0},
+            "bottom0A0_1": {"orientation": "NB", "pos": 1},
+            "bottom0A0_2": {"orientation": "NB", "pos": 2},
+            "left0A0_0": {"orientation": "EB", "pos": 0},
+            "left0A0_1": {"orientation": "EB", "pos": 1},
+            "left0A0_2": {"orientation": "EB", "pos": 2},
+        },
+    },
 }
 
 
@@ -42,7 +63,9 @@ class ObservationEvaluator(Evaluate):
         self.obs_matrix = np.zeros(
             (self.mat_size, self.mat_size), dtype=np.float32
         )
-        self.network.traffic_signals["intersection_1_1"].debug = True
+        self.network.traffic_signals[NETWORK_INFO[scenario]["ts_id"]].debug = (
+            True
+        )
 
     def run(
         self, hours, save_stats=False, plot_stats=False, output_folder=None
@@ -70,16 +93,18 @@ class ObservationEvaluator(Evaluate):
         visibility = self.config.signal["visibility"]
         for step in range(1, steps + 1):
             # ============================================== #
-            lane_map = NETWORK_INFO[scenario]["intersection_1_1_lane_map"]
-            intersection_1_1 = self.network.traffic_signals["intersection_1_1"]
+            lane_map = NETWORK_INFO[scenario]["lane_map"]
+            traffic_signal = self.network.traffic_signals[
+                NETWORK_INFO[scenario]["ts_id"]
+            ]
             pos_mats = compute_linearly_weighted_average(
-                intersection_1_1.position_matrices
+                traffic_signal.position_matrices
             )
             pos_mats = np.array_split(
-                pos_mats, len(intersection_1_1.incoming_lanes)
+                pos_mats, len(traffic_signal.incoming_lanes)
             )
-            for idx, lane in enumerate(intersection_1_1.incoming_lanes):
-                # pos_mat = intersection_1_1.lane_pos_mats[lane]
+            for idx, lane in enumerate(traffic_signal.incoming_lanes):
+                # pos_mat = traffic_signal.lane_pos_mats[lane]
                 pos_mat = pos_mats[idx]
                 pos = lane_map[lane]["pos"] + visibility
                 if lane_map[lane]["orientation"] == "EB":
@@ -98,7 +123,7 @@ class ObservationEvaluator(Evaluate):
             plt.tight_layout()
             plt.draw()
             plt.pause(0.01)
-            print(step)
+            # print(step)
             # Save the current figure as an image (in memory)
             img = plt_to_image(fig)
             frames.append(img)
@@ -115,7 +140,9 @@ class ObservationEvaluator(Evaluate):
             pass
         # Save frames as a GIF
         imageio.mimsave(
-            f"{output_folder}/obs_matrix_animation.gif", frames, fps=10
+            f"{output_folder}/{self.scenario}_obs_matrix_animation.gif",
+            frames,
+            fps=10,
         )
         # plt.ioff()
         # plt.show()
@@ -133,11 +160,11 @@ def plt_to_image(fig):
 
 if __name__ == "__main__":
 
-    scenario = "jinan_3_4"
+    scenario = "2x2_sumo_grid"
     output_folder = "/home/rohitbokade/Desktop/observations/"
     obs_evaluator = ObservationEvaluator(
         scenario=scenario,
         simulator_backend=NETWORK_INFO[scenario]["simulator_backend"],
         controller=NETWORK_INFO[scenario]["controller"],
     )
-    obs_evaluator.run(hours=1.0, output_folder=output_folder)
+    obs_evaluator.run(hours=0.1, output_folder=output_folder)

@@ -11,7 +11,7 @@ def run_evaluation(
     scenario, simulator_backend, controller, hours=1, add_args={}
 ):
     evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
-    evaluate.run(hours, save_stats=True, plot_stats=True)
+    evaluate.run(hours, save_stats=True, plot_stats=False)
     stats = pd.DataFrame(evaluate.log)
     stats["controller"] = controller
     return stats
@@ -48,7 +48,7 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
     fname = os.path.join(output_folder, f"{scenario}_stats.png")
     plt.tight_layout()
     plt.savefig(fname)
-    plt.show()
+    # plt.show()
 
 
 def evaluate_controllers(

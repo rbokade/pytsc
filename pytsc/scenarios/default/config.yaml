@@ -1,6 +1,7 @@
 # Network parameters
 network:
   network_type: synthetic # (synthetic, real)
+  control_scheme: decentralized  # (centralized, decentralized)
   # max_neighbor_distance: 450  # (meters)
 
 # Signal parameters

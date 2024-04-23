@@ -20,8 +20,8 @@ class GridNetwork:
     n_left_lanes = 1
     n_right_lanes = 1
     n_straight_lanes = 1
-    lane_max_speed = 13.89  # m/s
-    veh_max_speed = 13.89  # m/s
+    lane_max_speed = 11.11  # m/s
+    veh_max_speed = 11.11  # m/s
     veh_min_gap = 2.5  # meters
     veh_headway_time = 2  # meters
 

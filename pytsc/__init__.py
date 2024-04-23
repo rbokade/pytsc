@@ -1,6 +1,7 @@
 from pytsc.backends.cityflow import CITYFLOW_MODULES
 from pytsc.backends.sumo import SUMO_MODULES
 from pytsc.common import ACTION_SPACES, OBSERVATION_SPACES
+from pytsc.common.actions import CentralizedActionSpace
 from pytsc.common.utils import validate_input_against_allowed
 
 SUPPORTED_SIMULATOR_BACKENDS = ("sumo", "cityflow")
@@ -31,6 +32,7 @@ class TrafficSignalNetwork:
         self.simulator.start_simulator()
         self._init_traffic_signals()
         self._init_parsers()
+        self._set_n_agents()
         self.hour_count = 0
         self.episode_count = 0
 
@@ -64,6 +66,8 @@ class TrafficSignalNetwork:
         self.action_space = ACTION_SPACES[self.config.signal["action_space"]](
             self.config, self.traffic_signals
         )
+        if self.config.network["control_scheme"] == "centralized":
+            self.action_space = CentralizedActionSpace(self.action_space)
         self.observation_space = OBSERVATION_SPACES[
             self.config.signal["observation_space"]
         ](
@@ -91,6 +95,13 @@ class TrafficSignalNetwork:
                 self.simulator.step_measurements
             )
 
+    def _set_n_agents(self):
+        self.n_agents = (
+            len(self.traffic_signals)
+            if self.config.network["control_scheme"] == "decentralized"
+            else 1  # centralized
+        )
+
     def _update_ts_stats(self):
         for ts_id in self.traffic_signals.keys():
             self.traffic_signals[ts_id].update_stats(
@@ -109,8 +120,17 @@ class TrafficSignalNetwork:
     def get_observation_size(self):
         return self.observation_space.get_size()
 
+    def get_state(self):
+        return self.observation_space.get_state()
+
+    def get_state_size(self):
+        return self.observation_space.get_state_size()
+
     def get_reward(self):
         return self.metrics.reward
+
+    def get_rewards(self):
+        return self.metrics.rewards
 
     def get_env_info(self):
         stats = self.metrics.get_step_stats()

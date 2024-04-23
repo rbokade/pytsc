@@ -40,6 +40,7 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_mu = inter_mu
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
+        self.lane_connectivity_map = self._get_lane_connectivity_map()
 
     def _find_fringe_edges(self):
         """
@@ -82,13 +83,12 @@ class CityFlowTripGenerator(TripGenerator):
         return lane_connectivity_map
 
     def _choose_next_edge(self, current_edge):
-        lane_connectivity_map = self._get_lane_connectivity_map()
-        if current_edge not in lane_connectivity_map:
+        if current_edge not in self.lane_connectivity_map:
             return None
         chosen_direction = random.choices(
             self.turns, weights=self.turn_probabilities, k=1
         )[0]
-        next_edge = lane_connectivity_map[current_edge].get(
+        next_edge = self.lane_connectivity_map[current_edge].get(
             chosen_direction, None
         )
         return next_edge
@@ -99,10 +99,19 @@ class CityFlowTripGenerator(TripGenerator):
         current_edge = start_edge
         while True:
             next_edge = self._choose_next_edge(current_edge)
-            if not next_edge or next_edge in outgoing_edges:
+            loop_attempts = 0
+            while next_edge in route:
+                next_edge = self._choose_next_edge(current_edge)
+                loop_attempts += 1
+                if loop_attempts >= len(self.turns):
+                    next_edge = None
+                    break
+            if next_edge is None:
                 break
             route.append(next_edge)
             current_edge = next_edge
+            if next_edge in outgoing_edges:
+                break
         return route
 
     def generate_flows(self, filepath):
@@ -118,10 +127,13 @@ class CityFlowTripGenerator(TripGenerator):
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
                     break
-                route = self._generate_route(start_edge)
+                route = [start_edge]
+                while len(route) <= 1:
+                    route = self._generate_route(start_edge)
                 flow_entry = {
                     "vehicle": self.vehicle_data,
                     "route": route,
+                    "interval": 1.0,
                     "startTime": vehicle_start_time,
                     "endTime": vehicle_start_time,
                 }

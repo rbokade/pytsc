@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from itertools import product
 
 from pytsc.common.utils import pad_list
 
@@ -98,3 +99,41 @@ class PhaseSwitchActionSpace(BaseActionSpace):
                 mask[1] = 1
             masks.append(mask)
         return masks
+
+
+class CentralizedActionSpace(BaseActionSpace):
+    def __init__(self, individual_action_space):
+        self.individual_action_space = individual_action_space
+        super(CentralizedActionSpace, self).__init__(
+            individual_action_space.config,
+            individual_action_space.traffic_signals,
+        )
+        self.n_agents = len(self.traffic_signals)
+        self.n_actions = self.individual_action_space.get_size()
+
+    def apply(self, action):
+        actions = self.decode_action(action.item())
+        self.individual_action_space.apply(actions)
+
+    def decode_action(self, action):
+        actions = []
+        current_action = action
+        for _ in range(self.n_agents):
+            actions.append(current_action % self.n_actions)
+            current_action //= self.n_actions
+        return actions[::-1]
+
+    def get_size(self):
+        return self.individual_action_space.get_size() ** self.n_agents
+
+    def get_mask(self):
+        individual_masks = self.individual_action_space.get_mask()
+        combinations = product(range(self.n_actions), repeat=self.n_agents)
+        joint_mask = []
+        for combination in combinations:
+            is_valid = all(
+                individual_masks[agent_idx][action] == 1
+                for agent_idx, action in enumerate(combination)
+            )
+            joint_mask.append(is_valid)
+        return joint_mask
