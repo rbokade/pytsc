@@ -13,7 +13,7 @@ signal:
   min_green_time: 5  # must be a multiple of 5
   max_green_time: 25   # must be a multiple of 5
   visibility: 20  # range of visibility in n_bins, each bin = 7.5m
-  input_n_avg: 5  # number of timesteps to average over (in position matrix)
+  input_n_avg: 1  # number of timesteps to average over (in position matrix)
   round_robin: True  # if True, the signal cycles through the phases in order
   # cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
 

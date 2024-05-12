@@ -12,4 +12,4 @@ signal:
   round_robin: False
   observation_space: position_matrix
   visibility: 20
-  input_n_avg: 5
+  input_n_avg: 1
