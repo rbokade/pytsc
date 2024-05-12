@@ -48,6 +48,9 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
     def get_state(self):
         return self.tsc_env.get_state()
 
+    def get_local_rewards(self):
+        return self.tsc_env.get_rewards()
+
     def get_state_size(self):
         return self.tsc_env.get_state_size()
 

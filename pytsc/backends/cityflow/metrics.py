@@ -60,7 +60,11 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_delay(self):
-        return 1 - self.mean_speed
+        lane_measurements = self.simulator.step_measurements["lane"]
+        mean_speed = sum(
+            data["norm_mean_speed"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
+        return 1 - mean_speed
 
     @property
     def reward(self):
@@ -72,11 +76,11 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def rewards(self):
-        fc = self.config.misc_config["flickering_coef"]
-        gamma = self.config.misc_config["reward_gamma"]
+        fc = self.config.misc["flickering_coef"]
+        gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {
-            ts_id: -fc * ts.controller.phase_changed
+            ts_id: -fc * ts.controller.program.phase_changed
             - np.mean(ts.queue_lengths)
             for ts_id, ts in self.traffic_signals.items()
         }

@@ -13,9 +13,9 @@ CITYFLOW_GRID_GEN_SCRIPT = (
 )
 
 
-class GridNetwork:
-    col_distance = 400
-    row_distance = 400
+class GridNetworkGeneraot:
+    col_distance = 300
+    row_distance = 300
     intersection_width = 20
     n_left_lanes = 1
     n_right_lanes = 1
@@ -58,10 +58,10 @@ class GridNetwork:
         gridgen += f" --vehMinGap={self.veh_min_gap}"
         gridgen += f" --vehMaxSpeed={self.veh_max_speed}"
         gridgen += f" --vehHeadwayTime={self.veh_headway_time}"
-        gridgen += f" --flowFile {self.flow_file}"
         gridgen += f" --roadnetFile {self.roadnet_file}"
-        gridgen += f" --interval {arterial_interval}"
-        gridgen += " --tlPlan"
+        # gridgen += f" --flowFile {self.flow_file}"
+        # gridgen += f" --interval {arterial_interval}"
+        # gridgen += " --tlPlan"
         gridgen += " --turn"
         print(gridgen)
         os.system(gridgen)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         help="Mean flow rates for the arterial and side streets",
     )
     args = parser.parse_args()
-    arterial_network = GridNetwork(
+    network_generator = GridNetworkGeneraot(
         args.nrows, args.ncols, args.mean_flow_rates
     )
-    arterial_network.generate_roadnet_files()
+    network_generator.generate_roadnet_files()

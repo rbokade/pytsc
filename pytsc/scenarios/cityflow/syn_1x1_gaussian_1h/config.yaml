@@ -1,8 +1,8 @@
 cityflow:
   plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
-  roadnet_file: roadnet_3X3.json
-  flow_file: syn_3x3_gaussian_500_1h.json
+  roadnet_file: syn_1x1_gaussian_1h.json
+  flow_file: syn_1x1_gaussian_1h_600.json
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
   save_replay: False

@@ -6,8 +6,8 @@ import numpy as np
 
 
 class FlowGenerator:
-    def __init__(self, roadnet_file):
-        self.mean_flow_rate = 500
+    def __init__(self, roadnet_file, mean_flow_rate):
+        self.mean_flow_rate = mean_flow_rate
         self.roadnet = json.load(open(roadnet_file, "r"))
         self.fringe_roads = self._find_fringe_roads()
 
@@ -24,7 +24,7 @@ class FlowGenerator:
         intersection = next(
             (
                 i
-                for i in self.network["intersections"]
+                for i in self.roadnet["intersections"]
                 if i["id"] == intersection_id
             ),
             None,
@@ -52,10 +52,58 @@ class FlowGenerator:
             vehicles.append(vehicle)
         return vehicles
 
+    def _choose_next_edge(self, current_edge):
+        lane_connectivity_map = self._get_lane_connectivity_map()
+        if current_edge in lane_connectivity_map:
+            movement_options = lane_connectivity_map[current_edge]
+            # Now, instead of randomly choosing based on turn_probabilities,
+            # you check the available movements from current_edge
+            available_moves = [
+                move for move in self.turns if movement_options[move]
+            ]
+            if not available_moves:
+                return None
+            chosen_move = random.choice(available_moves)
+            next_edges = movement_options[chosen_move]
+            # If there are multiple options for a move, randomly select one.
+            next_edge = random.choice(next_edges) if next_edges else None
+            return next_edge
+        return None
+
+    def _generate_route(self, start_edge):
+        _, outgoing_edges = self._find_fringe_roads()
+        route = [start_edge]
+        current_edge = start_edge
+
+        while True:
+            next_edge = self._choose_next_edge(current_edge)
+            loop_attempts = 0
+            while next_edge in route:
+                next_edge = self._choose_next_edge(current_edge)
+                loop_attempts += 1
+                # If too many attempts have been made, stop trying to find a new edge
+                if loop_attempts > len(self.turns):
+                    next_edge = None  # Indicate failure to find a non-looping next edge
+                    break
+
+            # If next_edge is None, it means a suitable next edge wasn't found; break the loop
+            if next_edge is None:
+                break
+
+            # Append next_edge to route
+            route.append(next_edge)
+            current_edge = next_edge
+
+            # If the next_edge is an outgoing edge, it's a valid termination point; exit the loop
+            if next_edge in outgoing_edges:
+                break
+
+        return route
+
     def generate_flow(self):
         flow = []
         for road in self.fringe_roads:
-            for lane_index in range(3):  # Three lanes per approach
+            for lane_index in range(3):
                 route = self._generate_route(road, lane_index)
                 vehicles = self._generate_vehicles(route)
                 flow.extend(vehicles)

@@ -1,7 +1,9 @@
+import argparse
 import json
 import os
 import random
 
+from networkx import sigma
 import numpy as np
 
 from pytsc.backends.cityflow.config import Config
@@ -146,3 +148,46 @@ class CityFlowTripGenerator(TripGenerator):
         )
         with open(filename, "w") as f:
             json.dump(sorted_flows, f, indent=4)
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--scenario",
+        type=int,
+        default="1x1_cityflow_grid",
+        help="Name of the scenario",
+    )
+    parser.add_argument(
+        "--flow-rate-mean",
+        dest="flow_rate_mean",
+        type=float,
+        default=600,
+        help="Mean flow rate per incoming lane",
+    )
+    parser.add_argument(
+        "--flow-rate-sigma",
+        dest="flow_rate_sigma",
+        type=float,
+        default=0.8,
+        help="Std of the flow rate",
+    )
+    args = parser.parse_args()
+
+    start_time = 0
+    end_time = 3600
+    mu = end_time / args.flow_rate_mean
+    turn_probs = [0.1, 0.3, 0.6]
+
+    flow_generator = CityFlowTripGenerator(
+        scenario=args.scenario,
+        start_time=start_time,
+        end_time=end_time,
+        inter_mu=mu,
+        inter_sigma=args.flow_rate_sigma,
+        turn_probs=turn_probs,
+    )
+    flow_generator.generate_flows(
+        filepath="/home/rohitbokade/repos/pytsc/pytsc/tests"
+    )

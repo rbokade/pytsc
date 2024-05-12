@@ -113,10 +113,11 @@ class PositionMatrix(LaneFeatures):
         return observations
 
     def get_size(self):
-        return int(
+        size = int(
             (self.max_n_controlled_lanes * self.config.signal["visibility"])
             + self.max_n_controlled_phases
         )
+        return size
 
     def get_state(self):
         lane_features = super(PositionMatrix, self).get_observations()

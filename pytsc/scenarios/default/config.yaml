@@ -42,7 +42,7 @@ cityflow:
   vehicle_length: 5  # meters
   veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
   save_replay: False
-  flow_rate_type: "constant"
+  flow_rate_type: "constant"  # (constant, random, sequential)
 
 # Misc
 misc:
@@ -50,5 +50,5 @@ misc:
   pad_value: 0.0  # for observations (e.g. heterogeneous agents)
   save_trip_info: False
   flickering_coef: 0.0
-  # max_hops: 1  # maximum number of hops for the rewards
-  # reward_gamma: 1.0  # spatial discount factor for the rewards
+  max_hops: 1  # maximum number of hops for the rewards
+  reward_gamma: 0.0  # spatial discount factor for the rewards
