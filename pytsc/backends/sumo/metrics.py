@@ -108,7 +108,32 @@ class MetricsParser(BaseMetricsParser):
         return list(rewards.values())
 
     def get_step_stats(self):
-        return {
+        agent_stats = {}
+        agent_stats.update(
+            {
+                f"n_queued_{ts.id}": np.sum(ts.queue_lengths)
+                for ts in self.traffic_signals.values()
+            }
+        )
+        agent_stats.update(
+            {
+                f"mean_speed_{ts.id}": np.mean(ts.mean_speeds)
+                for ts in self.traffic_signals.values()
+            }
+        )
+        agent_stats.update(
+            {
+                f"mean_delay_{ts.id}": 1 - np.mean(ts.norm_mean_speeds)
+                for ts in self.traffic_signals.values()
+            }
+        )
+        agent_stats.update(
+            {
+                f"mean_density_{ts.id}": np.mean(ts.densities)
+                for ts in self.traffic_signals.values()
+            }
+        )
+        step_stats = {
             "time_step": self.time_step,
             "n_emergency_brakes": self.n_emergency_brakes,
             "n_teleported": self.n_teleported,
@@ -121,3 +146,5 @@ class MetricsParser(BaseMetricsParser):
             "average_travel_time": self.average_travel_time,
             "density": self.density,
         }
+        step_stats.update(agent_stats)
+        return step_stats
