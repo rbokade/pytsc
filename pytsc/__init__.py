@@ -1,6 +1,6 @@
 from pytsc.backends.cityflow import CITYFLOW_MODULES
 from pytsc.backends.sumo import SUMO_MODULES
-from pytsc.common import ACTION_SPACES, OBSERVATION_SPACES
+from pytsc.common import ACTION_SPACES, OBSERVATION_SPACES, REWARD_FUNCTIONS
 from pytsc.common.actions import CentralizedActionSpace
 from pytsc.common.utils import validate_input_against_allowed
 
@@ -83,6 +83,9 @@ class TrafficSignalNetwork:
             self.simulator,
             self.traffic_signals,
         )
+        self.reward_function = REWARD_FUNCTIONS[
+            self.config.signal["reward_function"]
+        ](self.metrics, self.traffic_signals)
 
     def _init_traffic_signals(self):
         parsed_traffic_signals = self.parsed_network.traffic_signals
@@ -127,10 +130,10 @@ class TrafficSignalNetwork:
         return self.observation_space.get_state_size()
 
     def get_reward(self):
-        return self.metrics.reward
+        return self.reward_function.get_global_reward()
 
     def get_rewards(self):
-        return self.metrics.rewards
+        return self.reward_function.get_local_reward()
 
     def get_env_info(self):
         stats = self.metrics.get_step_stats()

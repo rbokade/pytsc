@@ -43,6 +43,7 @@ class TrafficSignal(BaseTrafficSignal):
         self.config = config
         self.controller = TSController(id, config, simulator)
         self.incoming_lanes = config["incoming_lanes"]
+        self.outgoing_lanes = config["outgoing_lanes"]
         self.position_matrices = deque(maxlen=self.config["input_n_avg"])
         # self.init_rule_based_controllers()
 
@@ -72,11 +73,15 @@ class TrafficSignal(BaseTrafficSignal):
         for lane in self.incoming_lanes:
             lane_results = sub_results["lane"][lane]
             queue_lengths.append(lane_results["n_queued"])
-            densities.append(lane_results["n_vehicles"])
+            densities.append(lane_results["occupancy"])
             mean_speeds.append(lane_results["mean_speed"])
             norm_densities.append(lane_results["occupancy"])
             norm_queue_lengths.append(lane_results["norm_queue_length"])
             norm_mean_speeds.append(lane_results["norm_mean_speed"])
+        outgoing_densities = []
+        for lane in self.outgoing_lanes:
+            lane_results = sub_results["lane"][lane]
+            outgoing_densities.append(lane_results["occupancy"])
         self.queue_lengths = np.asarray(queue_lengths)
         self.densities = np.asarray(densities)
         self.mean_speeds = np.asarray(mean_speeds)
@@ -86,6 +91,9 @@ class TrafficSignal(BaseTrafficSignal):
         self.norm_mean_wait_times = np.zeros_like(norm_mean_speeds)
         self.time_on_phase = self.controller.norm_time_on_phase
         self.phase_id = np.asarray(self.controller.phase_one_hot)
+        self.pressure = np.abs(
+            np.mean(densities) - np.mean(outgoing_densities)
+        )
         self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, phase_index):

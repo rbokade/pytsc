@@ -67,35 +67,12 @@ class MetricsParser(BaseMetricsParser):
         return 1 - mean_speed
 
     @property
-    def reward(self):
-        fc = self.config.misc["flickering_coef"]
-        reward = 0
-        reward -= fc * self.flickering_signal
-        reward -= self.n_queued
-        return reward
-
-    @property
-    def rewards(self):
-        fc = self.config.misc["flickering_coef"]
-        gamma = self.config.misc["reward_gamma"]
-        k_hop_neighbors = self.parsed_network.k_hop_neighbors
-        local_rewards = {
-            ts_id: -fc * ts.controller.program.phase_changed
-            - np.mean(ts.queue_lengths)
-            for ts_id, ts in self.traffic_signals.items()
-        }
-        rewards = {}
-        for ts_id in self.traffic_signals.keys():
-            rewards[ts_id] = local_rewards[ts_id]
-            for k in range(1, len(self.traffic_signals.keys())):
-                neighbors_k = k_hop_neighbors[ts_id].get(k, [])
-                for neighbor_ts_id in neighbors_k:
-                    rewards[ts_id] += gamma**k * local_rewards[neighbor_ts_id]
-        return list(rewards.values())
-
-    @property
     def time_step(self):
         return self.simulator.step_measurements["sim"]["time_step"]
+
+    @property
+    def pressure(self):
+        return np.mean([ts.pressure for ts in self.traffic_signals.values()])
 
     def get_step_stats(self):
         agent_stats = {}
@@ -123,6 +100,12 @@ class MetricsParser(BaseMetricsParser):
                 for ts in self.traffic_signals.values()
             }
         )
+        agent_stats.update(
+            {
+                f"pressure_{ts.id}": np.mean(ts.pressure)
+                for ts in self.traffic_signals.values()
+            }
+        )
         step_stats = {
             "time_step": self.time_step,
             "average_travel_time": self.average_travel_time,
@@ -130,6 +113,7 @@ class MetricsParser(BaseMetricsParser):
             "mean_speed": self.mean_speed,
             "mean_delay": self.mean_delay,
             "density": self.density,
+            "pressure": self.pressure,
         }
         step_stats.update(agent_stats)
         return step_stats
