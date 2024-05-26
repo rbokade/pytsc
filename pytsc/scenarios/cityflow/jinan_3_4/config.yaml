@@ -8,6 +8,6 @@ cityflow:
   save_replay: False
 
 signal:
-  action_space: "phase_selection"
+  action_space: phase_selection
   round_robin: False
   reward_function: max_pressure
