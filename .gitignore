@@ -131,6 +131,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Disrupted scenarios
+disrupted/
+
 # Results
 frontend/
 *.csv
