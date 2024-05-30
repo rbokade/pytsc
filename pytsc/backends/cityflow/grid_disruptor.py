@@ -15,10 +15,13 @@ CONFIG_DIR = os.path.join(
 
 class CityFlowGridDisruptor:
 
-    def __init__(self, scenario, disruption_ratio, speed_reduction_factor):
+    def __init__(
+        self, scenario, disruption_ratio, speed_reduction_factor, replicate_no
+    ):
         self.scenario = scenario
         self.disruption_ratio = disruption_ratio
         self.speed_reduction_factor = speed_reduction_factor
+        self.replicate_no = replicate_no
         self.config = Config(scenario)
         self.parsed_network = NetworkParser(self.config)
         self.roadnet = self._load_roadnet()
@@ -33,7 +36,11 @@ class CityFlowGridDisruptor:
 
     def _create_disrupted_scenario_folder(self):
         scenario_dir = os.path.join(CONFIG_DIR, self.scenario)
-        self.disrupted_scenario_dir = os.path.join(scenario_dir, "disrupted")
+        settings = f"r_{self.disruption_ratio}__"
+        settings += f"p_{self.speed_reduction_factor}__"
+        self.disrupted_scenario_dir = os.path.join(
+            scenario_dir, "disrupted", settings
+        )
         os.makedirs(self.disrupted_scenario_dir, exist_ok=True)
 
     def _select_edges_to_disrupt(self):
@@ -68,9 +75,9 @@ class CityFlowGridDisruptor:
                         )
 
     def _save_disrupted_network(self):
-        filename = f"r_{self.disruption_ratio}__"
-        filename += f"p_{self.speed_reduction_factor}__"
-        filename += self.config.simulator["roadnet_file"]
+        filename = (
+            f"{self.replicate_no}__{self.config.simulator['roadnet_file']}"
+        )
         output_file = os.path.join(self.disrupted_scenario_dir, filename)
         with open(output_file, "w") as f:
             json.dump(self.roadnet, f, indent=4)
