@@ -1,5 +1,7 @@
 from abc import ABC
 
+import numpy as np
+
 from pytsc.common.utils import EnvLogger
 
 
@@ -102,7 +104,7 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
                 out_lane_vehicles += len(
                     inp["lane"][out_lane]["vehicles_bin_idxs"]
                 )
-            pressure += inc_lane_vehicles - out_lane_vehicles
+            pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)
         return pressure
 
 

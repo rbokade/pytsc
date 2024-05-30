@@ -3,7 +3,6 @@ import json
 import os
 import random
 
-from networkx import sigma
 import numpy as np
 
 from pytsc.backends.cityflow.config import Config
@@ -32,6 +31,7 @@ class CityFlowTripGenerator(TripGenerator):
         end_time,
         inter_mu,
         inter_sigma,
+        edge_weights=None,
         turn_probs=[0.1, 0.3, 0.6],
     ):
         self.scenario = scenario
@@ -43,6 +43,31 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
         self.lane_connectivity_map = self._get_lane_connectivity_map()
+        self._set_edge_weights(edge_weights)
+
+    def _set_edge_weights(self, input_edge_weights=None):
+        """
+        Sets the edge weights for route calculation. If edge weights are not
+        provided, edge weights are calculated according to the maximum allowed
+        speed for each lane, such that higher the (norm) max speed of a lane
+        higher the probability of the vehicle turning into that lane.
+        NOTE: Edge implies a link between intersection i and j, such that it
+        includes both lanes_ij and lanes_ji
+        """
+        if input_edge_weights is not None:
+            self.edge_weights = input_edge_weights
+            return
+        self.edge_weights = {}
+        lane_max_speeds = self.parsed_network.lane_max_speeds
+        global_max_speed = max(lane_max_speeds.values())
+        for road in self.parsed_network.roads:
+            lane_speeds = [
+                lane_max_speeds[f"{road['id']}_{i}"]
+                for i in range(len(road["lanes"]))
+            ]
+            avg_max_speed = sum(lane_speeds) / len(lane_speeds)
+            normalized_weight = avg_max_speed / global_max_speed
+            self.edge_weights[road["id"]] = np.round(normalized_weight, 2)
 
     def _find_fringe_edges(self):
         """
@@ -87,12 +112,26 @@ class CityFlowTripGenerator(TripGenerator):
     def _choose_next_edge(self, current_edge):
         if current_edge not in self.lane_connectivity_map:
             return None
-        chosen_direction = random.choices(
-            self.turns, weights=self.turn_probabilities, k=1
+        next_edge_candidates = []
+        combined_weights = []
+        for i, direction in enumerate(self.turns):
+            next_edge = self.lane_connectivity_map[current_edge].get(direction)
+            if next_edge:
+                next_edge_candidates.append(next_edge)
+                combined_weights.append(
+                    self.turn_probabilities[i]
+                    * self.edge_weights.get(next_edge, 1.0)
+                )
+        if not next_edge_candidates:
+            return None
+        # Normalize combined weights
+        total_weight = sum(combined_weights)
+        if total_weight == 0:
+            return None
+        normalized_weights = [w / total_weight for w in combined_weights]
+        next_edge = random.choices(
+            next_edge_candidates, weights=normalized_weights, k=1
         )[0]
-        next_edge = self.lane_connectivity_map[current_edge].get(
-            chosen_direction, None
-        )
         return next_edge
 
     def _generate_route(self, start_edge):
@@ -144,7 +183,8 @@ class CityFlowTripGenerator(TripGenerator):
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
         flow_rate = (self.end_time - self.start_time) / self.inter_mu
         filename = os.path.join(
-            filepath, f"{self.scenario}__flow_rate_{flow_rate}_flows.json"
+            filepath,
+            f"{self.scenario}__gaussian_flow_rate_{int(flow_rate)}_flows.json",
         )
         with open(filename, "w") as f:
             json.dump(sorted_flows, f, indent=4)
