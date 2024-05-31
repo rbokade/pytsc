@@ -2,6 +2,7 @@ from pytsc.backends.cityflow.trip_generator import CityFlowTripGenerator
 
 if __name__ == "__main__":
 
+    # # Generate hourly flows
     # for size in [2, 3, 4, 5]:
     #     for mean_flow in [500, 525, 550, 575, 600, 625, 650, 675, 700]:
     #         trip_generator = CityFlowTripGenerator(
@@ -16,6 +17,7 @@ if __name__ == "__main__":
     #             filepath="/home/rohitbokade/repos/pytsc/pytsc/tests"
     #         )
 
+    # Generate disrupted flows
     for size in [2, 3, 4, 5]:
         for disruption_ratio in [0.25, 0.5, 0.75, 1.0]:
             for speed_reduction_factor in [1.0, 0.75, 0.5, 0.25]:
