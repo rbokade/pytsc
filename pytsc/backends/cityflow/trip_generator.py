@@ -23,6 +23,9 @@ class CityFlowTripGenerator(TripGenerator):
         "maxSpeed": 11.11,
         "headwayTime": 1.5,
     }
+    """
+    NOTE: Traffic signal network is assumed to be a grid network.
+    """
 
     def __init__(
         self,
@@ -42,8 +45,26 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_mu = inter_mu
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
+        self.max_trip_length = self._get_max_trip_length()
         self.lane_connectivity_map = self._get_lane_connectivity_map()
         self._set_edge_weights(edge_weights)
+
+    def _get_max_trip_length(self):
+        """
+        Max trip length is assumed to be the length traveled by a vehicle
+        that goes from one corner of the grid to the opposite corner.
+        (n - 1) + (m - 1) + 2
+        """
+        n = np.asarray(self.parsed_network.adjacency_matrix).shape[0]
+        m = int(np.sqrt(n))
+        c = m
+        while m * c != n:
+            if m * c < n:
+                c += 1
+            else:
+                m -= 1
+                c = n // m
+        return (n - 1) + (m - 1) + 2
 
     def _set_edge_weights(self, input_edge_weights=None):
         """
@@ -169,7 +190,7 @@ class CityFlowTripGenerator(TripGenerator):
                 if vehicle_start_time >= self.end_time:
                     break
                 route = [start_edge]
-                while len(route) <= 1:
+                while len(route) <= 1 or len(route) > self.max_trip_length:
                     route = self._generate_route(start_edge)
                 flow_entry = {
                     "vehicle": self.vehicle_data,
