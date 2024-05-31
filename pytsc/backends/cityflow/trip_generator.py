@@ -6,7 +6,7 @@ import random
 import networkx as nx
 import numpy as np
 
-from pytsc.backends.cityflow.config import Config
+from pytsc.backends.cityflow.config import Config, DisruptedConfig
 from pytsc.backends.cityflow.network_parser import NetworkParser
 from pytsc.common.trip_generator import TripGenerator
 
@@ -35,11 +35,16 @@ class CityFlowTripGenerator(TripGenerator):
         end_time,
         inter_mu,
         inter_sigma,
+        disrupted=False,
         edge_weights=None,
         turn_probs=[0.1, 0.3, 0.6],
+        **kwargs,
     ):
         self.scenario = scenario
-        self.config = Config(scenario)
+        if disrupted:
+            self.config = DisruptedConfig(scenario, **kwargs)
+        else:
+            self.config = Config(scenario)
         self.parsed_network = NetworkParser(self.config)
         self.start_time = start_time
         self.end_time = end_time
@@ -47,7 +52,6 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
         self.max_trip_length = self._get_max_trip_length()
-        print(f"Max trip length: {self.max_trip_length}")
         self.lane_connectivity_map = self._get_lane_connectivity_map()
         self._set_edge_weights(edge_weights)
 
@@ -197,11 +201,13 @@ class CityFlowTripGenerator(TripGenerator):
                 current_time = vehicle_start_time
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
         flow_rate = (self.end_time - self.start_time) / self.inter_mu
-        filename = os.path.join(
-            filepath,
-            f"{self.scenario}__gaussian_flow_rate_{int(flow_rate)}_flows.json",
-        )
-        with open(filename, "w") as f:
+        filename = f"{self.scenario}__gaussian_{int(flow_rate)}_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = (
+                f"{self.config._additional_config['replicate_no']}__{filename}"
+            )
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)
 
 

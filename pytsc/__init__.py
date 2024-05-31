@@ -176,7 +176,7 @@ class DisruptedTrafficSignalNetwork(TrafficSignalNetwork):
             kwargs.get("disruption_ratio", None) is not None
         ), "Disruption ratio is needed for this scenario."
         assert (
-            kwargs.get("speed_reduction_ratio", None) is not None
+            kwargs.get("speed_reduction_factor", None) is not None
         ), "Speed reduction ratio is needed for this scenario."
         assert (
             kwargs.get("replicate_no", None) is not None
