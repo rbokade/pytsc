@@ -1,4 +1,4 @@
-from pytsc import TrafficSignalNetwork
+from pytsc import TrafficSignalNetwork, DisruptedTrafficSignalNetwork
 from smac.env import MultiAgentEnv
 
 
@@ -7,7 +7,12 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def __init__(self, map_name="monaco", simulator_backend="sumo", **kwargs):
         kwargs.pop("scenario", None)
-        self.tsc_env = TrafficSignalNetwork(
+        if "disrupted" in map_name:
+            tsc_env = DisruptedTrafficSignalNetwork
+        else:
+            tsc_env = TrafficSignalNetwork
+
+        self.tsc_env = tsc_env(
             map_name, simulator_backend=simulator_backend, **kwargs
         )
         self.episode_limit = self.tsc_env.episode_limit

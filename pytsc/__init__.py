@@ -33,6 +33,9 @@ class TrafficSignalNetwork:
         self._init_traffic_signals()
         self._init_parsers()
         self._set_n_agents()
+        self._init_counters()
+
+    def _init_counters(self):
         self.hour_count = 0
         self.episode_count = 0
 
@@ -163,3 +166,36 @@ class TrafficSignalNetwork:
         )
         self._update_ts_stats()
         return self.get_reward(), self.episode_over, self.get_env_info()
+
+
+class DisruptedTrafficSignalNetwork(TrafficSignalNetwork):
+    def __init__(self, scenario, simulator_backend, **kwargs):
+        self.scenario = scenario
+        self.simulator_backend = simulator_backend
+        assert (
+            kwargs.get("disruption_ratio", None) is not None
+        ), "Disruption ratio is needed for this scenario."
+        assert (
+            kwargs.get("speed_reduction_ratio", None) is not None
+        ), "Speed reduction ratio is needed for this scenario."
+        assert (
+            kwargs.get("replicate_no", None) is not None
+        ), "Replicate number is needed for this scenario."
+        assert (
+            self.simulator_backend in SUPPORTED_SIMULATOR_BACKENDS
+        ), f"Simulator backend {self.simulator_backend} not supported."
+        self.config = SIMULATOR_MODULES[simulator_backend]["disrupted_config"](
+            scenario, **kwargs
+        )
+        self._validate_config()
+        self.parsed_network = SIMULATOR_MODULES[simulator_backend][
+            "network_parser"
+        ](self.config)
+        self.simulator = SIMULATOR_MODULES[simulator_backend]["simulator"](
+            self.parsed_network
+        )
+        self.simulator.start_simulator()
+        self._init_traffic_signals()
+        self._init_parsers()
+        self._set_n_agents()
+        self._init_counters()

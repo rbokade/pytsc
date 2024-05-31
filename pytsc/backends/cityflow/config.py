@@ -83,3 +83,25 @@ class Config(BaseConfig):
         with open(self.cityflow_cfg_file, "w") as f:
             json.dump(cityflow_cfg, f, indent=4)
         EnvLogger.log_info(f"Loaded flow file: {self.flow_file}")
+
+
+class DisruptedConfig(Config):
+    def __init__(self, scenario, **kwargs):
+        scenario_path = os.path.join(CONFIG_DIR, scenario)
+        disruption_ratio = kwargs.get("disruption_ratio")
+        speed_reduction_ratio = kwargs.get("speed_reduction_ratio")
+        replicate_no = kwargs.get("replicate_no")
+        self.cityflow_roadnet_file = os.path.abspath(
+            os.path.join(
+                scenario_path,
+                "disrupted",
+                f"r_{disruption_ratio}" + "__" + f"p_{speed_reduction_ratio}",
+                f"{replicate_no}" + "__" + f"{self.simulator['roadnet_file']}",
+            )
+        )
+        self.dir = os.path.join(os.path.abspath(scenario_path), "")
+        self.temp_dir = tempfile.mkdtemp()
+        self.cityflow_cfg_file = None
+        self.flow_files_cycle = cycle(self.simulator.get("flow_files", []))
+        # self._set_flow_file()
+        self._check_assertions()

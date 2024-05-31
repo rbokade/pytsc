@@ -36,8 +36,9 @@ class CityFlowGridDisruptor:
 
     def _create_disrupted_scenario_folder(self):
         scenario_dir = os.path.join(CONFIG_DIR, self.scenario)
-        settings = f"r_{self.disruption_ratio}__"
-        settings += f"p_{self.speed_reduction_factor}__"
+        settings = f"r_{self.disruption_ratio}"
+        settings += "__"
+        settings += f"p_{self.speed_reduction_factor}"
         self.disrupted_scenario_dir = os.path.join(
             scenario_dir, "disrupted", settings
         )
