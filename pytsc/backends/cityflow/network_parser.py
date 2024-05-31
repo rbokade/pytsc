@@ -2,6 +2,7 @@ import json
 
 from functools import lru_cache
 
+import networkx as nx
 import numpy as np
 
 from pytsc.common.network_parser import BaseNetworkParser
@@ -479,3 +480,41 @@ class NetworkParser(BaseNetworkParser):
             green_phase_indices,
             yellow_phase_indices,
         )
+
+    def _get_networkx_representation(self):
+        G = nx.DiGraph()
+        for intersection in self.intersections:
+            G.add_node(
+                intersection["id"],
+                color="red" if not intersection["virtual"] else "gray",
+                pos=(intersection["point"]["x"], intersection["point"]["y"]),
+            )
+        for road in self.roads:
+            start_intersection = road["startIntersection"]
+            end_intersection = road["endIntersection"]
+            for i, lane in enumerate(road["lanes"]):
+                lane_id = f"{road['id']}_{i}"
+                G.add_edge(start_intersection, end_intersection, label=lane_id)
+        return G
+
+    def _plot_network(self, figsize=(12, 12)):
+        import matplotlib.pyplot as plt
+
+        G = self._get_networkx_representation()
+        node_colors = [node[1]["color"] for node in G.nodes(data=True)]
+        pos = nx.get_node_attributes(G, "pos")
+        fig, ax = plt.subplots(figsize=figsize)
+        nx.draw_networkx(
+            G,
+            pos,
+            with_labels=True,
+            font_weight="bold",
+            node_color=node_colors,
+            arrowsize=10,
+            ax=ax,
+        )
+        edge_labels = nx.get_edge_attributes(G, "label")
+        nx.draw_networkx_edge_labels(
+            G, pos, edge_labels=edge_labels, font_size=8, ax=ax
+        )
+        plt.show()

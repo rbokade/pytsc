@@ -3,6 +3,7 @@ import json
 import os
 import random
 
+import networkx as nx
 import numpy as np
 
 from pytsc.backends.cityflow.config import Config
@@ -46,6 +47,7 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
         self.max_trip_length = self._get_max_trip_length()
+        print(f"Max trip length: {self.max_trip_length}")
         self.lane_connectivity_map = self._get_lane_connectivity_map()
         self._set_edge_weights(edge_weights)
 
@@ -55,16 +57,8 @@ class CityFlowTripGenerator(TripGenerator):
         that goes from one corner of the grid to the opposite corner.
         (n - 1) + (m - 1) + 2
         """
-        n = np.asarray(self.parsed_network.adjacency_matrix).shape[0]
-        m = int(np.sqrt(n))
-        c = m
-        while m * c != n:
-            if m * c < n:
-                c += 1
-            else:
-                m -= 1
-                c = n // m
-        return (n - 1) + (m - 1) + 2
+        G = self.parsed_network._get_networkx_representation()
+        return nx.diameter(G) + 2
 
     def _set_edge_weights(self, input_edge_weights=None):
         """
