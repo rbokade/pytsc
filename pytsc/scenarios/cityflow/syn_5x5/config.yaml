@@ -4,15 +4,15 @@ cityflow:
   roadnet_file: 5x5_roadnet.json
   flow_file: syn_5x5__gaussian_flow_rate_600_flows.json
   flow_files: [
-    "syn_5x5__gaussian_flow_rate_500_flows.json",
-    "syn_5x5__gaussian_flow_rate_525_flows.json",
-    "syn_5x5__gaussian_flow_rate_550_flows.json",
-    "syn_5x5__gaussian_flow_rate_575_flows.json",
-    "syn_5x5__gaussian_flow_rate_600_flows.json",
-    "syn_5x5__gaussian_flow_rate_625_flows.json",
-    "syn_5x5__gaussian_flow_rate_650_flows.json",
-    "syn_5x5__gaussian_flow_rate_675_flows.json",
-    "syn_5x5__gaussian_flow_rate_700_flows.json",
+    "syn_5x5__gaussian_500_flows.json",
+    "syn_5x5__gaussian_525_flows.json",
+    "syn_5x5__gaussian_550_flows.json",
+    "syn_5x5__gaussian_575_flows.json",
+    "syn_5x5__gaussian_600_flows.json",
+    "syn_5x5__gaussian_625_flows.json",
+    "syn_5x5__gaussian_650_flows.json",
+    "syn_5x5__gaussian_675_flows.json",
+    "syn_5x5__gaussian_700_flows.json",
   ]
   roadnet_log_file: "roadnet_log_file.json"
   replay_log_file: "replay_log_file.txt"
