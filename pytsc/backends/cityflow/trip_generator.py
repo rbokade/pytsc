@@ -188,7 +188,7 @@ class CityFlowTripGenerator(TripGenerator):
                 if vehicle_start_time >= self.end_time:
                     break
                 route = [start_edge]
-                while len(route) <= 2 or len(route) > self.max_trip_length:
+                while len(route) <= 1 or len(route) > self.max_trip_length:
                     route = self._generate_route(start_edge)
                 flow_entry = {
                     "vehicle": self.vehicle_data,
