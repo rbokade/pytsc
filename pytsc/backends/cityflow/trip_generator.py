@@ -9,6 +9,7 @@ import numpy as np
 from pytsc.backends.cityflow.config import Config, DisruptedConfig
 from pytsc.backends.cityflow.network_parser import NetworkParser
 from pytsc.common.trip_generator import TripGenerator
+from pytsc.common.utils import generate_weibull_flow_rates
 
 
 class CityFlowTripGenerator(TripGenerator):
@@ -206,6 +207,77 @@ class CityFlowTripGenerator(TripGenerator):
             filename = (
                 f"{self.config._additional_config['replicate_no']}__{filename}"
             )
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
+            json.dump(sorted_flows, f, indent=4)
+
+
+class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
+    def generate_flows(
+        self,
+        filepath,
+        replicate_no,
+        interval_duration=360,
+        shape=1.5,
+        scale=300,
+    ):
+        """
+        Generate flows with the mean flow rate specified for every
+        interval_duration seconds.
+        """
+        n_segments = int(3600 / interval_duration)
+        flow_rate_segment_samples = []
+        for _ in range(100):
+            flow_rates = generate_weibull_flow_rates(
+                shape, scale, self.inter_mu, n_segments
+            )
+            flow_rate_segment_samples.append(flow_rates)
+
+        incoming_edges, _ = self._find_fringe_edges()
+        flows = []
+        num_intervals = (self.end_time - self.start_time) // interval_duration
+        for start_edge in incoming_edges:
+            current_time = self.start_time
+            selected_flow_rate_segment = random.choices(
+                flow_rate_segment_samples
+            )[0]
+            for i, interval in enumerate(range(num_intervals)):
+                interval_mean = selected_flow_rate_segment[i]
+                while current_time < (
+                    self.start_time + (interval + 1) * interval_duration
+                ):
+                    interarrival_time = np.random.normal(
+                        interval_mean, self.inter_sigma
+                    )
+                    interarrival_time = max(0, interarrival_time)
+                    vehicle_start_time = int(current_time + interarrival_time)
+                    if vehicle_start_time >= (
+                        self.start_time + (interval + 1) * interval_duration
+                    ):
+                        break
+                    if vehicle_start_time >= self.end_time:
+                        break
+                    route = [start_edge]
+                    while len(route) <= 1 or len(route) > self.max_trip_length:
+                        route = self._generate_route(start_edge)
+                    flow_entry = {
+                        "vehicle": self.vehicle_data,
+                        "route": route,
+                        "interval": 1.0,
+                        "startTime": vehicle_start_time,
+                        "endTime": vehicle_start_time,
+                    }
+                    flows.append(flow_entry)
+                    current_time = vehicle_start_time
+        sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        flow_rate = (self.end_time - self.start_time) / self.inter_mu
+        filename = f"{self.scenario}__interval_{int(flow_rate)}_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = (
+                f"{self.config._additional_config['replicate_no']}__{filename}"
+            )
+        else:
+            filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)

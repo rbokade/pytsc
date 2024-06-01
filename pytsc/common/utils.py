@@ -113,3 +113,15 @@ def compute_linearly_weighted_average(position_matrices):
         weight = (n - i) / normalization_factor
         lwma += weight * matrix
     return np.round(lwma, 3)
+
+
+def generate_weibull_flow_rates(shape, scale, max_rate, num_segments):
+    inter_arrival_times = np.random.weibull(shape, 1000) * scale
+    cumulative_times = np.cumsum(inter_arrival_times)
+    cumulative_times = cumulative_times[cumulative_times <= 3600]
+    random_peak_segment = np.random.randint(0, num_segments)
+    x = np.linspace(-2, 2, num_segments)
+    flow_rates = np.exp(-(x**2))  # Gaussian-like curve
+    flow_rates = flow_rates / max(flow_rates) * max_rate
+    flow_rates = np.roll(flow_rates, random_peak_segment)
+    return flow_rates
