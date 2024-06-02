@@ -4,7 +4,7 @@ if __name__ == "__main__":
 
     # Generate hourly flows
     flow_resolution = 25
-    for size in [4]:
+    for size in [2]:
         for replicate_no in range(1, 21):
             for mean_flow in [600]:
                 trip_generator = CityFlowTripGenerator(
