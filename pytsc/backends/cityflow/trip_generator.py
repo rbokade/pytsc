@@ -175,7 +175,7 @@ class CityFlowTripGenerator(TripGenerator):
                 break
         return route
 
-    def generate_flows(self, filepath):
+    def generate_flows(self, filepath, replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         for start_edge in incoming_edges:
@@ -207,6 +207,8 @@ class CityFlowTripGenerator(TripGenerator):
             filename = (
                 f"{self.config._additional_config['replicate_no']}__{filename}"
             )
+        if replicate_no is not None:
+            filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)
@@ -322,5 +324,5 @@ if __name__ == "__main__":
         turn_probs=turn_probs,
     )
     flow_generator.generate_flows(
-        filepath="/home/rohitbokade/repos/pytsc/pytsc/tests"
+        filepath="/Users/rohitbokade/repos/pytsc/pytsc/tests"
     )

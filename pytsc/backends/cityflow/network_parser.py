@@ -497,7 +497,7 @@ class NetworkParser(BaseNetworkParser):
                 G.add_edge(start_intersection, end_intersection, label=lane_id)
         return G
 
-    def _plot_network(self, figsize=(12, 12)):
+    def plot_network(self, figsize=(12, 12)):
         import matplotlib.pyplot as plt
 
         G = self._get_networkx_representation()
