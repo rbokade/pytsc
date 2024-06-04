@@ -37,6 +37,7 @@ class QueueLength(BaseRewardFunction):
         local_rewards = {
             ts_id: -fc * ts.controller.program.phase_changed
             - np.mean(ts.queue_lengths)
+            - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}
@@ -67,6 +68,7 @@ class MaxPressure(BaseRewardFunction):
         local_rewards = {
             ts_id: -fc * ts.controller.program.phase_changed
             - np.mean(ts.pressure)
+            - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}
