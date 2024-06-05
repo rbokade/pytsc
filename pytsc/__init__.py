@@ -114,6 +114,9 @@ class TrafficSignalNetwork:
                 self.simulator.step_measurements
             )
 
+    def get_pressures(self):
+        return self.metrics.pressures
+
     def get_action_mask(self):
         return self.action_space.get_mask()
 
