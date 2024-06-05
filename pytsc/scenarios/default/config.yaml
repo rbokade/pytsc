@@ -52,4 +52,4 @@ misc:
   save_trip_info: False
   flickering_coef: 0.0
   max_hops: 1  # maximum number of hops for the rewards
-  reward_gamma: 0.0  # spatial discount factor for the rewards
+  reward_gamma: 0.9  # spatial discount factor for the rewards
