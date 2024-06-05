@@ -37,4 +37,4 @@ cityflow:
 signal:
   action_space: phase_selection
   round_robin: False
-  reward_function: max_pressure
+  reward_function: queue_length
