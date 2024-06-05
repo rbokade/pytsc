@@ -112,10 +112,7 @@ class TrafficSignalNetwork:
         for ts_id in self.traffic_signals.keys():
             self.traffic_signals[ts_id].update_stats(
                 self.simulator.step_measurements
-            )
-
-    def get_pressures(self):
-        return self.metrics.pressures
+            )    
 
     def get_action_mask(self):
         return self.action_space.get_mask()
