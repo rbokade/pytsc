@@ -45,23 +45,31 @@ class TrafficSignal(BaseTrafficSignal):
         self.incoming_lanes = config["incoming_lanes"]
         self.outgoing_lanes = config["outgoing_lanes"]
         self.position_matrices = deque(maxlen=self.config["input_n_avg"])
+        self.speed_matrices = deque(maxlen=self.config["input_n_avg"])
         # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
-        pos_mat = []
-        self.lane_pos_mats = {}
+        pos_mat, speed_mat = [], []
+        # self.lane_pos_mats, self.lane_speed_mats = {}, {}
         for lane in self.incoming_lanes:
             lane_results = sub_results["lane"][lane]
             lane_pos_mat = np.zeros(
                 self.config["visibility"], dtype=np.float32
             )
+            lane_speed_mat = np.zeros(
+                self.config["visibility"], dtype=np.float32
+            )
             vehicle_bin_idxs = lane_results["vehicles_bin_idxs"]
             if len(vehicle_bin_idxs):
                 for i, norm_speed in vehicle_bin_idxs:
-                    lane_pos_mat[i] = norm_speed
+                    lane_pos_mat[i] = 1.0
+                    lane_speed_mat[i] = norm_speed
             pos_mat.append(lane_pos_mat)
-            self.lane_pos_mats[lane] = lane_pos_mat
+            speed_mat.append(lane_speed_mat)
+            # self.lane_pos_mats[lane] = lane_pos_mat
+            # self.lane_speed_mats[lane] = lane_speed_mat
         self.position_matrices.append(np.concatenate(pos_mat, axis=0))
+        self.speed_matrices.append(np.concatenate(speed_mat, axis=0))
         (
             queue_lengths,
             densities,

@@ -34,6 +34,7 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "adjacency_matrix": self.tsc_env.parsed_network.adjacency_matrix,
             "n_agents": self.tsc_env.n_agents,
             "obs_shape": self.get_obs_size(),
+            "obs_info": self.tsc_env.observation_space.get_observation_info(),
             "state_shape": self.get_state_size(),
         }
         return env_info
