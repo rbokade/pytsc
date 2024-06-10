@@ -84,8 +84,8 @@ class TrafficSignal(BaseTrafficSignal):
             )
             vehicle_bin_idxs = lane_results["vehicles_bin_idxs"]
             if len(vehicle_bin_idxs):
-                for i in vehicle_bin_idxs:
-                    lane_pos_mat[i] = 1.0
+                for i, norm_sped in vehicle_bin_idxs:
+                    lane_pos_mat[i] = norm_speed
             pos_mat.append(lane_pos_mat)
         self.position_matrices.append(np.concatenate(pos_mat, axis=0))
         (

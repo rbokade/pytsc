@@ -25,7 +25,15 @@ class Retriever(BaseRetriever):
                         lane_position=float(vehicle_info["distance"]),
                     )
                     if bin_idx is not None:
-                        lane_vehicles_bin_idxs[vehicle_lane].append(bin_idx)
+                        norm_speed = (
+                            float(vehicle_info["speed"])
+                            / self.simulator.parsed_network.lane_max_speeds[
+                                vehicle_lane
+                            ]
+                        )
+                        lane_vehicles_bin_idxs[vehicle_lane].append(
+                            (bin_idx, norm_speed)
+                        )
         return lane_vehicles_bin_idxs
 
     def _compute_lane_measurements(self):
