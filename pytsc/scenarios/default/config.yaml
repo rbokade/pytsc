@@ -29,6 +29,7 @@ sumo:
   initial_wait_time: 0  # sim seconds to wait to populate the network
   vehicle_length: 5  # meters
   veh_size_min_gap: 7.5  # vehicle size (5m) + minimum gap between vehicles (2.5m)
+  sim_length: 3600  # length of traffic simulation (in simulation seconds)
 
 # CityFlow specific parameters
 cityflow:
@@ -44,6 +45,7 @@ cityflow:
   veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
   save_replay: False
   flow_rate_type: "constant"  # (constant, random, sequential)
+  sim_length: 3600  # length of traffic simulation (in simulation seconds)
 
 # Misc
 misc:

@@ -12,7 +12,7 @@ class Simulator(BaseSimulator):
 
     @property
     def is_terminated(self):
-        if self.sim_step == 3600:
+        if self.sim_step == self.config.simulator["sim_length"]:
             return True
         else:
             return False
