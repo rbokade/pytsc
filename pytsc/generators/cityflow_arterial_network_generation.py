@@ -43,7 +43,7 @@ class ArterialNetwork:
 
     def _create_scenario_folder(self):
         self.scenario_dir = os.path.join(
-            CONFIG_DIR, f"syn_{self.nrows}x{self.ncols}"
+            CONFIG_DIR, f"syn_{self.nrows}x{self.ncols}_uniform"
         )
         os.makedirs(self.scenario_dir, exist_ok=True)
 
@@ -103,18 +103,29 @@ class ArterialNetwork:
             for flow in flow_data
             if len(flow["route"]) > 2  # arterial streets
         ]
+        occupied_slots = []
         for _ in range(self.n_bursts):
-            random_arterial_route = random.choice(arterial_routes)
-            burst_start_min = 30  # warmup time
-            burst_start_max = (
-                self.end_time
-                - burst_start_min
-                - (self.burst_size * self.burst_interval)
-            )
-            burst_start_time = random.randint(burst_start_min, burst_start_max)
-            burst_end_time = (
-                burst_start_time + self.burst_size * self.burst_interval
-            )
+            while True:
+                random_arterial_route = random.choice(arterial_routes)
+                burst_start_min = 30  # warmup time
+                burst_start_max = (
+                    self.end_time
+                    - burst_start_min
+                    - (self.burst_size * self.burst_interval)
+                )
+                burst_start_time = random.randint(
+                    burst_start_min, burst_start_max
+                )
+                burst_end_time = (
+                    burst_start_time + self.burst_size * self.burst_interval
+                )
+                overlapping = any(
+                    start <= burst_end_time and end >= burst_start_time
+                    for start, end in occupied_slots
+                )
+                if not overlapping:
+                    occupied_slots.append((burst_start_time, burst_end_time))
+                    break
             burst_flow = {
                 "vehicle": random_arterial_route["vehicle"],
                 "route": random_arterial_route["route"],
@@ -163,13 +174,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n_bursts",
         type=int,
-        default=1,
+        default=2,
         help="Number of bursts to generate",
     )
     parser.add_argument(
         "--burst_size",
         type=int,
-        default=15,
+        default=10,
         help="# of vehicles in the platoon",
     )
     parser.add_argument(
