@@ -147,6 +147,17 @@ class NetworkParser(BaseNetworkParser):
         points = [p["point"] for p in self.net["intersections"]]
         x_values = [p["x"] for p in points]
         y_values = [p["y"] for p in points]
+        return (min(x_values), min(y_values)), (max(x_values), max(y_values))
+
+    @property
+    @lru_cache(maxsize=None)
+    def norm_network_boundary(self):
+        """
+        Returns [max_x - min_x, max_y - min_y]
+        """
+        points = [p["point"] for p in self.net["intersections"]]
+        x_values = [p["x"] for p in points]
+        y_values = [p["y"] for p in points]
         return [max(x_values) - min(x_values), max(y_values) - min(y_values)]
 
     @property
@@ -314,8 +325,8 @@ class NetworkParser(BaseNetworkParser):
             if not intersection["virtual"]:
                 intersection_id = intersection["id"]
                 ts_norm_coordinates[intersection_id] = [
-                    intersection["point"]["x"] / self.network_boundary[0],
-                    intersection["point"]["y"] / self.network_boundary[1],
+                    intersection["point"]["x"] / self.norm_network_boundary[0],
+                    intersection["point"]["y"] / self.norm_network_boundary[1],
                 ]
         return ts_norm_coordinates
 

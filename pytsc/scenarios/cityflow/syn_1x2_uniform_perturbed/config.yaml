@@ -19,9 +19,9 @@ cityflow:
     "train/1x2_roadnet_600_burst_1_15_2_85.json",
     "train/1x2_roadnet_600_burst_1_15_2_86.json",
   ]
-  roadnet_log_file: "roadnet_log_file.json"
-  replay_log_file: "replay_log_file.txt"
-  save_replay: False
+  roadnet_log_file: "frontend/web/roadnet_log_file.json"
+  replay_log_file: "frontend/web/replay_log_file.txt"
+  save_replay: True
   sim_length: 360
 
 signal:

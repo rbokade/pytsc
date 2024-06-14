@@ -89,6 +89,18 @@ def pad_list(inp_list, size, pad_value=0):
     return pad_array(np.array(inp_list), size, pad_value).tolist()
 
 
+def get_vehicle_bin_index(n_bins, lane_length, vehicle_position):
+    if vehicle_position < 0:
+        vehicle_position = 0
+    elif vehicle_position > lane_length:
+        vehicle_position = lane_length
+    bin_size = lane_length / n_bins
+    bin_index = int(vehicle_position // bin_size)
+    if bin_index >= n_bins:
+        bin_index = n_bins - 1
+    return bin_index
+
+
 def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
     visibility_length = n_bins * bin_size
     distance_from_intersection = lane_length - lane_position
@@ -100,6 +112,16 @@ def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
     # Ensure the bin index is within the expected range [0, 9] for 10 bins
     bin_index = min(max(bin_index, 0), n_bins - 1)
     return int(bin_index)
+
+
+# def map_position_to_matrix(position, x_min, y_min, resolution):
+#     """
+#     Maps a position (x, y) to the corresponding indices in the matrix
+#     """
+#     x, y = position
+#     row = int((y - y_min) // resolution)
+#     col = int((x - x_min) // resolution)
+#     return row, col
 
 
 def compute_linearly_weighted_average(position_matrices):
