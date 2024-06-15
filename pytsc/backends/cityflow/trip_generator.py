@@ -228,23 +228,16 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
         interval_duration seconds.
         """
         n_segments = int(3600 / interval_duration)
-        flow_rate_segment_samples = []
-        for _ in range(100):
-            flow_rates = generate_weibull_flow_rates(
-                shape, scale, self.inter_mu, n_segments
-            )
-            flow_rate_segment_samples.append(flow_rates)
-
+        flow_rate_segment = generate_weibull_flow_rates(
+            shape, scale, self.inter_mu, n_segments
+        )
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         num_intervals = (self.end_time - self.start_time) // interval_duration
         for start_edge in incoming_edges:
             current_time = self.start_time
-            selected_flow_rate_segment = random.choices(
-                flow_rate_segment_samples
-            )[0]
             for i, interval in enumerate(range(num_intervals)):
-                interval_mean = selected_flow_rate_segment[i]
+                interval_mean = flow_rate_segment[i]
                 while current_time < (
                     self.start_time + (interval + 1) * interval_duration
                 ):

@@ -2,32 +2,17 @@ cityflow:
   plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
   roadnet_file: 2x2_roadnet.json
-  flow_file: syn_2x2__gaussian_600_flows.json
+  flow_file: 1__syn_2x2__interval_700_flows.json
   flow_files: [
-    "1__syn_2x2__gaussian_600_flows.json",
-    "2__syn_2x2__gaussian_600_flows.json",
-    "3__syn_2x2__gaussian_600_flows.json",
-    "4__syn_2x2__gaussian_600_flows.json",
-    "5__syn_2x2__gaussian_600_flows.json",
-    "6__syn_2x2__gaussian_600_flows.json",
-    "7__syn_2x2__gaussian_600_flows.json",
-    "8__syn_2x2__gaussian_600_flows.json",
-    "9__syn_2x2__gaussian_600_flows.json",
-    "10__syn_2x2__gaussian_600_flows.json",
-    "11__syn_2x2__gaussian_600_flows.json",
-    "12__syn_2x2__gaussian_600_flows.json",
-    "13__syn_2x2__gaussian_600_flows.json",
-    "14__syn_2x2__gaussian_600_flows.json",
-    "15__syn_2x2__gaussian_600_flows.json",
-    "16__syn_2x2__gaussian_600_flows.json",
-    "17__syn_2x2__gaussian_600_flows.json",
-    "18__syn_2x2__gaussian_600_flows.json",
-    "19__syn_2x2__gaussian_600_flows.json",
-    "20__syn_2x2__gaussian_600_flows.json",
+    "1__syn_2x2__interval_700_flows.json",
+    "2__syn_2x2__interval_700_flows.json",
+    "3__syn_2x2__interval_700_flows.json",
+    "4__syn_2x2__interval_700_flows.json",
+    "5__syn_2x2__interval_700_flows.json",
   ]
-  roadnet_log_file: "roadnet_log_file.json"
-  replay_log_file: "replay_log_file.txt"
-  save_replay: False
+  roadnet_log_file: "frontend/web/roadnet_log_file.json"
+  replay_log_file: "frontend/web/replay_log_file.txt"
+  save_replay: True
 
 signal:
   action_space: phase_selection

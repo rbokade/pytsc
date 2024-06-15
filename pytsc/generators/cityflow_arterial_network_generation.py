@@ -107,17 +107,20 @@ class ArterialNetwork:
         for _ in range(self.n_bursts):
             while True:
                 random_arterial_route = random.choice(arterial_routes)
+                random_burst_size = random.choice(
+                    [self.burst_size - 5, self.burst_size, self.burst_size + 5]
+                )
                 burst_start_min = 30  # warmup time
                 burst_start_max = (
                     self.end_time
                     - burst_start_min
-                    - (self.burst_size * self.burst_interval)
+                    - (random_burst_size * self.burst_interval)
                 )
                 burst_start_time = random.randint(
                     burst_start_min, burst_start_max
                 )
                 burst_end_time = (
-                    burst_start_time + self.burst_size * self.burst_interval
+                    burst_start_time + random_burst_size * self.burst_interval
                 )
                 overlapping = any(
                     start <= burst_end_time and end >= burst_start_time
@@ -134,10 +137,9 @@ class ArterialNetwork:
                 "endTime": burst_end_time,
             }
             flow_data.append(burst_flow)
-
         burst_flow_file = self.flow_file.replace(
             ".json",
-            f"_burst_{self.n_bursts}_{self.burst_size}_{self.burst_interval}_{self.seed}.json",
+            f"_burst_{self.n_bursts}_{random_burst_size}_{self.burst_interval}_{self.seed}.json",
         )
         with open(burst_flow_file, "w") as json_file:
             json.dump(flow_data, json_file, indent=4)
@@ -180,7 +182,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--burst_size",
         type=int,
-        default=10,
+        default=15,
         help="# of vehicles in the platoon",
     )
     parser.add_argument(
