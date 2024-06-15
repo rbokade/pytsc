@@ -102,14 +102,31 @@ class LaneFeatures(BaseObservationSpace):
         )
 
     def get_state(self):
-        observations = self.get_observations()
-        state = []
-        for obs in observations:
-            state.extend(obs)
+        ts = next(iter(self.traffic_signals))
+        (
+            norm_queue_lengths,
+            norm_densities,
+            norm_mean_speeds,
+        ) = ([], [], [])
+        for lane in self.parsed_network.lanes:
+            lane_results = self.traffic_signals[ts].sub_results["lane"][lane]
+            norm_densities.append(lane_results["occupancy"])
+            norm_queue_lengths.append(lane_results["norm_queue_length"])
+            norm_mean_speeds.append(lane_results["norm_mean_speed"])
+        phase_ids = np.concatenate(
+            [ts.phase_id for ts in self.traffic_signals.values()]
+        )
+        state = np.concatenate(
+            (norm_densities, norm_queue_lengths, norm_mean_speeds, phase_ids)
+        )
         return state
 
     def get_state_size(self):
-        return self.get_size() * len(self.traffic_signals)
+        lane_features_size = int(
+            len(self.parsed_network.lanes) * 3
+            + self.max_n_controlled_phases * len(self.traffic_signals)
+        )
+        return lane_features_size
 
 
 class PositionMatrix(LaneFeatures):
@@ -168,15 +185,29 @@ class PositionMatrix(LaneFeatures):
         )
         return size
 
-    def get_state(self):
-        return super(PositionMatrix, self).get_state()
-        # position_matrix = self.get_observations()
-        # return np.concatenate(lane_features + position_matrix).tolist()
+    # def get_state(self):
+    #     ts = next(iter(self.traffic_signals))
+    #     (
+    #         norm_queue_lengths,
+    #         norm_densities,
+    #         norm_mean_speeds,
+    #     ) = ([], [], [])
+    #     for lane in self.parsed_network.lanes:
+    #         lane_results = self.traffic_signals[ts].sub_results["lane"][lane]
+    #         norm_densities.append(lane_results["occupancy"])
+    #         norm_queue_lengths.append(lane_results["norm_queue_length"])
+    #         norm_mean_speeds.append(lane_results["norm_mean_speed"])
+    #     phase_ids = np.concatenate(
+    #         [ts.phase_id for ts in self.traffic_signals.values()]
+    #     )
+    #     state = np.concatenate(
+    #         (norm_densities, norm_queue_lengths, norm_mean_speeds, phase_ids)
+    #     )
+    #     return state
 
-    def get_state_size(self):
-        lane_features_size = int(
-            (4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases
-        ) * len(self.traffic_signals)
-        # obs_size = self.get_size() * len(self.traffic_signals)
-        # return lane_features_size + obs_size
-        return lane_features_size
+    # def get_state_size(self):
+    #     lane_features_size = int(
+    #         len(self.parsed_network.lanes) * 3
+    #         + self.max_n_controlled_phases * len(self.traffic_signals)
+    #     )
+    #     return lane_features_size
