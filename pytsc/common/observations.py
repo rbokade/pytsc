@@ -169,13 +169,14 @@ class PositionMatrix(LaneFeatures):
         return size
 
     def get_state(self):
-        lane_features = super(PositionMatrix, self).get_observations()
-        position_matrix = self.get_observations()
-        return np.concatenate(lane_features + position_matrix).tolist()
+        return super(PositionMatrix, self).get_observations()
+        # position_matrix = self.get_observations()
+        # return np.concatenate(lane_features + position_matrix).tolist()
 
     def get_state_size(self):
         lane_features_size = int(
             (4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases
         ) * len(self.traffic_signals)
-        obs_size = self.get_size() * len(self.traffic_signals)
-        return lane_features_size + obs_size
+        # obs_size = self.get_size() * len(self.traffic_signals)
+        # return lane_features_size + obs_size
+        return lane_features_size

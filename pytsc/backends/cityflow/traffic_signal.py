@@ -46,9 +46,11 @@ class TrafficSignal(BaseTrafficSignal):
         self.outgoing_lanes = config["outgoing_lanes"]
         self.position_matrices = deque(maxlen=self.config["input_n_avg"])
         self.speed_matrices = deque(maxlen=self.config["input_n_avg"])
+        self.sub_results = None
         # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
+        self.sub_results = sub_results
         pos_mat, speed_mat = [], []
         # self.lane_pos_mats, self.lane_speed_mats = {}, {}
         for lane in self.incoming_lanes:
