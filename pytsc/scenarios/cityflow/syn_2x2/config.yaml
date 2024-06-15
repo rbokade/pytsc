@@ -12,7 +12,7 @@ cityflow:
   ]
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
-  save_replay: True
+  save_replay: False
 
 signal:
   action_space: phase_selection
