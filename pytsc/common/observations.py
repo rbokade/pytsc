@@ -169,7 +169,7 @@ class PositionMatrix(LaneFeatures):
         return size
 
     def get_state(self):
-        return super(PositionMatrix, self).get_observations()
+        return super(PositionMatrix, self).get_state()
         # position_matrix = self.get_observations()
         # return np.concatenate(lane_features + position_matrix).tolist()
 
