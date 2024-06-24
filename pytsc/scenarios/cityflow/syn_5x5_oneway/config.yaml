@@ -16,6 +16,7 @@ cityflow:
   save_replay: False
 
 signal:
+  visibility: 10
   action_space: phase_switch
   round_robin: True
   reward_function: queue_length
