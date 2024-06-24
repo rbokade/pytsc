@@ -61,8 +61,10 @@ class GreedyPhaseSelector(BasePhaseSelector):
             "phase_to_inc_out_lanes"
         ][phase]
         for inc_lane in phase_inc_out_lanes.keys():
-            inc_vehicles += len(
+            inc_vehicles += sum(
                 inp["lane"][inc_lane]["position_speed_matrices"][0]
+            ) / (
+                sum(inp["lane"][inc_lane]["position_speed_matrices"][1]) + 1e-6
             )
         return inc_vehicles
 
@@ -100,12 +102,12 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
             "phase_to_inc_out_lanes"
         ][phase]
         for inc_lane, out_lanes in phase_inc_out_lanes.items():
-            inc_lane_vehicles = len(
+            inc_lane_vehicles = sum(
                 inp["lane"][inc_lane]["position_speed_matrices"][0]
             )
             out_lane_vehicles = 0
             for out_lane in out_lanes:
-                out_lane_vehicles += len(
+                out_lane_vehicles += sum(
                     inp["lane"][out_lane]["position_speed_matrices"][0]
                 )
             pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)

@@ -278,6 +278,109 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
             json.dump(sorted_flows, f, indent=4)
 
 
+class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
+    def __init__(
+        self,
+        scenario,
+        start_time,
+        end_time,
+        inter_mu_ns,
+        inter_sigma_ns,
+        inter_mu_ew,
+        inter_sigma_ew,
+        disrupted=False,
+        edge_weights=None,
+        **kwargs,
+    ):
+        self.inter_mu_ns = inter_mu_ns
+        self.inter_sigma_ns = inter_sigma_ns
+        self.inter_mu_ew = inter_mu_ew
+        self.inter_sigma_ew = inter_sigma_ew
+        super(CityFlowOneWayTripGenerator, self).__init__(
+            scenario,
+            start_time,
+            end_time,
+            inter_mu_ns,  # Default values for the parent's constructor
+            inter_sigma_ns,  # Default values for the parent's constructor
+            disrupted=disrupted,
+            edge_weights=edge_weights,
+            turn_probs=[0.0, 0.0, 1.0],
+            **kwargs,
+        )
+
+    def _is_ns_road(self, road):
+        start_point = road["points"][0]
+        end_point = road["points"][-1]
+        return (
+            start_point["x"] == end_point["x"]
+            and start_point["y"] > end_point["y"]
+        )
+
+    def _is_ew_road(self, road):
+        start_point = road["points"][0]
+        end_point = road["points"][-1]
+        return (
+            start_point["y"] == end_point["y"]
+            and start_point["x"] > end_point["x"]
+        )
+
+    def generate_flows(self, filepath, replicate_no=None):
+        incoming_edges, _ = self._find_fringe_edges()
+        ns_edges = [
+            road["id"]
+            for road in self.parsed_network.roads
+            if self._is_ns_road(road) and road["id"] in incoming_edges
+        ]
+        ew_edges = [
+            road["id"]
+            for road in self.parsed_network.roads
+            if self._is_ew_road(road) and road["id"] in incoming_edges
+        ]
+        flows = []
+
+        def generate_flow_for_edges(edges, inter_mu, inter_sigma):
+            for start_edge in edges:
+                current_time = self.start_time
+                while current_time < self.end_time:
+                    interarrival_time = np.random.normal(inter_mu, inter_sigma)
+                    interarrival_time = max(0, interarrival_time)
+                    vehicle_start_time = int(current_time + interarrival_time)
+                    if vehicle_start_time >= self.end_time:
+                        break
+                    route = [start_edge]
+                    while len(route) <= 1 or len(route) > self.max_trip_length:
+                        route = self._generate_route(start_edge)
+                    flow_entry = {
+                        "vehicle": self.vehicle_data,
+                        "route": route,
+                        "interval": 1.0,
+                        "startTime": vehicle_start_time,
+                        "endTime": vehicle_start_time,
+                    }
+                    flows.append(flow_entry)
+                    current_time = vehicle_start_time
+
+        generate_flow_for_edges(
+            ns_edges, self.inter_mu_ns, self.inter_sigma_ns
+        )
+        generate_flow_for_edges(
+            ew_edges, self.inter_mu_ew, self.inter_sigma_ew
+        )
+        sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        flow_rate_ns = (self.end_time - self.start_time) / self.inter_mu_ns
+        flow_rate_ew = (self.end_time - self.start_time) / self.inter_mu_ew
+        filename = f"{self.scenario}__oneway_{int(flow_rate_ns)}_NS_{int(flow_rate_ew)}_EW_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = (
+                f"{self.config._additional_config['replicate_no']}__{filename}"
+            )
+        if replicate_no is not None:
+            filename = f"{replicate_no}__{filename}"
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
+            json.dump(sorted_flows, f, indent=4)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
