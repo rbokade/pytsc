@@ -12,8 +12,8 @@ CONFIG_DIR = os.path.join(
 
 
 class CityFlowGridNetworkGenerator:
-    col_distance = 300
-    row_distance = 300
+    col_distance = 200
+    row_distance = 200
     intersection_width = 20
     n_left_lanes = 1
     n_right_lanes = 1
@@ -41,7 +41,7 @@ class CityFlowGridNetworkGenerator:
     def _generate_roadnet_file(self, mean_flow_rate):
         self._create_scenario_folder()
         self.roadnet_file = os.path.join(
-            self.scenario_dir, f"{self.nrows}x{self.ncols}_roadnet.json"
+            self.scenario_dir, f"syn_{self.nrows}x{self.ncols}_roadnet.json"
         )
         self.flow_file = os.path.join(
             self.scenario_dir,

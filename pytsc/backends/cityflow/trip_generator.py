@@ -63,7 +63,10 @@ class CityFlowTripGenerator(TripGenerator):
         (n - 1) + (m - 1) + 2
         """
         G = self.parsed_network._get_networkx_representation()
-        return nx.diameter(G) + 2
+        try:
+            return nx.diameter(G) + 2
+        except:
+            return len(self.parsed_network.traffic_signal_ids) + 1
 
     def _set_edge_weights(self, input_edge_weights=None):
         """
@@ -74,10 +77,15 @@ class CityFlowTripGenerator(TripGenerator):
         NOTE: Edge implies a link between intersection i and j, such that it
         includes both lanes_ij and lanes_ji
         """
-        if input_edge_weights is not None:
-            self.edge_weights = input_edge_weights
-            return
         self.edge_weights = {}
+        if input_edge_weights is not None:
+            for road in self.parsed_network.roads:
+                road_id = road["id"]
+                if road_id in input_edge_weights:
+                    self.edge_weights[road_id] = input_edge_weights[road_id]
+                else:
+                    self.edge_weights[road_id] = 0.0
+            return
         lane_max_speeds = self.parsed_network.lane_max_speeds
         global_max_speed = max(lane_max_speeds.values())
         for road in self.parsed_network.roads:
@@ -272,6 +280,94 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
                 f"{self.config._additional_config['replicate_no']}__{filename}"
             )
         else:
+            filename = f"{replicate_no}__{filename}"
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
+            json.dump(sorted_flows, f, indent=4)
+
+
+class VariableDemandTripGenerator(CityFlowTripGenerator):
+    def __init__(
+        self,
+        scenario,
+        start_time,
+        end_time,
+        inter_mus,
+        inter_sigmas,
+        edge_weights,
+        disrupted=False,
+        turn_probs=[1 / 3, 1 / 3, 1 / 3],
+        **kwargs,
+    ):
+        self.scenario = scenario
+        if disrupted:
+            self.config = DisruptedConfig(scenario, **kwargs)
+        else:
+            self.config = Config(scenario)
+        self.parsed_network = NetworkParser(self.config)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.inter_mus = inter_mus
+        self.inter_sigmas = inter_sigmas
+        self.turn_probabilities = turn_probs
+        self.max_trip_length = self._get_max_trip_length()
+        self.lane_connectivity_map = self._get_lane_connectivity_map()
+        self._set_edge_weights(edge_weights)
+        self.demand_profile = [
+            0.5,
+            0.6,
+            0.75,
+            1.0,
+            1.0,
+            0.5,
+            0.5,
+            0.3,
+            0.3,
+            1e-6,
+        ]
+
+    def _get_interarrival_time(self, edge_id, current_time):
+        time_slot = (current_time % 3600) // 600
+        mu = self.inter_mus[edge_id] / self.demand_profile[time_slot]
+        sigma = self.inter_sigmas[edge_id] / self.demand_profile[time_slot]
+        interarrival_time = np.random.normal(mu, sigma)
+        return max(0, interarrival_time)
+
+    def generate_flows(self, filepath, replicate_no=None):
+        incoming_edges, _ = self._find_fringe_edges()
+        flows = []
+        for start_edge in incoming_edges:
+            if start_edge in self.inter_mus.keys():
+                current_time = self.start_time
+                while current_time < self.end_time:
+                    interarrival_time = self._get_interarrival_time(
+                        start_edge, current_time
+                    )
+                    vehicle_start_time = int(current_time + interarrival_time)
+                    if vehicle_start_time >= self.end_time:
+                        break
+                    route = [start_edge]
+                    while len(route) <= 1 or len(route) > self.max_trip_length:
+                        route = self._generate_route(start_edge)
+                    flow_entry = {
+                        "vehicle": self.vehicle_data,
+                        "route": route,
+                        "interval": 1.0,
+                        "startTime": vehicle_start_time,
+                        "endTime": vehicle_start_time,
+                    }
+                    flows.append(flow_entry)
+                    current_time = vehicle_start_time
+        sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        flow_rate = (self.end_time - self.start_time) / np.mean(
+            list(self.inter_mus.values())
+        )
+        filename = f"{self.scenario}__gaussian_{int(flow_rate)}_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = (
+                f"{self.config._additional_config['replicate_no']}__{filename}"
+            )
+        if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
