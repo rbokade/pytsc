@@ -1,7 +1,12 @@
 cityflow:
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
   roadnet_file: syn_1x3_roadnet.json
-  flow_file: syn_1x3_uniform_900.json
+  flow_rate_type: "random"
+  flow_files: [
+    "syn_1x3_uniform_1.json",
+    "syn_1x3_uniform_2.json",
+    "syn_1x3_uniform_3.json",
+  ]
   roadnet_log_file: "roadnet_log_file.json"
   replay_log_file: "replay_log_file.txt"
   save_replay: False
