@@ -23,7 +23,7 @@ class ArterialNetwork:
     veh_max_speed = 10
     veh_min_gap = 2.5
     veh_headway_time = 2
-    end_time = 360
+    end_time = 3600
 
     def __init__(
         self,
@@ -52,11 +52,11 @@ class ArterialNetwork:
     ):
         self._create_scenario_folder()
         self.roadnet_file = os.path.join(
-            self.scenario_dir, f"{self.nrows}x{self.ncols}_roadnet.json"
+            self.scenario_dir, f"syn_{self.nrows}x{self.ncols}_roadnet.json"
         )
         self.flow_file = os.path.join(
             self.scenario_dir,
-            f"{self.nrows}x{self.ncols}_roadnet_{mean_flow_rate}.json",
+            f"syn_{self.nrows}x{self.ncols}_uniform_{mean_flow_rate}.json",
         )
         arterial_interval = 3600 / mean_flow_rate
         side_street_interval = 3600 / (mean_flow_rate * 3 / 5)

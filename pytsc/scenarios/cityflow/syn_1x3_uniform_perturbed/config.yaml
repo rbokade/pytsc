@@ -1,0 +1,11 @@
+cityflow:
+  # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
+  roadnet_file: syn_1x3_roadnet.json
+  flow_file: syn_1x3_uniform_900.json
+  roadnet_log_file: "roadnet_log_file.json"
+  replay_log_file: "replay_log_file.txt"
+  save_replay: False
+
+signal:
+  visibility: 10
+  reward_function: queue_length
