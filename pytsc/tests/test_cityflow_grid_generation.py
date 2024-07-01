@@ -7,8 +7,8 @@ if __name__ == "__main__":
 
     grid_generator = CityFlowGridNetworkGenerator(
         cityflow_dir="/Users/rohitbokade/CityFlow/",
-        nrows=1,
-        ncols=7,
+        nrows=5,
+        ncols=5,
     )
     grid_generator.generate_roadnet_files()
 

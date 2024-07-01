@@ -15,8 +15,8 @@ class CityFlowGridNetworkGenerator:
     col_distance = 200
     row_distance = 200
     intersection_width = 20
-    n_left_lanes = 1
-    n_right_lanes = 1
+    n_left_lanes = 0
+    n_right_lanes = 0
     n_straight_lanes = 1
     lane_max_speed = 11.11  # m/s
     veh_max_speed = 11.11  # m/s
@@ -29,7 +29,7 @@ class CityFlowGridNetworkGenerator:
         self.mean_flow_rates = mean_flow_rates
         self.cityflow_gridgen_script = os.path.join(
             cityflow_dir,
-            "tools/generator/generate_grid_scenario.py",
+            "tools/generator/generate_one_way_grid_scenario.py",
         )
 
     def _create_scenario_folder(self):
@@ -60,8 +60,8 @@ class CityFlowGridNetworkGenerator:
         gridgen += f" --vehMaxSpeed={self.veh_max_speed}"
         gridgen += f" --vehHeadwayTime={self.veh_headway_time}"
         gridgen += f" --roadnetFile {self.roadnet_file}"
-        # gridgen += " --tlPlan"
-        gridgen += " --turn"
+        gridgen += " --tlPlan"
+        # gridgen += " --turn"
         print(gridgen)
         os.system(gridgen)
 

@@ -2,9 +2,8 @@ from pytsc.backends.cityflow.trip_generator import CityFlowOneWayTripGenerator
 
 if __name__ == "__main__":
 
-    # Generate hourly flows
-    mean_flow_ns = 500
-    mean_flow_ew = 500
+    mean_flow_ns = 1000
+    mean_flow_ew = 750
 
     trip_generator = CityFlowOneWayTripGenerator(
         scenario="syn_5x5_oneway",
