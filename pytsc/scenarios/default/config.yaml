@@ -55,3 +55,5 @@ misc:
   flickering_coef: 0.0
   max_hops: 1  # maximum number of hops for the rewards
   reward_gamma: 0.9  # spatial discount factor for the rewards
+  return_agent_stats: True  # return step stats for each agent
+  return_lane_stats: False  # return step stats for each lane
