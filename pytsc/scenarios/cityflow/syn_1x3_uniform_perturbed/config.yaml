@@ -3,6 +3,7 @@ cityflow:
   roadnet_file: syn_1x3_roadnet.json
   flow_rate_type: "random"
   flow_files: [
+    "syn_1x3_uniform_0.json",
     "syn_1x3_uniform_1.json",
     "syn_1x3_uniform_2.json",
     "syn_1x3_uniform_3.json",

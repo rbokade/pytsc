@@ -51,7 +51,7 @@ class MetricsParser(BaseMetricsParser):
         lane_measurements = self.simulator.step_measurements["lane"]
         total_occupancy = sum(
             data["occupancy"] for data in lane_measurements.values()
-        )
+        ).item()
         return total_occupancy / len(lane_measurements)
 
     @property
@@ -72,7 +72,9 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def pressure(self):
-        return np.sum([ts.pressure for ts in self.traffic_signals.values()])
+        return np.sum(
+            [ts.pressure for ts in self.traffic_signals.values()]
+        ).item()
 
     @property
     def pressures(self):
@@ -86,7 +88,7 @@ class MetricsParser(BaseMetricsParser):
             "mean_speed": self.mean_speed,
             "mean_delay": self.mean_delay,
             "density": self.density,
-            "pressure": self.pressure.item(),
+            "pressure": self.pressure,
         }
         if self.config.misc["return_agent_stats"]:
             agent_stats = {}
@@ -133,6 +135,10 @@ class MetricsParser(BaseMetricsParser):
             stat_keys = ("n_vehicles", "n_queued", "mean_speed", "occupancy")
             lane_stats = {}
             for lane, stat_dict in lane_measurements.items():
-                lane_stats = {f"{lane}__{k}": stat_dict[k] for k in stat_keys}
+                for k in stat_keys:
+                    try:
+                        lane_stats[f"{lane}__{k}"] = stat_dict[k].item()
+                    except Exception:
+                        lane_stats[f"{lane}__{k}"] = stat_dict[k]
             step_stats.update(lane_stats)
         return step_stats
