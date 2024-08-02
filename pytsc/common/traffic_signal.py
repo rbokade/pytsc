@@ -35,9 +35,7 @@ class BaseTrafficSignal(ABC):
         }
 
     def get_controller_actions(self, sub_results):
-        return {
-            k: v.get_action(sub_results) for k, v in self.controllers.items()
-        }
+        return {k: v.get_action(sub_results) for k, v in self.controllers.items()}
 
 
 class BaseTSProgram(ABC):
@@ -47,6 +45,7 @@ class BaseTSProgram(ABC):
         self.phase_indices = config["phase_indices"]
         self.phases_min_max_times = config["phases_min_max_times"]
         self.yellow_time = config["yellow_time"]
+        self.max_cycle_length = config["max_cycle_length"]
 
     @abstractmethod
     def _initialize_traffic_light_program(self):
@@ -67,9 +66,7 @@ class BaseTSProgram(ABC):
             self.time_on_phase = self.yellow_time
         self.current_phase_index = phase_index
         self.current_phase = self.phases[phase_index]
-        max_phase_time = self.phases_min_max_times[self.current_phase][
-            "max_time"
-        ]
+        max_phase_time = self.phases_min_max_times[self.current_phase]["max_time"]
         self.norm_time_on_phase = self.time_on_phase / max_phase_time
 
     def __repr__(self):
@@ -94,6 +91,14 @@ class BaseTSController(ABC):
     @property
     def green_phase_indices(self):
         return self.config["green_phase_indices"]
+
+    @property
+    def yellow_time(self):
+        return self.config["yellow_time"]
+
+    @property
+    def max_cycle_length(self):
+        return self.config["max_cycle_length"]
 
     @property
     def yellow_phase_indices(self):
@@ -153,10 +158,10 @@ class BaseTSController(ABC):
         return phase_one_hot
 
     def _instantiate_traffic_light_logic(self):
-        if getattr(self, "round_robin", False):
-            self.logic = TLSRoundRobinPhaseSelectLogic(self)
-        else:
+        if getattr(self.config, "round_robin", False):
             self.logic = TLSFreePhaseSelectLogic(self)
+        else:
+            self.logic = TLSRoundRobinPhaseSelectLogic(self)
 
     def get_allowable_phase_switches(self):
         return self.logic.get_allowable_phase_switches(self.time_on_phase)
@@ -191,13 +196,8 @@ class TLSFreePhaseSelectLogic:
 
     def get_allowable_phase_switches(self, time_on_phase):
         mask = [0 for _ in range(self.n_phases)]
-        if (
-            self.controller.current_phase_index
-            in self.controller.green_phase_indices
-        ):
-            min_max_times = self.phases_min_max_times[
-                self.controller.current_phase
-            ]
+        if self.controller.current_phase_index in self.controller.green_phase_indices:
+            min_max_times = self.phases_min_max_times[self.controller.current_phase]
             min_time = min_max_times["min_time"]
             max_time = min_max_times["max_time"]
             if time_on_phase < min_time:  # stay on current phase
@@ -224,15 +224,64 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
     def __init__(self, controller):
         super(TLSRoundRobinPhaseSelectLogic, self).__init__(controller)
         self.yellow_time = controller.yellow_time
+        self.max_cycle_length = controller.max_cycle_length
+        self._validate_max_cycle_length()
+        self._initialize_phase_durations()
+
+    # def get_allowable_phase_switches(self, time_on_phase):
+    #     mask = [0 for _ in range(self.n_phases)]
+    #     if self.controller.current_phase_index in self.green_phase_indices:
+    #         min_max_times = self.phases_min_max_times[
+    #             self.controller.current_phase
+    #         ]
+    #         min_time = min_max_times["min_time"]
+    #         max_time = min_max_times["max_time"]
+    #         if time_on_phase < min_time:  # stay on current phase
+    #             mask[self.controller.current_phase_index] = 1
+    #             return mask
+    #         elif time_on_phase >= min_time and time_on_phase < max_time:
+    #             # stay on the same phase or switch to the corr. yellow phase
+    #             mask[self.controller.current_phase_index] = 1
+    #             mask[self.controller.next_phase_index] = 1
+    #         elif time_on_phase == max_time:
+    #             # switch to corr. yellow phase
+    #             mask[self.controller.next_phase_index] = 1
+    #         else:
+    #             breakpoint()  # should never reach here
+    #     else:
+    #         mask[self.controller.next_phase_index] = 1
+    #     return mask
+
+    def _validate_max_cycle_length(self):
+        min_cycle_length = sum(
+            self.phases_min_max_times[phase]["min_time"] for phase in self.phase_indices
+        )
+        assert (
+            self.max_cycle_length >= min_cycle_length
+        ), "max_cycle_length must be greater than or equal to the sum of all min_phase_durations"
+
+    def _initialize_phase_durations(self):
+        self.phase_durations = {}
+        remaining_time = self.max_cycle_length
+        for phase in self.phase_indices:
+            min_time = self.phases_min_max_times[phase]["min_time"]
+            remaining_time -= min_time
+
+        for phase in self.phase_indices:
+            min_time = self.phases_min_max_times[phase]["min_time"]
+            max_time = self.phases_min_max_times[phase]["max_time"]
+            self.phase_durations[phase] = min(max_time, remaining_time + min_time)
+            remaining_time -= self.phase_durations[phase] - min_time
 
     def get_allowable_phase_switches(self, time_on_phase):
         mask = [0 for _ in range(self.n_phases)]
+        time_left_on_cycle = self.max_cycle_length - time_on_phase
         if self.controller.current_phase_index in self.green_phase_indices:
-            min_max_times = self.phases_min_max_times[
-                self.controller.current_phase
-            ]
+            min_max_times = self.phases_min_max_times[self.controller.current_phase]
             min_time = min_max_times["min_time"]
-            max_time = min_max_times["max_time"]
+            max_time = min(
+                self.phase_durations[self.controller.current_phase], time_left_on_cycle
+            )
             if time_on_phase < min_time:  # stay on current phase
                 mask[self.controller.current_phase_index] = 1
                 return mask

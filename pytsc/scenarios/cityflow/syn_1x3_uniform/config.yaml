@@ -10,3 +10,4 @@ cityflow:
 signal:
   visibility: 10
   reward_function: queue_length
+  max_cycle_length: 60
