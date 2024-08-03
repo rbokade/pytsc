@@ -8,7 +8,7 @@ cityflow:
   save_replay: False
 
 signal:
-  visibility: 10
+  visibility: 20
   reward_function: queue_length
   min_green_time: 20
   max_green_time: 60
