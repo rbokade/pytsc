@@ -17,7 +17,6 @@ signal:
   input_n_avg: 1  # number of timesteps to average over (in position matrix)
   round_robin: True  # if True, the signal cycles through the phases in order
   # cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
-  max_cycle_length: 90  # (int) seconds
 
 # SUMO specific parameters
 sumo:
