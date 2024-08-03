@@ -52,7 +52,7 @@ misc:
   max_wait_time: 1000  # (simulation seconds)
   pad_value: 0.0  # for observations (e.g. heterogeneous agents)
   save_trip_info: False
-  flickering_coef: 0.0
+  flickering_coef: 0.1  # penalize traffic signal for switching phase
   max_hops: 1  # maximum number of hops for the rewards
   reward_gamma: 0.9  # spatial discount factor for the rewards
   return_agent_stats: True  # return step stats for each agent
