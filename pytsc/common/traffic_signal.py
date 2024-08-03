@@ -45,7 +45,6 @@ class BaseTSProgram(ABC):
         self.phase_indices = config["phase_indices"]
         self.phases_min_max_times = config["phases_min_max_times"]
         self.yellow_time = config["yellow_time"]
-        self.max_cycle_length = config["max_cycle_length"]
 
     @abstractmethod
     def _initialize_traffic_light_program(self):
@@ -95,10 +94,6 @@ class BaseTSController(ABC):
     @property
     def yellow_time(self):
         return self.config["yellow_time"]
-
-    @property
-    def max_cycle_length(self):
-        return self.config["max_cycle_length"]
 
     @property
     def yellow_phase_indices(self):
