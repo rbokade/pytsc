@@ -35,16 +35,10 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
         return env_info
 
     def get_obs(self):
-        if self.tsc_env.config.network["control_scheme"] == "decentralized":
-            return self.tsc_env.get_observations()
-        else:
-            return self.tsc_env.get_state()
+        return self.tsc_env.get_observations()
 
     def get_obs_size(self):
-        if self.tsc_env.config.network["control_scheme"] == "decentralized":
-            return self.tsc_env.get_observation_size()
-        else:
-            return self.tsc_env.get_state_size()
+        return self.tsc_env.get_observation_size()
 
     def get_pressures(self):
         return self.tsc_env.metrics.pressures
@@ -53,10 +47,7 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
         return self.tsc_env.get_state()
 
     def get_local_rewards(self):
-        if self.tsc_env.config.network["control_scheme"] == "decentralized":
-            return self.tsc_env.get_rewards()
-        else:
-            return [self.tsc_env.get_reward()]
+        return self.tsc_env.get_rewards()
 
     def get_state_size(self):
         return self.tsc_env.get_state_size()

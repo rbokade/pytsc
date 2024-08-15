@@ -4,6 +4,8 @@ from pytsc.common import ACTION_SPACES, OBSERVATION_SPACES, REWARD_FUNCTIONS
 from pytsc.common.actions import CentralizedActionSpace
 from pytsc.common.utils import validate_input_against_allowed
 
+import numpy as np
+
 SUPPORTED_SIMULATOR_BACKENDS = ("sumo", "cityflow")
 REWARD_METRICS = ("queue", "pressure")  # TODO: Implement `pressure`
 SIMULATOR_MODULES = {
@@ -112,22 +114,17 @@ class TrafficSignalNetwork:
         return self.action_space.get_size()
 
     def get_observations(self):
-        if self.config.network["control_scheme"] == "centralized":
-            return (
-                self.observation_space.get_observations()
-                + self.observation_space.get_state()
-            )
-        else:
+        if self.config.network["control_scheme"] == "decentralized":
             return self.observation_space.get_observations()
+        else:
+            return [np.concatenate(self.observation_space.get_observations()).tolist()]
 
     def get_observation_size(self):
-        if self.config.network["control_scheme"] == "centralized":
-            return (
-                self.observation_space.get_observation_size()
-                + self.observation_space.get_state_size()
-            )
-        else:
+        if self.config.network["control_scheme"] == "decentralized":
             return self.observation_space.get_size()
+        else:
+            n_a = self.parsed_network.adjacency_matrix.shape[0]
+            return self.observation_space.get_size() * n_a
 
     def get_state(self):
         return self.observation_space.get_state()
@@ -139,7 +136,10 @@ class TrafficSignalNetwork:
         return self.reward_function.get_global_reward()
 
     def get_rewards(self):
-        return self.reward_function.get_local_reward()
+        if self.config.network["control_scheme"] == "decentralized":
+            return self.reward_function.get_local_reward()
+        else:
+            return [self.reward_function.get_global_reward()]
 
     def get_env_info(self):
         stats = self.metrics.get_step_stats()

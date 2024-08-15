@@ -11,9 +11,7 @@ class BaseObservationSpace(ABC):
     Standard observation space for traffic signal control.
     """
 
-    def __init__(
-        self, config, parsed_network, traffic_signals, simulator_backend
-    ):
+    def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
         self.config = config
         self.parsed_network = parsed_network
         self.n_agents = len(traffic_signals)
@@ -38,9 +36,7 @@ class BaseObservationSpace(ABC):
 
 
 class LaneFeatures(BaseObservationSpace):
-    def __init__(
-        self, config, parsed_network, traffic_signals, simulator_backend
-    ):
+    def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
         super(LaneFeatures, self).__init__(
             config, parsed_network, traffic_signals, simulator_backend
         )
@@ -58,21 +54,13 @@ class LaneFeatures(BaseObservationSpace):
         """
         observations = []
         for ts in self.traffic_signals.values():
-            obs = pad_array(
-                ts.norm_queue_lengths, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.norm_densities, self.max_n_controlled_lanes
-            ).tolist()
-            obs += pad_array(
-                ts.norm_mean_speeds, self.max_n_controlled_lanes
-            ).tolist()
+            obs = pad_array(ts.norm_queue_lengths, self.max_n_controlled_lanes).tolist()
+            obs += pad_array(ts.norm_densities, self.max_n_controlled_lanes).tolist()
+            obs += pad_array(ts.norm_mean_speeds, self.max_n_controlled_lanes).tolist()
             obs += pad_array(
                 ts.norm_mean_wait_times, self.max_n_controlled_lanes
             ).tolist()
-            obs += pad_array(
-                ts.phase_id, self.max_n_controlled_phases
-            ).tolist()
+            obs += pad_array(ts.phase_id, self.max_n_controlled_phases).tolist()
             observations.append(obs)
         return observations
 
@@ -97,9 +85,7 @@ class LaneFeatures(BaseObservationSpace):
         }
 
     def get_size(self):
-        return int(
-            (4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases
-        )
+        return int((4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases)
 
     def get_state(self):
         ts = next(iter(self.traffic_signals))
@@ -130,9 +116,7 @@ class LaneFeatures(BaseObservationSpace):
 
 
 class PositionMatrix(LaneFeatures):
-    def __init__(
-        self, config, parsed_network, traffic_signals, simulator_backend
-    ):
+    def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
         super(PositionMatrix, self).__init__(
             config, parsed_network, traffic_signals, simulator_backend
         )
@@ -143,25 +127,19 @@ class PositionMatrix(LaneFeatures):
             pos_mat = compute_linearly_weighted_average(ts.position_matrices)
             pos_mat = pad_array(
                 pos_mat,
-                2
-                * self.max_n_controlled_lanes
-                * self.config.signal["visibility"],
+                2 * self.max_n_controlled_lanes * self.config.signal["visibility"],
             )
             speed_mat = compute_linearly_weighted_average(ts.speed_matrices)
             speed_mat = pad_array(
                 speed_mat,
-                2
-                * self.max_n_controlled_lanes
-                * self.config.signal["visibility"],
+                2 * self.max_n_controlled_lanes * self.config.signal["visibility"],
             )
             obs = np.concatenate((pos_mat, speed_mat, ts.phase_id), axis=0)
             observations.append(obs.tolist())
         return observations
 
     def get_observation_info(self):
-        mat_length = (
-            2 * self.max_n_controlled_lanes * self.config.signal["visibility"]
-        )
+        mat_length = 2 * self.max_n_controlled_lanes * self.config.signal["visibility"]
         pos_start = 0
         pos_end = mat_length
         speed_start = pos_end
