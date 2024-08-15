@@ -15,10 +15,7 @@ class BaseActionSpace(ABC):
             try:
                 actions = actions.tolist()
             except Exception:
-                print(
-                    "Actions must be list or numpy array."
-                    + f"Got {type(actions)}"
-                )
+                print("Actions must be list or numpy array." + f"Got {type(actions)}")
 
     @abstractmethod
     def apply(self, actions):
@@ -39,9 +36,7 @@ class PhaseSelectionActionSpace(BaseActionSpace):
     """
 
     def __init__(self, config, traffic_signals):
-        super(PhaseSelectionActionSpace, self).__init__(
-            config, traffic_signals
-        )
+        super(PhaseSelectionActionSpace, self).__init__(config, traffic_signals)
 
     def apply(self, actions):
         # self._check_actions_type(actions)
@@ -49,9 +44,7 @@ class PhaseSelectionActionSpace(BaseActionSpace):
             ts.action_to_phase(actions[ts_idx])
 
     def get_size(self):
-        return max(
-            [ts.controller.n_phases for ts in self.traffic_signals.values()]
-        )
+        return max([ts.controller.n_phases for ts in self.traffic_signals.values()])
 
     def get_mask(self):
         masks = []

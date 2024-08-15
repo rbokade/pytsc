@@ -1,4 +1,4 @@
-from pytsc import TrafficSignalNetwork, DisruptedTrafficSignalNetwork
+from pytsc import TrafficSignalNetwork
 from smac.env import MultiAgentEnv
 
 
@@ -7,12 +7,7 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def __init__(self, map_name="monaco", simulator_backend="sumo", **kwargs):
         kwargs.pop("scenario", None)
-        if "disrupted" in map_name:
-            tsc_env = DisruptedTrafficSignalNetwork
-        else:
-            tsc_env = TrafficSignalNetwork
-
-        self.tsc_env = tsc_env(
+        self.tsc_env = TrafficSignalNetwork(
             map_name, simulator_backend=simulator_backend, **kwargs
         )
         self.episode_limit = self.tsc_env.episode_limit
@@ -58,7 +53,10 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
         return self.tsc_env.get_state()
 
     def get_local_rewards(self):
-        return self.tsc_env.get_rewards()
+        if self.tsc_env.config.network["control_scheme"] == "decentralized":
+            return self.tsc_env.get_rewards()
+        else:
+            return [self.tsc_env.get_reward()]
 
     def get_state_size(self):
         return self.tsc_env.get_state_size()
