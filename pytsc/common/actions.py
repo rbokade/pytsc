@@ -114,7 +114,7 @@ class CentralizedActionSpace(BaseActionSpace):
         for _ in range(self.n_agents):
             actions.append(current_action % self.n_actions)
             current_action //= self.n_actions
-        return actions
+        return actions[::-1]
 
     def get_size(self):
         return self.individual_action_space.get_size() ** self.n_agents
