@@ -96,11 +96,11 @@ class PhaseSwitchActionSpace(BaseActionSpace):
 
 class CentralizedActionSpace(BaseActionSpace):
     def __init__(self, individual_action_space):
-        self.individual_action_space = individual_action_space
         super(CentralizedActionSpace, self).__init__(
             individual_action_space.config,
             individual_action_space.traffic_signals,
         )
+        self.individual_action_space = individual_action_space
         self.n_agents = len(self.traffic_signals)
         self.n_actions = self.individual_action_space.get_size()
 
@@ -114,7 +114,7 @@ class CentralizedActionSpace(BaseActionSpace):
         for _ in range(self.n_agents):
             actions.append(current_action % self.n_actions)
             current_action //= self.n_actions
-        return actions[::-1]
+        return actions
 
     def get_size(self):
         return self.individual_action_space.get_size() ** self.n_agents
