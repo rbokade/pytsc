@@ -6,6 +6,7 @@ cityflow:
   roadnet_log_file: "roadnet_log_file.json"
   replay_log_file: "replay_log_file.txt"
   save_replay: False
+  episode_limit: 3600
 
 signal:
   visibility: 20
