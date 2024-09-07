@@ -47,7 +47,7 @@ class TrafficSignalNetwork:
 
     @property
     def episode_over(self):
-        return self.simulator.sim_step % (self.config.simulator["episode_limit"]) == 0
+        return self.simulator.sim_step % self.config.simulator["episode_limit"] == 0
 
     def _validate_config(self):
         validate_input_against_allowed(
