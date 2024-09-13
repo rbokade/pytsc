@@ -47,7 +47,10 @@ class TrafficSignalNetwork:
 
     @property
     def episode_over(self):
-        return self.simulator.sim_step % self.config.simulator["episode_limit"] == 0
+        if self.simulator.sim_step > 0:
+            return self.simulator.sim_step % self.config.simulator["episode_limit"] == 0
+        else:
+            return False
 
     def _validate_config(self):
         validate_input_against_allowed(
@@ -147,13 +150,14 @@ class TrafficSignalNetwork:
         return stats
 
     def restart(self):
+        if self.episode_over:
+            self.episode_count += 1
         if self.simulator.is_terminated:
             self.simulator.close_simulator()
             self.simulator.start_simulator()
             self._init_traffic_signals()
             self._init_parsers()
             self.hour_count += 1
-        self.episode_count += 1
 
     def step(self, actions):
         self.action_space.apply(actions)
