@@ -90,8 +90,7 @@ class CityFlowTripGenerator(TripGenerator):
         global_max_speed = max(lane_max_speeds.values())
         for road in self.parsed_network.roads:
             lane_speeds = [
-                lane_max_speeds[f"{road['id']}_{i}"]
-                for i in range(len(road["lanes"]))
+                lane_max_speeds[f"{road['id']}_{i}"] for i in range(len(road["lanes"]))
             ]
             avg_max_speed = sum(lane_speeds) / len(lane_speeds)
             normalized_weight = avg_max_speed / global_max_speed
@@ -147,8 +146,7 @@ class CityFlowTripGenerator(TripGenerator):
             if next_edge:
                 next_edge_candidates.append(next_edge)
                 combined_weights.append(
-                    self.turn_probabilities[i]
-                    * self.edge_weights.get(next_edge, 1.0)
+                    self.turn_probabilities[i] * self.edge_weights.get(next_edge, 1.0)
                 )
         if not next_edge_candidates:
             return None
@@ -189,9 +187,7 @@ class CityFlowTripGenerator(TripGenerator):
         for start_edge in incoming_edges:
             current_time = self.start_time
             while current_time < self.end_time:
-                interarrival_time = np.random.normal(
-                    self.inter_mu, self.inter_sigma
-                )
+                interarrival_time = np.random.normal(self.inter_mu, self.inter_sigma)
                 interarrival_time = max(0, interarrival_time)
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
@@ -212,9 +208,7 @@ class CityFlowTripGenerator(TripGenerator):
         flow_rate = (self.end_time - self.start_time) / self.inter_mu
         filename = f"{self.scenario}__gaussian_{int(flow_rate)}_flows.json"
         if "replicate_no" in self.config._additional_config:
-            filename = (
-                f"{self.config._additional_config['replicate_no']}__{filename}"
-            )
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
@@ -276,9 +270,7 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
         flow_rate = (self.end_time - self.start_time) / self.inter_mu
         filename = f"{self.scenario}__interval_{int(flow_rate)}_flows.json"
         if "replicate_no" in self.config._additional_config:
-            filename = (
-                f"{self.config._additional_config['replicate_no']}__{filename}"
-            )
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         else:
             filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
@@ -364,9 +356,7 @@ class VariableDemandTripGenerator(CityFlowTripGenerator):
         )
         filename = f"{self.scenario}__gaussian_{int(flow_rate)}_flows.json"
         if "replicate_no" in self.config._additional_config:
-            filename = (
-                f"{self.config._additional_config['replicate_no']}__{filename}"
-            )
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
@@ -407,18 +397,12 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
     def _is_ns_road(self, road):
         start_point = road["points"][0]
         end_point = road["points"][-1]
-        return (
-            start_point["x"] == end_point["x"]
-            and start_point["y"] > end_point["y"]
-        )
+        return start_point["x"] == end_point["x"] and start_point["y"] > end_point["y"]
 
     def _is_ew_road(self, road):
         start_point = road["points"][0]
         end_point = road["points"][-1]
-        return (
-            start_point["y"] == end_point["y"]
-            and start_point["x"] > end_point["x"]
-        )
+        return start_point["y"] == end_point["y"] and start_point["x"] > end_point["x"]
 
     def generate_flows(self, filepath, replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
@@ -456,20 +440,14 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
                     flows.append(flow_entry)
                     current_time = vehicle_start_time
 
-        generate_flow_for_edges(
-            ns_edges, self.inter_mu_ns, self.inter_sigma_ns
-        )
-        generate_flow_for_edges(
-            ew_edges, self.inter_mu_ew, self.inter_sigma_ew
-        )
+        generate_flow_for_edges(ns_edges, self.inter_mu_ns, self.inter_sigma_ns)
+        generate_flow_for_edges(ew_edges, self.inter_mu_ew, self.inter_sigma_ew)
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
         flow_rate_ns = (self.end_time - self.start_time) / self.inter_mu_ns
         flow_rate_ew = (self.end_time - self.start_time) / self.inter_mu_ew
         filename = f"{self.scenario}__oneway_{int(flow_rate_ns)}_NS_{int(flow_rate_ew)}_EW_flows.json"
         if "replicate_no" in self.config._additional_config:
-            filename = (
-                f"{self.config._additional_config['replicate_no']}__{filename}"
-            )
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
         filepath = os.path.join(filepath, filename)
@@ -515,6 +493,4 @@ if __name__ == "__main__":
         inter_sigma=args.flow_rate_sigma,
         turn_probs=turn_probs,
     )
-    flow_generator.generate_flows(
-        filepath="/Users/rohitbokade/repos/pytsc/pytsc/tests"
-    )
+    flow_generator.generate_flows(filepath="/Users/rohitbokade/repos/pytsc/pytsc/tests")

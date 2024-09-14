@@ -3,8 +3,8 @@ cityflow:
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
   roadnet_file: roadnet_3_4.json
   flow_file: anon_3_4_jinan_real.json
-  roadnet_log_file: "frontend/web/roadnet_log_file.json"
-  replay_log_file: "frontend/web/replay_log_file.txt"
+  roadnet_log_file: "roadnet_log_file.json"
+  replay_log_file: "replay_log_file.txt"
   save_replay: False
 
 signal:

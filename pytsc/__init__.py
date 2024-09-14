@@ -1,10 +1,10 @@
+import numpy as np
+
 from pytsc.backends.cityflow import CITYFLOW_MODULES
 from pytsc.backends.sumo import SUMO_MODULES
 from pytsc.common import ACTION_SPACES, OBSERVATION_SPACES, REWARD_FUNCTIONS
 from pytsc.common.actions import CentralizedActionSpace
 from pytsc.common.utils import validate_input_against_allowed
-
-import numpy as np
 
 SUPPORTED_SIMULATOR_BACKENDS = ("sumo", "cityflow")
 REWARD_METRICS = ("queue", "pressure")  # TODO: Implement `pressure`
