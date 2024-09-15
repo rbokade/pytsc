@@ -4,6 +4,8 @@ import re
 import numpy as np
 
 
+import logging
+
 class EnvLogger:
 
     @staticmethod
@@ -15,13 +17,12 @@ class EnvLogger:
             )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
-        # Set the logger level here
-        logger.setLevel(logging.INFO)
 
     @staticmethod
-    def get_logger(name=__name__):
+    def get_logger(name=__name__, level=logging.INFO):
         logger = logging.getLogger(name)
         EnvLogger._ensure_handler(logger)
+        logger.setLevel(level)  # Set the logger level dynamically
         return logger
 
     @staticmethod
@@ -36,6 +37,12 @@ class EnvLogger:
     @staticmethod
     def log_warning(msg):
         EnvLogger.log(logging.WARNING, msg)
+
+    @staticmethod
+    def set_log_level(level):
+        logger = EnvLogger.get_logger()
+        logger.setLevel(level)
+
 
 
 def validate_input_against_allowed(inp_cfg_str, allowed_cfg_strs):

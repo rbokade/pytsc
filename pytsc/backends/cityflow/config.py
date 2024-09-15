@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import random
 import tempfile
@@ -16,6 +17,8 @@ CONFIG_DIR = os.path.join(
     "scenarios",
     "cityflow",
 )
+
+EnvLogger.set_log_level(logging.WARNING)
 
 
 class Config(BaseConfig):

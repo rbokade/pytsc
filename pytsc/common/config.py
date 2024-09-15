@@ -1,4 +1,5 @@
 import os
+import logging
 import pprint
 import yaml
 
@@ -13,11 +14,12 @@ CONFIG_DIR = os.path.join(
     "scenarios",
 )
 
+EnvLogger.set_log_level(logging.WARNING)
 
 class BaseConfig(ABC):
     def __init__(self, scenario, **kwargs):
         self.scenario = scenario
-        self._additional_config = kwargs
+        self._additional_config = kwargs        
 
     def _load_config(self, simulator_backend):
         # Load default config parameters

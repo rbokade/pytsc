@@ -1,9 +1,12 @@
 from abc import ABC
 
+import logging
+
 import numpy as np
 
 from pytsc.common.utils import EnvLogger
 
+EnvLogger.set_log_level(logging.WARNING)
 
 class BasePhaseSelector(ABC):
     def __init__(self, traffic_signal, round_robin=True, **kwargs):
