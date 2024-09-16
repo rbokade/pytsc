@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import pandas as pd
+
 from pytsc.controllers import (
     FixedTimePhaseSelector,
     GreedyPhaseSelector,
@@ -153,10 +155,10 @@ class BaseTSController(ABC):
         return phase_one_hot
 
     def _instantiate_traffic_light_logic(self):
-        if getattr(self.config, "round_robin", False):
-            self.logic = TLSFreePhaseSelectLogic(self)
-        else:
+        if self.config["round_robin"]:
             self.logic = TLSRoundRobinPhaseSelectLogic(self)
+        else:
+            self.logic = TLSFreePhaseSelectLogic(self)
 
     def get_allowable_phase_switches(self):
         return self.logic.get_allowable_phase_switches(self.time_on_phase)
