@@ -89,7 +89,7 @@ class Config(BaseConfig):
         # Save cityflow_cfg to file
         with open(self.cityflow_cfg_file, "w") as f:
             json.dump(cityflow_cfg, f, indent=4)
-        EnvLogger.log_info(f"Loaded flow file: {self.flow_file}")
+        # EnvLogger.log_info(f"Loaded flow file: {self.flow_file}")
 
 
 class DisruptedConfig(Config):

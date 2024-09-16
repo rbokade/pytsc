@@ -52,10 +52,10 @@ class Retriever(BaseRetriever):
         lane_n_queued = self.engine.get_lane_waiting_vehicle_count()
         lane_vehicles = self.engine.get_lane_vehicles()
         vehicle_speeds = self.engine.get_vehicle_speed()
-        if self.config.signal["observation_space"] == "position_matrix":
-            position_speed_matrices = self._get_position_and_speed_matrices()
-        else:
-            position_speed_matrices = {lane_id: None for lane_id in lane_n_queued.keys()}
+        # if self.config.signal["observation_space"] == "position_matrix":
+        position_speed_matrices = self._get_position_and_speed_matrices()
+        # else:
+        #     position_speed_matrices = {lane_id: None for lane_id in lane_n_queued.keys()}
         lane_measurements = {}
         for lane_id, vehicles_on_lane in lane_vehicles.items():
             n_queued = lane_n_queued[lane_id]

@@ -36,8 +36,8 @@ class BaseTrafficSignal(ABC):
             "sotl": SOTLPhaseSelector(self),
         }
 
-    def get_controller_actions(self, sub_results):
-        return {k: v.get_action(sub_results) for k, v in self.controllers.items()}
+    # def get_controller_action(self, sub_results):
+    #     return {k: v.get_action(sub_results) for k, v in self.controllers.items()}
 
 
 class BaseTSProgram(ABC):

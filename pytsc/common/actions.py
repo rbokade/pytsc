@@ -29,6 +29,13 @@ class BaseActionSpace(ABC):
     def get_size(self):
         raise NotImplementedError
 
+    def get_trad_controller_actions(self, controller):
+        actions = []
+        for ts in self.traffic_signals.values():
+            action = ts.get_controller_action(controller)
+            actions.append(action)
+        return actions
+
 
 class PhaseSelectionActionSpace(BaseActionSpace):
     """
