@@ -6,7 +6,7 @@ cityflow:
   roadnet_log_file: "roadnet_log_file.json"
   replay_log_file: "replay_log_file.txt"
   save_replay: False
-  flow_rate_type: "random"
+  flow_rate_type: "sequential"
   flow_files: [
     "randomized/anon_3_4_jinan_real_0.json",
     "randomized/anon_3_4_jinan_real_1.json",

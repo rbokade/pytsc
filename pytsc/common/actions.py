@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from itertools import product
+import random
 
 from pytsc.common.utils import pad_list
 
@@ -31,8 +32,14 @@ class BaseActionSpace(ABC):
 
     def get_trad_controller_actions(self, controller):
         actions = []
-        for ts in self.traffic_signals.values():
-            action = ts.get_controller_action(controller)
+        mask = self.get_mask()
+        for i, ts in enumerate(self.traffic_signals.values()):
+            if controller == "random":
+                action = random.choices(range(ts.controller.n_phases), weights=mask[i])[
+                    0
+                ]
+            else:
+                action = ts.get_controller_action(controller)
             actions.append(action)
         return actions
 
@@ -99,6 +106,20 @@ class PhaseSwitchActionSpace(BaseActionSpace):
                 mask[1] = 1
             masks.append(mask)
         return masks
+
+    def get_trad_controller_actions(self, controller):
+        actions = []
+        mask = self.get_mask()
+        for i, ts in enumerate(self.traffic_signals.values()):
+            if controller == "random":
+                action = random.choices([0, 1], weights=mask[i])[0]
+            else:
+                action = ts.get_controller_action(controller)
+            if ts.controller.program.current_phase_index != action:
+                actions.append(1)
+            else:
+                actions.append(0)
+        return actions
 
 
 class CentralizedActionSpace(BaseActionSpace):
