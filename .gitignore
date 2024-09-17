@@ -139,6 +139,7 @@ frontend/
 *.csv
 *.png
 *.txt
+!pytsc_logo.png
 
 # Ignore the results directory
 pytsc/results/
