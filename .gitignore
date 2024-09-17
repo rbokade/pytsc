@@ -142,3 +142,4 @@ frontend/
 
 # Ignore the results directory
 pytsc/results/
+pytsc/scenarios/jinan_3_4/randomized/
