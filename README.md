@@ -1,3 +1,5 @@
+![PyTSC Logo](./pytsc_logo.png)
+
 ## `pytsc`: Traffic Signal Control Environment for Multi-Agent Reinforcement Learning (Experimental)
 
 `pytsc` is a work-in-progress environment aimed at researchers who want to quickly prototype multi-agent reinforcement learning solutions for traffic signal control. The project is designed to offer both [SUMO](https://github.com/eclipse/sumo) and [CityFlow](https://github.com/cityflow-project/CityFlow) simulation backends, allowing researchers to easily integrate open-source traffic signal control datasets for their research projects.
