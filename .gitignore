@@ -1,5 +1,6 @@
 # MacOS
 .DS_Store
+!README.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
