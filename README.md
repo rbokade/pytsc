@@ -1,10 +1,10 @@
 ![PyTSC Logo](./pytsc_logo.png)
 
-## `pytsc`: Traffic Signal Control Environment for Multi-Agent Reinforcement Learning (Experimental)
+## `PyTSC`: Traffic Signal Control Environment for Multi-Agent Reinforcement Learning (Experimental)
 
-`pytsc` is a work-in-progress environment aimed at researchers who want to quickly prototype multi-agent reinforcement learning solutions for traffic signal control. The project is designed to offer both [SUMO](https://github.com/eclipse/sumo) and [CityFlow](https://github.com/cityflow-project/CityFlow) simulation backends, allowing researchers to easily integrate open-source traffic signal control datasets for their research projects.
+`PyTSC` is a work-in-progress environment aimed at researchers who want to quickly prototype PyTSC-agent reinforcement learning solutions for traffic signal control. The project is designed to offer both [SUMO](https://github.com/eclipse/sumo) and [CityFlow](https://github.com/cityflow-project/CityFlow) simulation backends, allowing researchers to easily integrate open-source traffic signal control datasets for their research projects.
 
-Currently, pytsc is compatible with the [PyMARL](https://github.com/oxwhirl/pymarl) library, providing a smooth experience for researchers already working with it. In future updates, we plan to develop wrappers for other popular MARL libraries to further extend the environment's versatility.
+Currently, `PyTSC` is compatible with the [PyMARL](https://github.com/oxwhirl/pymarl) library, providing a smooth experience for researchers already working with it. In future updates, we plan to develop wrappers for other popular MARL libraries to further extend the environment's versatility.
 
 The code is highly modular, enabling researchers to create their own variants of simulations with ease. For SUMO, the environment employs [subscriptions](https://sumo.dlr.de/docs/FAQ.html#traci) to improve simulation speeds. While the integration of the CityFlow simulator is still under development, it remains a priority for the project.
 
