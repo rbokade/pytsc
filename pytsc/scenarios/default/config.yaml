@@ -12,8 +12,8 @@ signal:
   reward_function: queue_length
   yellow_time: 5  # must be a multiple of 5
   min_green_time: 5  # must be a multiple of 5
-  max_green_time: 25   # must be a multiple of 5
-  visibility: 10  # range of visibility in n_bins, each bin = 7.5m
+  max_green_time: 60   # must be a multiple of 5
+  visibility: 20  # range of visibility in n_bins, each bin = 7.5m
   input_n_avg: 1  # number of timesteps to average over (in position matrix)
   round_robin: True  # if True, the signal cycles through the phases in order
   # cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
@@ -29,6 +29,7 @@ sumo:
   initial_wait_time: 0  # sim seconds to wait to populate the network
   vehicle_length: 5  # meters
   veh_size_min_gap: 7.5  # vehicle size (5m) + minimum gap between vehicles (2.5m)
+  sim_length: 3600  # length of traffic simulation (in simulation seconds)
 
 # CityFlow specific parameters
 cityflow:
@@ -44,12 +45,15 @@ cityflow:
   veh_size_min_gap: 7.5  # vehicle_size + minimum gap or headway = 5 + 2.5
   save_replay: False
   flow_rate_type: "constant"  # (constant, random, sequential)
+  sim_length: 3600  # length of traffic simulation (in simulation seconds)
 
 # Misc
 misc:
   max_wait_time: 1000  # (simulation seconds)
   pad_value: 0.0  # for observations (e.g. heterogeneous agents)
   save_trip_info: False
-  flickering_coef: 0.0
+  flickering_coef: 0.01  # penalize traffic signal for switching phase
   max_hops: 1  # maximum number of hops for the rewards
-  reward_gamma: 0.0  # spatial discount factor for the rewards
+  reward_gamma: 0.9  # spatial discount factor for the rewards
+  return_agent_stats: True  # return step stats for each agent
+  return_lane_stats: False  # return step stats for each lane

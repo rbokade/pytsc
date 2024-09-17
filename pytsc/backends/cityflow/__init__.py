@@ -1,4 +1,7 @@
 from pytsc.backends.cityflow.config import Config as CityFlowConfig
+from pytsc.backends.cityflow.config import (
+    DisruptedConfig as CityFlowDisruptedConfig,
+)
 from pytsc.backends.cityflow.metrics import (
     MetricsParser as CityFlowMetricsParser,
 )
@@ -14,6 +17,7 @@ from pytsc.backends.cityflow.traffic_signal import (
 
 CITYFLOW_MODULES = {
     "config": CityFlowConfig,
+    "disrupted_config": CityFlowDisruptedConfig,
     "metrics_parser": CityFlowMetricsParser,
     "network_parser": CityFlowNetworkParser,
     "retriever": CityFlowRetriever,

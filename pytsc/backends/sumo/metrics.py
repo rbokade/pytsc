@@ -82,7 +82,7 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def pressure(self):
-        return np.mean([ts.pressure for ts in self.traffic_signals.values()])
+        return np.sum([ts.pressure for ts in self.traffic_signals.values()])
 
     def get_step_stats(self):
         agent_stats = {}

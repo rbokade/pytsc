@@ -1,9 +1,12 @@
 from abc import ABC
 
+import logging
+
 import numpy as np
 
 from pytsc.common.utils import EnvLogger
 
+EnvLogger.set_log_level(logging.WARNING)
 
 class BasePhaseSelector(ABC):
     def __init__(self, traffic_signal, round_robin=True, **kwargs):
@@ -61,7 +64,11 @@ class GreedyPhaseSelector(BasePhaseSelector):
             "phase_to_inc_out_lanes"
         ][phase]
         for inc_lane in phase_inc_out_lanes.keys():
-            inc_vehicles += len(inp["lane"][inc_lane]["vehicles_bin_idxs"])
+            inc_vehicles += sum(
+                inp["lane"][inc_lane]["position_speed_matrices"][0]
+            ) / (
+                sum(inp["lane"][inc_lane]["position_speed_matrices"][1]) + 1e-6
+            )
         return inc_vehicles
 
 
@@ -98,11 +105,13 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
             "phase_to_inc_out_lanes"
         ][phase]
         for inc_lane, out_lanes in phase_inc_out_lanes.items():
-            inc_lane_vehicles = len(inp["lane"][inc_lane]["vehicles_bin_idxs"])
+            inc_lane_vehicles = sum(
+                inp["lane"][inc_lane]["position_speed_matrices"][0]
+            )
             out_lane_vehicles = 0
             for out_lane in out_lanes:
-                out_lane_vehicles += len(
-                    inp["lane"][out_lane]["vehicles_bin_idxs"]
+                out_lane_vehicles += sum(
+                    inp["lane"][out_lane]["position_speed_matrices"][0]
                 )
             pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)
         return pressure
@@ -154,5 +163,7 @@ class SOTLPhaseSelector(BasePhaseSelector):
             "phase_to_inc_out_lanes"
         ][phase]
         for inc_lane in phase_inc_out_lanes.keys():
-            total_vehicles += len(inp["lane"][inc_lane]["vehicles_bin_idxs"])
+            total_vehicles += len(
+                inp["lane"][inc_lane]["position_speed_matrices"][0]
+            )
         return total_vehicles

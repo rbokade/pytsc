@@ -45,23 +45,48 @@ class TrafficSignal(BaseTrafficSignal):
         self.incoming_lanes = config["incoming_lanes"]
         self.outgoing_lanes = config["outgoing_lanes"]
         self.position_matrices = deque(maxlen=self.config["input_n_avg"])
-        # self.init_rule_based_controllers()
+        self.speed_matrices = deque(maxlen=self.config["input_n_avg"])
+        self.sub_results = None
+        self.init_rule_based_controllers()
+
+    def get_controller_action(self, controller):
+        inp = self.simulator.step_measurements
+        inp.update(
+            {
+                "time": self.simulator.sim_time,
+                "current_phase_index": self.controller.program.current_phase_index,
+                "time_on_phase": self.controller.time_on_phase,
+            }
+        )
+        return self.controllers[controller].get_action(inp)
 
     def update_stats(self, sub_results):
-        pos_mat = []
-        self.lane_pos_mats = {}
+        self.sub_results = sub_results
+        # if self.config["observation_space"] == "position_matrix":
+        pos_mat, speed_mat = [], []
+        # self.lane_pos_mats, self.lane_speed_mats = {}, {}
         for lane in self.incoming_lanes:
             lane_results = sub_results["lane"][lane]
-            lane_pos_mat = np.zeros(
-                self.config["visibility"], dtype=np.float32
-            )
-            vehicle_bin_idxs = lane_results["vehicles_bin_idxs"]
-            if len(vehicle_bin_idxs):
-                for i in vehicle_bin_idxs:
-                    lane_pos_mat[i] = 1.0
+            lane_pos_mat = lane_results["position_speed_matrices"][0][
+                : self.config["visibility"]
+            ]
+            lane_speed_mat = lane_results["position_speed_matrices"][1][
+                : self.config["visibility"]
+            ]
             pos_mat.append(lane_pos_mat)
-            self.lane_pos_mats[lane] = lane_pos_mat
+            speed_mat.append(lane_speed_mat)
+        for lane in self.outgoing_lanes:
+            lane_results = sub_results["lane"][lane]
+            lane_pos_mat = lane_results["position_speed_matrices"][0][
+                -self.config["visibility"] :
+            ]
+            lane_speed_mat = lane_results["position_speed_matrices"][1][
+                -self.config["visibility"] :
+            ]
+            pos_mat.append(lane_pos_mat)
+            speed_mat.append(lane_speed_mat)
         self.position_matrices.append(np.concatenate(pos_mat, axis=0))
+        self.speed_matrices.append(np.concatenate(speed_mat, axis=0))
         (
             queue_lengths,
             densities,

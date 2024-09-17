@@ -25,7 +25,7 @@ class QueueLength(BaseRewardFunction):
 
     def get_global_reward(self):
         fc = self.config.misc["flickering_coef"]
-        reward = 0
+        reward = 1e-6
         reward -= fc * self.metrics.flickering_signal
         reward -= self.metrics.n_queued
         return reward
@@ -37,6 +37,7 @@ class QueueLength(BaseRewardFunction):
         local_rewards = {
             ts_id: -fc * ts.controller.program.phase_changed
             - np.mean(ts.queue_lengths)
+            - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}
@@ -55,7 +56,7 @@ class MaxPressure(BaseRewardFunction):
 
     def get_global_reward(self):
         fc = self.config.misc["flickering_coef"]
-        reward = 0
+        reward = 1e-6
         reward -= fc * self.metrics.flickering_signal
         reward -= self.metrics.pressure
         return reward
@@ -67,6 +68,7 @@ class MaxPressure(BaseRewardFunction):
         local_rewards = {
             ts_id: -fc * ts.controller.program.phase_changed
             - np.mean(ts.pressure)
+            - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}

@@ -1,5 +1,5 @@
 from pytsc.common.retriever import BaseRetriever
-from pytsc.common.utils import calculate_bin_index
+from pytsc.common.utils import get_vehicle_bin_index
 
 
 class Retriever(BaseRetriever):
@@ -7,10 +7,19 @@ class Retriever(BaseRetriever):
         super().__init__(simulator)
         self.engine = simulator.engine
 
-    def _get_lane_vehicles_bin_idxs(self):
+    def _get_position_and_speed_matrices(self):
         vehicles = self.engine.get_vehicles(include_waiting=True)
         lane_lengths = self.simulator.parsed_network.lane_lengths
-        lane_vehicles_bin_idxs = {lane: [] for lane in lane_lengths.keys()}
+        lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
+        position_speed_matrices = {
+            lane: [[], []] for lane in lane_lengths.keys()
+        }
+        for lane in lane_lengths.keys():
+            bin_count = int(
+                lane_lengths[lane] / self.config.simulator["veh_size_min_gap"]
+            )
+            position_speed_matrices[lane][0] = [0.0] * bin_count
+            position_speed_matrices[lane][1] = [0.0] * bin_count
         if len(vehicles):
             for vehicle in vehicles:
                 vehicle_info = self.engine.get_vehicle_info(vehicle)
@@ -18,22 +27,35 @@ class Retriever(BaseRetriever):
                     "drivable", "NO_LANE_AVAILABLE"
                 )
                 if vehicle_lane in lane_lengths.keys():
-                    bin_idx = calculate_bin_index(
-                        n_bins=self.config.signal["visibility"],
-                        bin_size=self.config.simulator["veh_size_min_gap"],
+                    bin_count = int(
+                        lane_lengths[vehicle_lane]
+                        / self.config.simulator["veh_size_min_gap"]
+                    )
+                    bin_idx = get_vehicle_bin_index(
+                        n_bins=bin_count,
                         lane_length=lane_lengths[vehicle_lane],
-                        lane_position=float(vehicle_info["distance"]),
+                        vehicle_position=float(vehicle_info["distance"]),
                     )
                     if bin_idx is not None:
-                        lane_vehicles_bin_idxs[vehicle_lane].append(bin_idx)
-        return lane_vehicles_bin_idxs
+                        position_speed_matrices[vehicle_lane][0][bin_idx] = 1.0
+                        norm_speed = (
+                            float(vehicle_info["speed"])
+                            / lane_max_speeds[vehicle_lane]
+                        )
+                        position_speed_matrices[vehicle_lane][1][
+                            bin_idx
+                        ] = norm_speed
+        return position_speed_matrices
 
     def _compute_lane_measurements(self):
         v_size = self.config.simulator["veh_size_min_gap"]
         lane_n_queued = self.engine.get_lane_waiting_vehicle_count()
         lane_vehicles = self.engine.get_lane_vehicles()
         vehicle_speeds = self.engine.get_vehicle_speed()
-        lane_vehicles_bin_idxs = self._get_lane_vehicles_bin_idxs()
+        # if self.config.signal["observation_space"] == "position_matrix":
+        position_speed_matrices = self._get_position_and_speed_matrices()
+        # else:
+        #     position_speed_matrices = {lane_id: None for lane_id in lane_n_queued.keys()}
         lane_measurements = {}
         for lane_id, vehicles_on_lane in lane_vehicles.items():
             n_queued = lane_n_queued[lane_id]
@@ -57,7 +79,7 @@ class Retriever(BaseRetriever):
                 "occupancy": occupancy,
                 "norm_queue_length": norm_queue_length,
                 "norm_mean_speed": norm_mean_speed,
-                "vehicles_bin_idxs": lane_vehicles_bin_idxs[lane_id],
+                "position_speed_matrices": position_speed_matrices[lane_id],
             }
         return lane_measurements
 

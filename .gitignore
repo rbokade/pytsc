@@ -1,5 +1,6 @@
 # MacOS
 .DS_Store
+!README.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -131,11 +132,16 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Disrupted scenarios
+disrupted/
+
 # Results
 frontend/
 *.csv
 *.png
 *.txt
+!pytsc_logo.png
 
 # Ignore the results directory
 pytsc/results/
+randomized/

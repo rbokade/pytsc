@@ -7,9 +7,7 @@ import pandas as pd
 from pytsc.controllers.evaluate import Evaluate
 
 
-def run_evaluation(
-    scenario, simulator_backend, controller, hours=1, add_args={}
-):
+def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}):
     evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
     evaluate.run(hours, save_stats=True, plot_stats=False)
     stats = pd.DataFrame(evaluate.log)

@@ -51,7 +51,7 @@ class MetricsParser(BaseMetricsParser):
         lane_measurements = self.simulator.step_measurements["lane"]
         total_occupancy = sum(
             data["occupancy"] for data in lane_measurements.values()
-        )
+        ).item()
         return total_occupancy / len(lane_measurements)
 
     @property
@@ -72,40 +72,15 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def pressure(self):
-        return np.mean([ts.pressure for ts in self.traffic_signals.values()])
+        return np.sum(
+            [ts.pressure for ts in self.traffic_signals.values()]
+        ).item()
+
+    @property
+    def pressures(self):
+        return [ts.pressure for ts in self.traffic_signals.values()]
 
     def get_step_stats(self):
-        agent_stats = {}
-        agent_stats.update(
-            {
-                f"n_queued_{ts.id}": np.sum(ts.queue_lengths)
-                for ts in self.traffic_signals.values()
-            }
-        )
-        agent_stats.update(
-            {
-                f"mean_speed_{ts.id}": np.mean(ts.mean_speeds)
-                for ts in self.traffic_signals.values()
-            }
-        )
-        agent_stats.update(
-            {
-                f"mean_delay_{ts.id}": 1 - np.mean(ts.norm_mean_speeds)
-                for ts in self.traffic_signals.values()
-            }
-        )
-        agent_stats.update(
-            {
-                f"mean_density_{ts.id}": np.mean(ts.densities)
-                for ts in self.traffic_signals.values()
-            }
-        )
-        agent_stats.update(
-            {
-                f"pressure_{ts.id}": np.mean(ts.pressure)
-                for ts in self.traffic_signals.values()
-            }
-        )
         step_stats = {
             "time_step": self.time_step,
             "average_travel_time": self.average_travel_time,
@@ -115,5 +90,55 @@ class MetricsParser(BaseMetricsParser):
             "density": self.density,
             "pressure": self.pressure,
         }
-        step_stats.update(agent_stats)
+        if self.config.misc["return_agent_stats"]:
+            agent_stats = {}
+            agent_stats.update(
+                {
+                    f"{ts.id}__phase": ts.controller.current_phase
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            agent_stats.update(
+                {
+                    f"{ts.id}__n_queued": np.sum(ts.queue_lengths).item()
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            agent_stats.update(
+                {
+                    f"{ts.id}__mean_speed": np.mean(ts.mean_speeds).item()
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            agent_stats.update(
+                {
+                    f"{ts.id}__mean_delay": 1
+                    - np.mean(ts.norm_mean_speeds).item()
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            agent_stats.update(
+                {
+                    f"{ts.id}__mean_density": np.mean(ts.densities).item()
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            agent_stats.update(
+                {
+                    f"{ts.id}__pressure": np.mean(ts.pressure).item()
+                    for ts in self.traffic_signals.values()
+                }
+            )
+            step_stats.update(agent_stats)
+        if self.config.misc["return_lane_stats"]:
+            lane_measurements = self.simulator.step_measurements["lane"]
+            stat_keys = ("n_vehicles", "n_queued", "mean_speed", "occupancy")
+            lane_stats = {}
+            for lane, stat_dict in lane_measurements.items():
+                for k in stat_keys:
+                    try:
+                        lane_stats[f"{lane}__{k}"] = stat_dict[k].item()
+                    except Exception:
+                        lane_stats[f"{lane}__{k}"] = stat_dict[k]
+            step_stats.update(lane_stats)
         return step_stats

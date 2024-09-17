@@ -92,6 +92,12 @@ class NetworkParser(BaseNetworkParser):
             xmin, ymin, xmax, ymax = self.net.getBoundary()
         except Exception:
             [xmin, ymin], [xmax, ymax] = self.net.getBBoxXY()
+        return (x_min, y_min), (x_max, y_max)
+
+    @property
+    @lru_cache(maxsize=None)
+    def norm_network_boundary(self):
+        (x_min, y_min), (x_max, y_max) = self.network_boundary
         return [xmax - xmin, ymax - ymin]
 
     @property
@@ -215,8 +221,8 @@ class NetworkParser(BaseNetworkParser):
         ts_norm_coordinates = {}
         for ts_id, ts_coord in self.ts_coordinates.items():
             ts_norm_coordinates[ts_id] = [
-                ts_coord[0] / self.network_boundary[0],
-                ts_coord[1] / self.network_boundary[1],
+                ts_coord[0] / self.norm_network_boundary[0],
+                ts_coord[1] / self.norm_network_boundary[1],
             ]
         return ts_norm_coordinates
 

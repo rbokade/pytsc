@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from itertools import product
+import random
 
 from pytsc.common.utils import pad_list
 
@@ -15,10 +16,7 @@ class BaseActionSpace(ABC):
             try:
                 actions = actions.tolist()
             except Exception:
-                print(
-                    "Actions must be list or numpy array."
-                    + f"Got {type(actions)}"
-                )
+                print("Actions must be list or numpy array." + f"Got {type(actions)}")
 
     @abstractmethod
     def apply(self, actions):
@@ -32,6 +30,19 @@ class BaseActionSpace(ABC):
     def get_size(self):
         raise NotImplementedError
 
+    def get_trad_controller_actions(self, controller):
+        actions = []
+        mask = self.get_mask()
+        for i, ts in enumerate(self.traffic_signals.values()):
+            if controller == "random":
+                action = random.choices(range(ts.controller.n_phases), weights=mask[i])[
+                    0
+                ]
+            else:
+                action = ts.get_controller_action(controller)
+            actions.append(action)
+        return actions
+
 
 class PhaseSelectionActionSpace(BaseActionSpace):
     """
@@ -39,9 +50,7 @@ class PhaseSelectionActionSpace(BaseActionSpace):
     """
 
     def __init__(self, config, traffic_signals):
-        super(PhaseSelectionActionSpace, self).__init__(
-            config, traffic_signals
-        )
+        super(PhaseSelectionActionSpace, self).__init__(config, traffic_signals)
 
     def apply(self, actions):
         # self._check_actions_type(actions)
@@ -49,9 +58,7 @@ class PhaseSelectionActionSpace(BaseActionSpace):
             ts.action_to_phase(actions[ts_idx])
 
     def get_size(self):
-        return max(
-            [ts.controller.n_phases for ts in self.traffic_signals.values()]
-        )
+        return max([ts.controller.n_phases for ts in self.traffic_signals.values()])
 
     def get_mask(self):
         masks = []
@@ -100,14 +107,28 @@ class PhaseSwitchActionSpace(BaseActionSpace):
             masks.append(mask)
         return masks
 
+    def get_trad_controller_actions(self, controller):
+        actions = []
+        mask = self.get_mask()
+        for i, ts in enumerate(self.traffic_signals.values()):
+            if controller == "random":
+                action = random.choices([0, 1], weights=mask[i])[0]
+            else:
+                action = ts.get_controller_action(controller)
+            if ts.controller.program.current_phase_index != action:
+                actions.append(1)
+            else:
+                actions.append(0)
+        return actions
+
 
 class CentralizedActionSpace(BaseActionSpace):
     def __init__(self, individual_action_space):
-        self.individual_action_space = individual_action_space
         super(CentralizedActionSpace, self).__init__(
             individual_action_space.config,
             individual_action_space.traffic_signals,
         )
+        self.individual_action_space = individual_action_space
         self.n_agents = len(self.traffic_signals)
         self.n_actions = self.individual_action_space.get_size()
 

@@ -1,0 +1,19 @@
+cityflow:
+  # plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
+  # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
+  roadnet_file: syn_5x5_roadnet.json
+  flow_file: syn_5x5_oneway__oneway_500_NS_500_EW_flows.json
+  flow_files: [
+    "syn_5x5_oneway__oneway_500_NS_500_EW_flows.json",
+    "syn_5x5_oneway__oneway_750_NS_750_EW_flows.json",
+    "syn_5x5_oneway__oneway_750_NS_1000_EW_flows.json",
+    "syn_5x5_oneway__oneway_1000_NS_750_EW_flows.json",
+  ]
+  roadnet_log_file: "roadnet_log_file.json"
+  replay_log_file: "replay_log_file.txt"
+  save_replay: False
+
+signal:
+  action_space: phase_switch
+  round_robin: True
+  reward_function: queue_length

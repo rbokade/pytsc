@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import pandas as pd
+
 from pytsc.controllers import (
     FixedTimePhaseSelector,
     GreedyPhaseSelector,
@@ -34,10 +36,8 @@ class BaseTrafficSignal(ABC):
             "sotl": SOTLPhaseSelector(self),
         }
 
-    def get_controller_actions(self, sub_results):
-        return {
-            k: v.get_action(sub_results) for k, v in self.controllers.items()
-        }
+    # def get_controller_action(self, sub_results):
+    #     return {k: v.get_action(sub_results) for k, v in self.controllers.items()}
 
 
 class BaseTSProgram(ABC):
@@ -67,9 +67,7 @@ class BaseTSProgram(ABC):
             self.time_on_phase = self.yellow_time
         self.current_phase_index = phase_index
         self.current_phase = self.phases[phase_index]
-        max_phase_time = self.phases_min_max_times[self.current_phase][
-            "max_time"
-        ]
+        max_phase_time = self.phases_min_max_times[self.current_phase]["max_time"]
         self.norm_time_on_phase = self.time_on_phase / max_phase_time
 
     def __repr__(self):
@@ -94,6 +92,10 @@ class BaseTSController(ABC):
     @property
     def green_phase_indices(self):
         return self.config["green_phase_indices"]
+
+    @property
+    def yellow_time(self):
+        return self.config["yellow_time"]
 
     @property
     def yellow_phase_indices(self):
@@ -153,7 +155,7 @@ class BaseTSController(ABC):
         return phase_one_hot
 
     def _instantiate_traffic_light_logic(self):
-        if getattr(self, "round_robin", False):
+        if self.config["round_robin"]:
             self.logic = TLSRoundRobinPhaseSelectLogic(self)
         else:
             self.logic = TLSFreePhaseSelectLogic(self)
@@ -191,13 +193,8 @@ class TLSFreePhaseSelectLogic:
 
     def get_allowable_phase_switches(self, time_on_phase):
         mask = [0 for _ in range(self.n_phases)]
-        if (
-            self.controller.current_phase_index
-            in self.controller.green_phase_indices
-        ):
-            min_max_times = self.phases_min_max_times[
-                self.controller.current_phase
-            ]
+        if self.controller.current_phase_index in self.controller.green_phase_indices:
+            min_max_times = self.phases_min_max_times[self.controller.current_phase]
             min_time = min_max_times["min_time"]
             max_time = min_max_times["max_time"]
             if time_on_phase < min_time:  # stay on current phase
@@ -228,9 +225,7 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
     def get_allowable_phase_switches(self, time_on_phase):
         mask = [0 for _ in range(self.n_phases)]
         if self.controller.current_phase_index in self.green_phase_indices:
-            min_max_times = self.phases_min_max_times[
-                self.controller.current_phase
-            ]
+            min_max_times = self.phases_min_max_times[self.controller.current_phase]
             min_time = min_max_times["min_time"]
             max_time = min_max_times["max_time"]
             if time_on_phase < min_time:  # stay on current phase

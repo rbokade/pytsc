@@ -5,6 +5,7 @@ import numpy as np
 
 
 class EnvLogger:
+    logger = None
 
     @staticmethod
     def _ensure_handler(logger):
@@ -15,14 +16,14 @@ class EnvLogger:
             )
             handler.setFormatter(formatter)
             logger.addHandler(handler)
-        # Set the logger level here
-        logger.setLevel(logging.INFO)
 
     @staticmethod
-    def get_logger(name=__name__):
-        logger = logging.getLogger(name)
-        EnvLogger._ensure_handler(logger)
-        return logger
+    def get_logger(name=__name__, level=logging.INFO):
+        if EnvLogger.logger is None:
+            EnvLogger.logger = logging.getLogger(name)
+            EnvLogger._ensure_handler(EnvLogger.logger)
+            EnvLogger.logger.setLevel(level)  # Set the logger level dynamically
+        return EnvLogger.logger
 
     @staticmethod
     def log(level, msg):
@@ -36,6 +37,11 @@ class EnvLogger:
     @staticmethod
     def log_warning(msg):
         EnvLogger.log(logging.WARNING, msg)
+
+    @staticmethod
+    def set_log_level(level):
+        logger = EnvLogger.get_logger()
+        logger.setLevel(level)
 
 
 def validate_input_against_allowed(inp_cfg_str, allowed_cfg_strs):
@@ -89,6 +95,18 @@ def pad_list(inp_list, size, pad_value=0):
     return pad_array(np.array(inp_list), size, pad_value).tolist()
 
 
+def get_vehicle_bin_index(n_bins, lane_length, vehicle_position):
+    if vehicle_position < 0:
+        vehicle_position = 0
+    elif vehicle_position > lane_length:
+        vehicle_position = lane_length
+    bin_size = lane_length / n_bins
+    bin_index = int(vehicle_position // bin_size)
+    if bin_index >= n_bins:
+        bin_index = n_bins - 1
+    return bin_index
+
+
 def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
     visibility_length = n_bins * bin_size
     distance_from_intersection = lane_length - lane_position
@@ -102,6 +120,16 @@ def calculate_bin_index(n_bins, bin_size, lane_length, lane_position):
     return int(bin_index)
 
 
+# def map_position_to_matrix(position, x_min, y_min, resolution):
+#     """
+#     Maps a position (x, y) to the corresponding indices in the matrix
+#     """
+#     x, y = position
+#     row = int((y - y_min) // resolution)
+#     col = int((x - x_min) // resolution)
+#     return row, col
+
+
 def compute_linearly_weighted_average(position_matrices):
     """
     position_matrices: dequeue
@@ -113,3 +141,15 @@ def compute_linearly_weighted_average(position_matrices):
         weight = (n - i) / normalization_factor
         lwma += weight * matrix
     return np.round(lwma, 3)
+
+
+def generate_weibull_flow_rates(shape, scale, max_rate, num_segments):
+    inter_arrival_times = np.random.weibull(shape, 1000) * scale
+    cumulative_times = np.cumsum(inter_arrival_times)
+    cumulative_times = cumulative_times[cumulative_times <= 3600]
+    random_peak_segment = np.random.randint(0, num_segments)
+    x = np.linspace(-2, 2, num_segments)
+    flow_rates = np.exp(-(x**2))  # Gaussian-like curve
+    flow_rates = flow_rates / max(flow_rates) * max_rate
+    flow_rates = np.roll(flow_rates, random_peak_segment)
+    return flow_rates
