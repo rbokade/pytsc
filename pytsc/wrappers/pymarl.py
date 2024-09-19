@@ -35,10 +35,10 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "edge_features": self.tsc_env.parsed_network.edge_features,
             "in_degrees": self.tsc_env.parsed_network.in_degrees,
             "out_degrees": self.tsc_env.parsed_network.out_degrees,
-            "agent_positions": {
-                ts_id: ts.position
-                for ts_id, ts in self.tsc_env.traffic_signals.items()
-            },
+            # "agent_positions": {
+            #     ts_id: ts.position
+            #     for ts_id, ts in self.tsc_env.traffic_signals.items()
+            # },
         }
         return env_info
 
