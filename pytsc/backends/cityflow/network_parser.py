@@ -379,6 +379,62 @@ class NetworkParser(BaseNetworkParser):
                                     ].append(lane_id)
         return directional_lanes
 
+    @property
+    @lru_cache(maxsize=None)
+    def in_degrees(self):
+        in_degrees = np.sum(self.adjacency_matrix, axis=0)
+        return in_degrees
+
+    @property
+    @lru_cache(maxsize=None)
+    def out_degrees(self):
+        out_degrees = np.sum(self.adjacency_matrix, axis=1)
+        return out_degrees
+
+    @property
+    @lru_cache(maxsize=None)
+    def distance_matrix(self):
+        G = nx.from_numpy_array(self.adjacency_matrix, create_using=nx.DiGraph)
+        n_traffic_signals = len(self.traffic_signal_ids)
+        distance_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
+        for i in range(n_traffic_signals):
+            lengths, _ = nx.single_source_dijkstra(G, i)
+            for j in lengths:
+                distance_matrix[i, j] = lengths[j]
+        return distance_matrix
+
+    @property
+    @lru_cache(maxsize=None)
+    def edge_features(self):
+        n_traffic_signals = len(self.traffic_signal_ids)
+        edge_features = np.zeros((n_traffic_signals, n_traffic_signals, 2))
+        for road in self.roads:
+            start_tl = road["startIntersection"]
+            end_tl = road["endIntersection"]
+            if (start_tl in self.traffic_signal_ids) and (
+                end_tl in self.traffic_signal_ids
+            ):
+                start_index = self.traffic_signal_ids.index(start_tl)
+                end_index = self.traffic_signal_ids.index(end_tl)
+                num_lanes = len(road["lanes"])
+                lane_lengths = []
+                for i, lane in enumerate(road["lanes"]):
+                    lane_id = f"{road['id']}_{i}"
+                    lane_lengths.append(self.lane_lengths[lane_id])
+                avg_lane_length = np.mean(lane_lengths)
+                edge_features[start_index, end_index, 0] = num_lanes
+                edge_features[start_index, end_index, 1] = avg_lane_length
+        # Normalize the matrices
+        edge_features[:, :, 0] = edge_features[:, :, 0] / np.max(
+            edge_features[:, :, 0]
+        )
+        edge_features[:, :, 1] = edge_features[:, :, 1] / np.max(
+            edge_features[:, :, 1]
+        )
+        # Final feature matrix
+        # edge_features_agg = edge_features[:, :, 0] / edge_features[:, :, 1]
+        return edge_features
+
     def _id_to_intersection(self, intersection_id):
         for intersection in self.intersections:
             if intersection["id"] == intersection_id:

@@ -4,13 +4,13 @@ if __name__ == "__main__":
 
    
     trip_generator = CityFlowRandomizedTripGenerator(
-        scenario="jinan_3_4",
+        scenario="hangzhou_4_4",
         start_time=0,
         end_time=3600,
     )
     for i in range(100):
         trip_generator.generate_flows(
-            filepath="/Users/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/jinan_3_4/randomized",
+            filepath="/Users/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/hangzhou_4_4/randomized",
             replicate_no=i,
         )
 

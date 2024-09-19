@@ -501,7 +501,9 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         self.end_time = end_time
         self.lane_connectivity_map = self._get_lane_connectivity_map()
         turn_ratios, self.flow_info = self.get_flow_rates()
-        self.turn_probabilities = [v for v in turn_ratios.values()]
+        self.turn_probabilities = [
+            turn_ratios["turn_left"], turn_ratios["turn_right"], turn_ratios["go_straight"]
+        ]
         self.max_trip_length = self._get_max_trip_length()
         self._set_edge_weights(None)
 

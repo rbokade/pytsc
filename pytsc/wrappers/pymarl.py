@@ -31,6 +31,14 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "obs_shape": self.get_obs_size(),
             "obs_info": self.tsc_env.observation_space.get_observation_info(),
             "state_shape": self.get_state_size(),
+            "distance_matrix": self.tsc_env.parsed_network.distance_matrix,
+            "edge_features": self.tsc_env.parsed_network.edge_features,
+            "in_degrees": self.tsc_env.parsed_network.in_degrees,
+            "out_degrees": self.tsc_env.parsed_network.out_degrees,
+            "agent_positions": {
+                ts_id: ts.position
+                for ts_id, ts in self.tsc_env.traffic_signals.items()
+            },
         }
         return env_info
 
