@@ -2,7 +2,7 @@ import os
 import json
 import random
 
-scenario_path = "/home/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/hangzhou_4_4"
+scenario_path = "/Users/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/hangzhou_4_4"
 file_path = os.path.join(scenario_path, "anon_4_4_hangzhou_real_5816.json")
 with open(file_path, "r") as f:
     original_data = json.load(f)

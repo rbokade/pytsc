@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import random
+from turtle import st
 
 import networkx as nx
 import numpy as np
@@ -10,6 +11,26 @@ from pytsc.backends.cityflow.config import Config, DisruptedConfig
 from pytsc.backends.cityflow.network_parser import NetworkParser
 from pytsc.common.trip_generator import TripGenerator
 from pytsc.common.utils import generate_weibull_flow_rates
+
+CONFIG_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "../..",
+    "scenarios",
+    "cityflow",
+)
+
+
+def detect_turn_direction(prev_road, curr_road):
+    prev_split = prev_road.split('_')
+    curr_split = curr_road.split('_')
+    if prev_split[1] == curr_split[1]: 
+        return "go_straight"
+    elif int(curr_split[1]) > int(prev_split[1]): 
+        return "turn_right"
+    else: 
+        return "turn_left"
+
+
 
 
 class CityFlowTripGenerator(TripGenerator):
@@ -455,6 +476,125 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
             json.dump(sorted_flows, f, indent=4)
 
 
+class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
+    turns = ["turn_left", "turn_right", "go_straight"]
+    vehicle_data = {
+        "length": 5.0,
+        "width": 2.0,
+        "maxPosAcc": 2.0,
+        "maxNegAcc": 4.5,
+        "usualPosAcc": 2.0,
+        "usualNegAcc": 4.5,
+        "minGap": 2.5,
+        "maxSpeed": 11.11,
+        "headwayTime": 1.5,
+    }
+    """
+    NOTE: Traffic signal network is assumed to be a grid network.
+    """
+
+    def __init__(self, scenario, start_time, end_time, **kwargs):
+        self.scenario = scenario
+        self.config = Config(scenario)
+        self.parsed_network = NetworkParser(self.config)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.lane_connectivity_map = self._get_lane_connectivity_map()
+        turn_ratios, self.flow_info = self.get_flow_rates()
+        self.turn_probabilities = [v for v in turn_ratios.values()]
+        self.max_trip_length = self._get_max_trip_length()
+        self._set_edge_weights(None)
+
+    def _get_max_trip_length(self):
+        """
+        Max trip length is assumed to be the length traveled by a vehicle
+        that goes from one corner of the grid to the opposite corner.
+        (n - 1) + (m - 1) + 2
+        """
+        print([v for v in self.flow_info.values()])
+        return max([v['max_route_length'] for v in self.flow_info.values()])
+        
+    def get_flow_rates(self):
+        flow_file_dir = os.path.join(CONFIG_DIR, self.scenario, self.config.simulator['flow_file'])
+        with open(flow_file_dir, "r") as flow_file:
+            flow_data = json.load(flow_file)
+        road_counts = {}
+        start_times = []
+        road_start_times = {}
+        route_lengths = {}
+        turning_ratios = {"go_straight": 0, "turn_right": 0, "turn_left": 0}
+        for vehicle in flow_data:
+            route = vehicle["route"]
+            start_road = route[0]
+            start_time = vehicle["startTime"]
+            road_counts[start_road] = road_counts.get(start_road, 0) + 1
+            start_times.append(start_time)
+            if start_road not in road_start_times:
+                road_start_times[start_road] = []
+            if start_road not in route_lengths:
+                route_lengths[start_road] = []
+            road_start_times[start_road].append(start_time)
+            route_lengths[start_road].append(len(route))
+            for i in range(1, len(route)):
+                turn_direction = detect_turn_direction(route[i-1], route[i])
+                turning_ratios[turn_direction] += 1
+        turning_ratios = {k: v / sum(turning_ratios.values()) for k, v in turning_ratios.items()}
+        total_time_hours = (max(start_times) - min(start_times)) / 3600
+        flow_rates = {road: count / total_time_hours for road, count in road_counts.items()}
+        road_arrival_diff_stats = {}
+        for road, times in road_start_times.items():
+            diffs = np.diff(sorted(times))
+            road_arrival_diff_stats[road] = (np.mean(diffs), np.std(diffs))
+        combined_results = {}
+        for road in road_counts:
+            combined_results[road] = {
+                "flow_rate": flow_rates[road],
+                "arrival_diff_mean": road_arrival_diff_stats[road][0] if diffs.size > 0 else 0,
+                "arrival_diff_std": road_arrival_diff_stats[road][1] if diffs.size > 0 else 0,
+                "mean_route_length": np.mean(route_lengths[road]),
+                "min_route_length": np.min(route_lengths[road]),
+                "max_route_length": np.max(route_lengths[road]),
+            }
+        return turning_ratios, combined_results
+
+    def generate_flows(self, filepath, replicate_no=None):
+        incoming_edges, _ = self._find_fringe_edges()
+        flows = []
+        for start_edge in incoming_edges:
+            if start_edge not in self.flow_info:
+                continue
+            current_time = self.start_time
+            while current_time < self.end_time:
+                interarrival_time = np.random.normal(
+                    self.flow_info[start_edge]['arrival_diff_mean'], 
+                    self.flow_info[start_edge]['arrival_diff_std'],
+                )
+                interarrival_time = max(0, interarrival_time)
+                vehicle_start_time = int(current_time + interarrival_time)
+                if vehicle_start_time >= self.end_time:
+                    break
+                route = [start_edge]
+                while len(route) <= 1 or len(route) > self.max_trip_length:
+                    route = self._generate_route(start_edge)
+                flow_entry = {
+                    "vehicle": self.vehicle_data,
+                    "route": route,
+                    "interval": 1.0,
+                    "startTime": vehicle_start_time,
+                    "endTime": vehicle_start_time,
+                }
+                flows.append(flow_entry)
+                current_time = vehicle_start_time
+        sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        filename = f"{self.scenario}__gaussian_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
+        if replicate_no is not None:
+            filename = f"{replicate_no}__{filename}"
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
+            json.dump(sorted_flows, f, indent=4)
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -494,3 +634,5 @@ if __name__ == "__main__":
         turn_probs=turn_probs,
     )
     flow_generator.generate_flows(filepath="/Users/rohitbokade/repos/pytsc/pytsc/tests")
+
+
