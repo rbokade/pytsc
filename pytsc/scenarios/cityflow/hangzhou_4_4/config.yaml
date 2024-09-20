@@ -6,7 +6,7 @@ cityflow:
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
   save_replay: False
-  flow_rate_type: "sequential"
+  flow_rate_type: "constant"
   flow_files: [
     "randomized/0__hangzhou_4_4__gaussian_flows.json",
     "randomized/1__hangzhou_4_4__gaussian_flows.json",
