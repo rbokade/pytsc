@@ -14,7 +14,7 @@ CONFIG_DIR = os.path.join(
     "scenarios",
 )
 
-EnvLogger.set_log_level(logging.WARNING)
+# EnvLogger.set_log_level(logging.WARNING)
 
 class BaseConfig(ABC):
     def __init__(self, scenario, **kwargs):

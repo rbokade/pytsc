@@ -9,7 +9,7 @@ from pytsc.common.utils import EnvLogger, validate_input_against_allowed
 from pytsc.controllers import TRADITIONAL_CONTROLLERS
 
 
-EnvLogger.set_log_level(logging.WARNING)
+# EnvLogger.set_log_level(logging.WARNING)
 
 class Evaluate:
     def __init__(self, scenario, simulator_backend, controller_name, **kwargs):

@@ -1,8 +1,8 @@
 import argparse
 import json
+import logging
 import os
 import random
-from turtle import st
 
 import networkx as nx
 import numpy as np
@@ -10,7 +10,7 @@ import numpy as np
 from pytsc.backends.cityflow.config import Config, DisruptedConfig
 from pytsc.backends.cityflow.network_parser import NetworkParser
 from pytsc.common.trip_generator import TripGenerator
-from pytsc.common.utils import generate_weibull_flow_rates
+from pytsc.common.utils import EnvLogger, generate_weibull_flow_rates
 
 CONFIG_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -18,6 +18,8 @@ CONFIG_DIR = os.path.join(
     "scenarios",
     "cityflow",
 )
+
+EnvLogger.set_log_level(logging.WARNING)
 
 
 def detect_turn_direction(prev_road, curr_road):
@@ -551,8 +553,8 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         for road in road_counts:
             combined_results[road] = {
                 "flow_rate": flow_rates[road],
-                "arrival_diff_mean": road_arrival_diff_stats[road][0] if diffs.size > 0 else 0,
-                "arrival_diff_std": road_arrival_diff_stats[road][1] if diffs.size > 0 else 0,
+                "arrival_diff_mean": road_arrival_diff_stats[road][0],
+                "arrival_diff_std": road_arrival_diff_stats[road][1],
                 "mean_route_length": np.mean(route_lengths[road]),
                 "min_route_length": np.min(route_lengths[road]),
                 "max_route_length": np.max(route_lengths[road]),
@@ -562,22 +564,40 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
     def generate_flows(self, filepath, replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
+        total_route_length = 0  # Track total route length
+        num_routes = 0  # Track number of routes generated
+        target_mean_route_length = sum(v['mean_route_length'] for v in self.flow_info.values()) / len(self.flow_info)
         for start_edge in incoming_edges:
             if start_edge not in self.flow_info:
                 continue
             current_time = self.start_time
             while current_time < self.end_time:
                 interarrival_time = np.random.normal(
-                    self.flow_info[start_edge]['arrival_diff_mean'], 
+                    self.flow_info[start_edge]['arrival_diff_mean'] - 1.5, 
                     self.flow_info[start_edge]['arrival_diff_std'],
                 )
                 interarrival_time = max(0, interarrival_time)
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
                     break
+                # Try to generate a route with length close to the target mean
                 route = [start_edge]
                 while len(route) <= 1 or len(route) > self.max_trip_length:
                     route = self._generate_route(start_edge)
+                # Adjust route generation based on current mean route length
+                current_mean_route_length = total_route_length / num_routes if num_routes > 0 else 0
+                if current_mean_route_length < target_mean_route_length:
+                    # Bias towards longer routes if current mean is below the target
+                    while len(route) < target_mean_route_length and len(route) <= self.max_trip_length:
+                        next_edge = self._choose_next_edge(route[-1])
+                        if next_edge and next_edge not in route:
+                            route.append(next_edge)
+                        else:
+                            break
+                elif current_mean_route_length > target_mean_route_length:
+                    # Bias towards shorter routes if current mean is above the target
+                    while len(route) > target_mean_route_length and len(route) > 1:
+                        route.pop()
                 flow_entry = {
                     "vehicle": self.vehicle_data,
                     "route": route,
@@ -586,6 +606,8 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                     "endTime": vehicle_start_time,
                 }
                 flows.append(flow_entry)
+                total_route_length += len(route)
+                num_routes += 1
                 current_time = vehicle_start_time
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
         filename = f"{self.scenario}__gaussian_flows.json"
@@ -596,6 +618,10 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)
+        final_mean_route_length = total_route_length / num_routes if num_routes > 0 else 0
+        EnvLogger.log_info(
+            f"Final mean route length: {final_mean_route_length}, Target: {target_mean_route_length}"
+        )
 
 if __name__ == "__main__":
 

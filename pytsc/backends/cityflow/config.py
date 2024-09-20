@@ -18,7 +18,7 @@ CONFIG_DIR = os.path.join(
     "cityflow",
 )
 
-EnvLogger.set_log_level(logging.WARNING)
+# EnvLogger.set_log_level(logging.WARNING)
 
 
 class Config(BaseConfig):
