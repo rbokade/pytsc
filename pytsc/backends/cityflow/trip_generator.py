@@ -491,10 +491,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         "maxSpeed": 11.11,
         "headwayTime": 1.5,
     }
-    """
-    NOTE: Traffic signal network is assumed to be a grid network.
-    """
-
+    
     def __init__(self, scenario, start_time, end_time, **kwargs):
         self.scenario = scenario
         self.config = Config(scenario)
@@ -502,7 +499,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         self.start_time = start_time
         self.end_time = end_time
         self.lane_connectivity_map = self._get_lane_connectivity_map()
-        turn_ratios, self.flow_info = self.get_flow_rates()
+        turn_ratios, self.flow_info, self.stored_routes = self.get_flow_rates()
         self.turn_probabilities = [
             turn_ratios["turn_left"], turn_ratios["turn_right"], turn_ratios["go_straight"]
         ]
@@ -510,26 +507,26 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         self._set_edge_weights(None)
 
     def _get_max_trip_length(self):
-        """
-        Max trip length is assumed to be the length traveled by a vehicle
-        that goes from one corner of the grid to the opposite corner.
-        (n - 1) + (m - 1) + 2
-        """
-        print([v for v in self.flow_info.values()])
         return max([v['max_route_length'] for v in self.flow_info.values()])
-        
+
     def get_flow_rates(self):
         flow_file_dir = os.path.join(CONFIG_DIR, self.scenario, self.config.simulator['flow_file'])
         with open(flow_file_dir, "r") as flow_file:
             flow_data = json.load(flow_file)
+        
         road_counts = {}
         start_times = []
         road_start_times = {}
         route_lengths = {}
+        stored_routes = {}
         turning_ratios = {"go_straight": 0, "turn_right": 0, "turn_left": 0}
         for vehicle in flow_data:
             route = vehicle["route"]
             start_road = route[0]
+            if start_road not in stored_routes:
+                stored_routes[start_road] = []
+            if route not in stored_routes[start_road]:
+                stored_routes[start_road].append(route)  
             start_time = vehicle["startTime"]
             road_counts[start_road] = road_counts.get(start_road, 0) + 1
             start_times.append(start_time)
@@ -542,6 +539,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
             for i in range(1, len(route)):
                 turn_direction = detect_turn_direction(route[i-1], route[i])
                 turning_ratios[turn_direction] += 1
+        
         turning_ratios = {k: v / sum(turning_ratios.values()) for k, v in turning_ratios.items()}
         total_time_hours = (max(start_times) - min(start_times)) / 3600
         flow_rates = {road: count / total_time_hours for road, count in road_counts.items()}
@@ -549,6 +547,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         for road, times in road_start_times.items():
             diffs = np.diff(sorted(times))
             road_arrival_diff_stats[road] = (np.mean(diffs), np.std(diffs))
+        
         combined_results = {}
         for road in road_counts:
             combined_results[road] = {
@@ -559,13 +558,13 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                 "min_route_length": np.min(route_lengths[road]),
                 "max_route_length": np.max(route_lengths[road]),
             }
-        return turning_ratios, combined_results
+        return turning_ratios, combined_results, stored_routes  # Return stored routes dictionary
 
     def generate_flows(self, filepath, replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
-        total_route_length = 0  # Track total route length
-        num_routes = 0  # Track number of routes generated
+        total_route_length = 0 
+        num_routes = 0  
         target_mean_route_length = sum(v['mean_route_length'] for v in self.flow_info.values()) / len(self.flow_info)
         for start_edge in incoming_edges:
             if start_edge not in self.flow_info:
@@ -573,31 +572,19 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
             current_time = self.start_time
             while current_time < self.end_time:
                 interarrival_time = np.random.normal(
-                    self.flow_info[start_edge]['arrival_diff_mean'] - 1.5, 
+                    self.flow_info[start_edge]['arrival_diff_mean'], 
                     self.flow_info[start_edge]['arrival_diff_std'],
                 )
                 interarrival_time = max(0, interarrival_time)
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
                     break
-                # Try to generate a route with length close to the target mean
-                route = [start_edge]
-                while len(route) <= 1 or len(route) > self.max_trip_length:
-                    route = self._generate_route(start_edge)
-                # Adjust route generation based on current mean route length
-                current_mean_route_length = total_route_length / num_routes if num_routes > 0 else 0
-                if current_mean_route_length < target_mean_route_length:
-                    # Bias towards longer routes if current mean is below the target
-                    while len(route) < target_mean_route_length and len(route) <= self.max_trip_length:
-                        next_edge = self._choose_next_edge(route[-1])
-                        if next_edge and next_edge not in route:
-                            route.append(next_edge)
-                        else:
-                            break
-                elif current_mean_route_length > target_mean_route_length:
-                    # Bias towards shorter routes if current mean is above the target
-                    while len(route) > target_mean_route_length and len(route) > 1:
-                        route.pop()
+                
+                if start_edge in self.stored_routes:
+                    route = random.choice(self.stored_routes[start_edge])
+                else:
+                    route = self._generate_route(start_edge)  # Fallback in case no routes are found
+                
                 flow_entry = {
                     "vehicle": self.vehicle_data,
                     "route": route,
@@ -615,6 +602,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
             filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
+        os.makedirs(filepath, exist_ok=True)
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)
