@@ -1,15 +1,42 @@
 import argparse
 import os
-
+import cProfile
+import pstats
+import io
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from pytsc.controllers.evaluate import Evaluate
 
 
-def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}):
+def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}, profile=False):
     evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
+
+    if profile:
+        # Initialize the profiler
+        profiler = cProfile.Profile()
+        profiler.enable()
+
     evaluate.run(hours, save_stats=True, plot_stats=False)
+    
+    if profile:
+        # Stop profiling and print stats
+        profiler.disable()
+        s = io.StringIO()
+
+        # Check Python version and sort stats accordingly
+        try:
+            ps = pstats.Stats(profiler, stream=s).sort_stats(pstats.SortKey.TIME)
+        except AttributeError:
+            # For older versions of Python, use 'time' sorting as a string
+            ps = pstats.Stats(profiler, stream=s).sort_stats('time')
+        
+        ps.print_stats()
+        # Save the profiling data to a file
+        with open(f"profile_{controller}.txt", "w") as f:
+            f.write(s.getvalue())
+        print(f"Profiling results saved for {controller} to profile_{controller}.txt")
+    
     stats = pd.DataFrame(evaluate.log)
     stats["controller"] = controller
     return stats
@@ -46,7 +73,6 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
     fname = os.path.join(output_folder, f"{scenario}_stats.png")
     plt.tight_layout()
     plt.savefig(fname)
-    # plt.show()
 
 
 def evaluate_controllers(
@@ -56,6 +82,7 @@ def evaluate_controllers(
     hours=1,
     output_folder=None,
     add_args={},
+    profile=False
 ):
     if output_folder is None:
         output_folder = "pytsc/results"
@@ -69,6 +96,7 @@ def evaluate_controllers(
             controller,
             hours=hours,
             add_args=add_args.get(controller, {}),
+            profile=profile  # Pass profiling argument
         )
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
@@ -96,17 +124,25 @@ if __name__ == "__main__":
         type=str,
         help="`fixed_time`, `sotl`, `max_pressure`, `greedy`, `all`",
     )
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        help="Enable profiling of Evaluate class methods",
+    )
     args = parser.parse_args()
 
     if args.controllers == "all":
         controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
     else:
         controllers = [args.controllers]
+    
     hours = 1
     add_args = {
         "fixed_time": {"green_time": 25},
         "sotl": {"mu": 7, "theta": 5, "phi_min": 5},
     }
+
+    # Pass the profile argument to evaluate_controllers
     evaluate_controllers(
         args.scenario,
         args.simulator_backend,
@@ -114,4 +150,5 @@ if __name__ == "__main__":
         output_folder="pytsc/results",
         hours=hours,
         add_args=add_args,
+        profile=args.profile  # Pass the profiling flag
     )

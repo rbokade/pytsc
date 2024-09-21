@@ -1,3 +1,5 @@
+import np as np
+
 from pytsc.common.retriever import BaseRetriever
 from pytsc.common.utils import get_vehicle_bin_index
 
@@ -18,8 +20,8 @@ class Retriever(BaseRetriever):
             bin_count = int(
                 lane_lengths[lane] / self.config.simulator["veh_size_min_gap"]
             )
-            position_speed_matrices[lane][0] = [0.0] * bin_count
-            position_speed_matrices[lane][1] = [0.0] * bin_count
+            position_speed_matrices[lane][0] = np.zeros(bin_count)
+            position_speed_matrices[lane][1] = np.zeros(bin_count)
         if len(vehicles):
             for vehicle in vehicles:
                 vehicle_info = self.engine.get_vehicle_info(vehicle)
