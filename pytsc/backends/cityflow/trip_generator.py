@@ -19,7 +19,7 @@ CONFIG_DIR = os.path.join(
     "cityflow",
 )
 
-EnvLogger.set_log_level(logging.WARNING)
+# EnvLogger.set_log_level(logging.WARNING)
 
 
 def detect_turn_direction(prev_road, curr_road):
@@ -519,26 +519,39 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         road_start_times = {}
         route_lengths = {}
         stored_routes = {}
-        total_routes = 0  # Track total number of routes for calculating proportions
+        total_routes_per_start = {}  
         turning_ratios = {"go_straight": 0, "turn_right": 0, "turn_left": 0}
 
         for vehicle in flow_data:
             route = vehicle["route"]
             start_road = route[0]
+            
+            # Initialize stored_routes and total_routes_per_start
             if start_road not in stored_routes:
                 stored_routes[start_road] = []
+            if start_road not in total_routes_per_start:
+                total_routes_per_start[start_road] = {}
+            
+            # Count the route occurrences for each start_road
+            if tuple(route) not in total_routes_per_start[start_road]:
+                total_routes_per_start[start_road][tuple(route)] = 0
+            total_routes_per_start[start_road][tuple(route)] += 1
+            
             if route not in stored_routes[start_road]:
                 stored_routes[start_road].append(route)
+
             start_time = vehicle["startTime"]
             road_counts[start_road] = road_counts.get(start_road, 0) + 1
-            total_routes += 1  # Count the number of routes
             start_times.append(start_time)
+
             if start_road not in road_start_times:
                 road_start_times[start_road] = []
             if start_road not in route_lengths:
                 route_lengths[start_road] = []
             road_start_times[start_road].append(start_time)
             route_lengths[start_road].append(len(route))
+
+            # Update turning ratios
             for i in range(1, len(route)):
                 turn_direction = detect_turn_direction(route[i-1], route[i])
                 turning_ratios[turn_direction] += 1
@@ -562,7 +575,8 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                 "min_route_length": np.min(route_lengths[road]),
                 "max_route_length": np.max(route_lengths[road]),
             }
-        return turning_ratios, combined_results, stored_routes, route_proportions  # Return stored routes and proportions
+        
+        return turning_ratios, combined_results, stored_routes, route_proportions
 
     def generate_flows(self, filepath, replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
@@ -583,11 +597,10 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
                     break
-
-                # Sample a route with weighted probabilities based on route proportions
+                
                 if start_edge in self.stored_routes:
                     routes = self.stored_routes[start_edge]
-                    weights = [self.route_proportions[start_edge]] * len(routes)
+                    weights = [self.route_proportions[start_edge][tuple(route)] for route in routes]
                     route = random.choices(routes, weights=weights, k=1)[0]
                 else:
                     route = self._generate_route(start_edge)  # Fallback in case no routes are found
@@ -614,6 +627,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         filepath = os.path.join(filepath, filename)
         with open(filepath, "w") as f:
             json.dump(sorted_flows, f, indent=4)
+        
         final_mean_route_length = total_route_length / num_routes if num_routes > 0 else 0
         EnvLogger.log_info(
             f"Final mean route length: {final_mean_route_length}, Target: {target_mean_route_length}"
