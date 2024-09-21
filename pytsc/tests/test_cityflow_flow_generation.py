@@ -13,4 +13,3 @@ if __name__ == "__main__":
             filepath=f"/home/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/{scenario}/randomized",
             replicate_no=i,
         )
-
