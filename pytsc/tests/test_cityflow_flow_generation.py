@@ -2,7 +2,7 @@ from pytsc.backends.cityflow.trip_generator import CityFlowRandomizedTripGenerat
 
 if __name__ == "__main__":
 
-    scenario = "hangzhou_4_4"
+    scenario = "jinan_3_4"
     trip_generator = CityFlowRandomizedTripGenerator(
         scenario=scenario,
         start_time=0,
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     )
     for i in range(100):
         trip_generator.generate_flows(
-            filepath=f"/Users/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/{scenario}/randomized",
+            filepath=f"/home/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/{scenario}/randomized",
             replicate_no=i,
         )
 

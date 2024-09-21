@@ -8,6 +8,7 @@ from pytsc.common.utils import EnvLogger
 
 # EnvLogger.set_log_level(logging.WARNING)
 
+
 class BasePhaseSelector(ABC):
     def __init__(self, traffic_signal, round_robin=True, **kwargs):
         self.traffic_signal = traffic_signal
@@ -25,8 +26,7 @@ class FixedTimePhaseSelector(BasePhaseSelector):
 
     def get_action(self, inp):
         if (
-            self.controller.current_phase_index
-            in self.controller.green_phase_indices
+            self.controller.current_phase_index in self.controller.green_phase_indices
             and self.controller.time_on_phase < self.green_time
         ):
             return self.controller.current_phase_index
@@ -42,10 +42,7 @@ class GreedyPhaseSelector(BasePhaseSelector):
     def get_action(self, inp):
         action_mask = self.controller.get_allowable_phase_switches()
         queues = []
-        if (
-            self.controller.current_phase_index
-            in self.controller.green_phase_indices
-        ):
+        if self.controller.current_phase_index in self.controller.green_phase_indices:
             for act, available in enumerate(action_mask):
                 if available:
                     queue = self._compute_queue_for_phase(inp, act)
@@ -60,13 +57,11 @@ class GreedyPhaseSelector(BasePhaseSelector):
     def _compute_queue_for_phase(self, inp, phase_index):
         inc_vehicles = 0
         phase = self.traffic_signal.config["phases"][phase_index]
-        phase_inc_out_lanes = self.traffic_signal.config[
-            "phase_to_inc_out_lanes"
-        ][phase]
+        phase_inc_out_lanes = self.traffic_signal.config["phase_to_inc_out_lanes"][
+            phase
+        ]
         for inc_lane in phase_inc_out_lanes.keys():
-            inc_vehicles += sum(
-                inp["lane"][inc_lane]["position_speed_matrices"][0]
-            ) / (
+            inc_vehicles += sum(inp["lane"][inc_lane]["position_speed_matrices"][0]) / (
                 sum(inp["lane"][inc_lane]["position_speed_matrices"][1]) + 1e-6
             )
         return inc_vehicles
@@ -80,10 +75,7 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
     def get_action(self, inp):
         action_mask = self.controller.get_allowable_phase_switches()
         pressures = []
-        if (
-            self.controller.current_phase_index
-            in self.controller.green_phase_indices
-        ):
+        if self.controller.current_phase_index in self.controller.green_phase_indices:
             for act, available in enumerate(action_mask):
                 if available:
                     pressure = self._compute_pressure_for_phase(inp, act)
@@ -101,13 +93,11 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
         """
         pressure = 0
         phase = self.traffic_signal.config["phases"][phase_index]
-        phase_inc_out_lanes = self.traffic_signal.config[
-            "phase_to_inc_out_lanes"
-        ][phase]
+        phase_inc_out_lanes = self.traffic_signal.config["phase_to_inc_out_lanes"][
+            phase
+        ]
         for inc_lane, out_lanes in phase_inc_out_lanes.items():
-            inc_lane_vehicles = sum(
-                inp["lane"][inc_lane]["position_speed_matrices"][0]
-            )
+            inc_lane_vehicles = sum(inp["lane"][inc_lane]["position_speed_matrices"][0])
             out_lane_vehicles = 0
             for out_lane in out_lanes:
                 out_lane_vehicles += sum(
@@ -131,10 +121,10 @@ class SOTLPhaseSelector(BasePhaseSelector):
         self.phi_min = phi_min
         self.last_vehicle_time = {}
         self.controller = traffic_signal.controller
-        EnvLogger.log_info(
-            "SOTL parameters:\n"
-            + f"\nmu: {self.mu} | phi = {self.phi_min} | theta: {self.theta}"
-        )
+        # EnvLogger.log_info(
+        #     "SOTL parameters:\n"
+        #     + f"\nmu: {self.mu} | phi = {self.phi_min} | theta: {self.theta}"
+        # )
 
     def get_action(self, inp):
         action_mask = self.controller.get_allowable_phase_switches()
@@ -159,11 +149,9 @@ class SOTLPhaseSelector(BasePhaseSelector):
     def _compute_flow_for_phase(self, inp, phase_index):
         total_vehicles = 0
         phase = self.traffic_signal.config["phases"][phase_index]
-        phase_inc_out_lanes = self.traffic_signal.config[
-            "phase_to_inc_out_lanes"
-        ][phase]
+        phase_inc_out_lanes = self.traffic_signal.config["phase_to_inc_out_lanes"][
+            phase
+        ]
         for inc_lane in phase_inc_out_lanes.keys():
-            total_vehicles += len(
-                inp["lane"][inc_lane]["position_speed_matrices"][0]
-            )
+            total_vehicles += len(inp["lane"][inc_lane]["position_speed_matrices"][0])
         return total_vehicles
