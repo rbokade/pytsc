@@ -61,6 +61,7 @@ class LaneFeatures(BaseObservationSpace):
                 ts.norm_mean_wait_times, self.max_n_controlled_lanes
             ).tolist()
             obs += pad_array(ts.phase_id, self.max_n_controlled_phases).tolist()
+            obs += [ts.sim_step]
             observations.append(obs)
         return observations
 
@@ -85,10 +86,11 @@ class LaneFeatures(BaseObservationSpace):
         }
 
     def get_size(self):
-        return int((4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases)
+        return int((4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases + 1)
 
     def get_state(self):
         ts = next(iter(self.traffic_signals))
+        sim_step = [ts.sim_step]
         (
             norm_queue_lengths,
             norm_densities,
@@ -103,7 +105,7 @@ class LaneFeatures(BaseObservationSpace):
             [ts.phase_id for ts in self.traffic_signals.values()]
         )
         state = np.concatenate(
-            (norm_densities, norm_queue_lengths, norm_mean_speeds, phase_ids)
+            (norm_densities, norm_queue_lengths, norm_mean_speeds, phase_ids, sim_step)
         )
         return state
 
@@ -111,6 +113,7 @@ class LaneFeatures(BaseObservationSpace):
         lane_features_size = int(
             len(self.parsed_network.lanes) * 3
             + self.max_n_controlled_phases * len(self.traffic_signals)
+            + 1
         )
         return lane_features_size
 
@@ -135,7 +138,7 @@ class PositionMatrix(LaneFeatures):
                 2 * self.max_n_controlled_lanes * self.config.signal["visibility"],
             )
             obs = np.concatenate((pos_mat, speed_mat, ts.phase_id), axis=0)
-            observations.append(obs.tolist())
+            observations.append(obs.tolist() + [ts.sim_step])
         return observations
 
     def get_observation_info(self):
@@ -153,6 +156,7 @@ class PositionMatrix(LaneFeatures):
             "pos_mat_idxs": range(pos_start, pos_end),
             "speed_mat_idxs": range(speed_start, speed_end),
             "phase_idxs": range(phase_start, phase_end),
+            "sim_step_idx": phase_end,
         }
 
     def get_size(self):
@@ -160,6 +164,7 @@ class PositionMatrix(LaneFeatures):
             4  # (pos, speed, inc and out lanes)
             * (self.max_n_controlled_lanes * self.config.signal["visibility"])
             + self.max_n_controlled_phases
+            + 1
         )
         return size
 

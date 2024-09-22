@@ -2,6 +2,7 @@ import logging
 import re
 
 import numpy as np
+from scipy.sparse.csgraph import minimum_spanning_tree
 
 
 class EnvLogger:
@@ -11,9 +12,7 @@ class EnvLogger:
     def _ensure_handler(logger):
         if not logger.hasHandlers():
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -153,3 +152,9 @@ def generate_weibull_flow_rates(shape, scale, max_rate, num_segments):
     flow_rates = flow_rates / max(flow_rates) * max_rate
     flow_rates = np.roll(flow_rates, random_peak_segment)
     return flow_rates
+
+
+def compute_max_spanning_tree(density_map):
+    density_map_neg = -1 * density_map
+    mst = minimum_spanning_tree(density_map_neg)
+    return mst.toarray()

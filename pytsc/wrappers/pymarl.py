@@ -48,6 +48,9 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
     def get_obs_size(self):
         return self.tsc_env.get_observation_size()
 
+    def get_mst(self):
+        return self.tsc_env.metrics.mst
+
     def get_pressures(self):
         return self.tsc_env.metrics.pressures
 

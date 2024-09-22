@@ -1,6 +1,7 @@
 import numpy as np
 
 from pytsc.common.metrics import BaseMetricsParser
+from pytsc.common.utils import compute_max_spanning_tree
 
 
 class MetricsParser(BaseMetricsParser):
@@ -34,9 +35,7 @@ class MetricsParser(BaseMetricsParser):
     @property
     def mean_speed(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        total_vehicles = sum(
-            data["n_vehicles"] for data in lane_measurements.values()
-        )
+        total_vehicles = sum(data["n_vehicles"] for data in lane_measurements.values())
         if total_vehicles == 0:
             return 0.0
         else:
@@ -72,13 +71,39 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def pressure(self):
-        return np.sum(
-            [ts.pressure for ts in self.traffic_signals.values()]
-        ).item()
+        return np.sum([ts.pressure for ts in self.traffic_signals.values()]).item()
 
     @property
     def pressures(self):
         return [ts.pressure for ts in self.traffic_signals.values()]
+
+    @property
+    def density_map(self):
+        neighbors_lanes = self.parsed_network.neighbors_lanes
+        ts_ids = list(self.traffic_signals.keys())
+        density_map = np.zeros((len(ts_ids), len(ts_ids)))
+        lane_measurements = self.simulator.step_measurements["lane"]
+        for i, ts in enumerate(ts_ids):
+            neighbors = neighbors_lanes[ts]
+            if not neighbors:
+                continue
+            for j, n_ts_id in enumerate(ts_ids):
+                if n_ts_id in neighbors:
+                    lanes = neighbors_lanes[ts][n_ts_id]
+                    total_occupancy = 0
+                    for lane in lanes:
+                        current_density = lane_measurements[lane]["occupancy"]
+                        total_occupancy += current_density
+                    mean_occupancy = total_occupancy / len(lanes)
+                    density_map[i, j] = np.clip(mean_occupancy, 0, 1).item()
+        undirected_density_map = (
+            density_map + density_map.T
+        ) / 2  # sum up inc and out lanes and convert to symmetric matrix
+        return undirected_density_map + 1e-6 * self.parsed_network.adjacency_matrix
+
+    @property
+    def mst(self):
+        return compute_max_spanning_tree(self.density_map)
 
     def get_step_stats(self):
         step_stats = {
@@ -112,8 +137,7 @@ class MetricsParser(BaseMetricsParser):
             )
             agent_stats.update(
                 {
-                    f"{ts.id}__mean_delay": 1
-                    - np.mean(ts.norm_mean_speeds).item()
+                    f"{ts.id}__mean_delay": 1 - np.mean(ts.norm_mean_speeds).item()
                     for ts in self.traffic_signals.values()
                 }
             )
