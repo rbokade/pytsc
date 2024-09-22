@@ -90,7 +90,7 @@ class LaneFeatures(BaseObservationSpace):
 
     def get_state(self):
         ts = next(iter(self.traffic_signals))
-        sim_step = [ts.sim_step]
+        sim_step = [self.traffic_signals[ts].sim_step]
         (
             norm_queue_lengths,
             norm_densities,
