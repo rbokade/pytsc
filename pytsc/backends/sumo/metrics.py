@@ -49,11 +49,18 @@ class MetricsParser(BaseMetricsParser):
         return sum(data["n_queued"] for data in lane_measurements.values())
 
     @property
+    def n_queued_norm(self):
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(data["n_queued"] for data in lane_measurements.values()) / len(
+            lane_measurements
+        )
+
+    @property
     def mean_wait_time(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(
-            data["mean_wait_time"] for data in lane_measurements.values()
-        ) / len(lane_measurements)
+        return sum(data["mean_wait_time"] for data in lane_measurements.values()) / len(
+            lane_measurements
+        )
 
     @property
     def average_travel_time(self):
@@ -65,16 +72,16 @@ class MetricsParser(BaseMetricsParser):
     @property
     def mean_speed(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(
-            data["mean_speed"] for data in lane_measurements.values()
-        ) / len(lane_measurements)
+        return sum(data["mean_speed"] for data in lane_measurements.values()) / len(
+            lane_measurements
+        )
 
     @property
     def density(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(
-            data["occupancy"] for data in lane_measurements.values()
-        ) / len(lane_measurements)
+        return sum(data["occupancy"] for data in lane_measurements.values()) / len(
+            lane_measurements
+        )
 
     @property
     def mean_delay(self):

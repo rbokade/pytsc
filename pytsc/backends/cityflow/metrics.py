@@ -33,6 +33,14 @@ class MetricsParser(BaseMetricsParser):
         return total_queued
 
     @property
+    def n_queued_norm(self):
+        lane_measurements = self.simulator.step_measurements["lane"]
+        total_queued = 0
+        for data in lane_measurements.values():
+            total_queued += data["norm_queue_length"]
+        return total_queued / len(lane_measurements)
+
+    @property
     def mean_speed(self):
         lane_measurements = self.simulator.step_measurements["lane"]
         total_vehicles = sum(data["n_vehicles"] for data in lane_measurements.values())

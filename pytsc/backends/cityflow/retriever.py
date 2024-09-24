@@ -11,9 +11,7 @@ class Retriever(BaseRetriever):
         vehicles = self.engine.get_vehicles(include_waiting=True)
         lane_lengths = self.simulator.parsed_network.lane_lengths
         lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
-        position_speed_matrices = {
-            lane: [[], []] for lane in lane_lengths.keys()
-        }
+        position_speed_matrices = {lane: [[], []] for lane in lane_lengths.keys()}
         for lane in lane_lengths.keys():
             bin_count = int(
                 lane_lengths[lane] / self.config.simulator["veh_size_min_gap"]
@@ -23,9 +21,7 @@ class Retriever(BaseRetriever):
         if len(vehicles):
             for vehicle in vehicles:
                 vehicle_info = self.engine.get_vehicle_info(vehicle)
-                vehicle_lane = vehicle_info.get(
-                    "drivable", "NO_LANE_AVAILABLE"
-                )
+                vehicle_lane = vehicle_info.get("drivable", "NO_LANE_AVAILABLE")
                 if vehicle_lane in lane_lengths.keys():
                     bin_count = int(
                         lane_lengths[vehicle_lane]
@@ -39,12 +35,9 @@ class Retriever(BaseRetriever):
                     if bin_idx is not None:
                         position_speed_matrices[vehicle_lane][0][bin_idx] = 1.0
                         norm_speed = (
-                            float(vehicle_info["speed"])
-                            / lane_max_speeds[vehicle_lane]
+                            float(vehicle_info["speed"]) / lane_max_speeds[vehicle_lane]
                         )
-                        position_speed_matrices[vehicle_lane][1][
-                            bin_idx
-                        ] = norm_speed
+                        position_speed_matrices[vehicle_lane][1][bin_idx] = norm_speed
         return position_speed_matrices
 
     def _compute_lane_measurements(self):

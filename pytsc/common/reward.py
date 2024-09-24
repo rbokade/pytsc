@@ -27,7 +27,7 @@ class QueueLength(BaseRewardFunction):
         fc = self.config.misc["flickering_coef"]
         reward = 1e-6
         reward -= fc * self.metrics.flickering_signal
-        reward -= self.metrics.n_queued
+        reward -= self.metrics.n_queued_norm
         return reward
 
     def get_local_reward(self):

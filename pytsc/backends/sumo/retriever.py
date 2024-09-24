@@ -99,9 +99,7 @@ class Retriever(BaseRetriever):
                 )
                 if bin_idx is not None:
                     speed = self.traci.vehicle.getSpeed(v)
-                    norm_speed = (
-                        speed / self.parsed_network.lane_max_speeds[lane]
-                    )
+                    norm_speed = speed / self.parsed_network.lane_max_speeds[lane]
                     lane_vehicles_bin_idxs.append((bin_idx, norm_speed))
             lane_measurements[lane] = {}
             lane_measurements[lane].update(
