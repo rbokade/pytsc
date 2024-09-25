@@ -51,6 +51,9 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
     def get_mst(self):
         return self.tsc_env.metrics.mst
 
+    def get_network_flow(self):
+        return self.tsc_env.metrics.network_flow
+
     def get_pressures(self):
         return self.tsc_env.metrics.pressures
 

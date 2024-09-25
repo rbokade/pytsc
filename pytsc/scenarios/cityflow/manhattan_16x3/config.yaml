@@ -6,6 +6,7 @@ cityflow:
   roadnet_log_file: "frontend/web/roadnet_log_file.json"
   replay_log_file: "frontend/web/replay_log_file.txt"
   save_replay: False
+  flow_rate_type: "constant"
 
 signal:
   action_space: phase_selection

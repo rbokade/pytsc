@@ -9,7 +9,9 @@ import pandas as pd
 from pytsc.controllers.evaluate import Evaluate
 
 
-def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}, profile=False):
+def run_evaluation(
+    scenario, simulator_backend, controller, hours=1, add_args={}, profile=False
+):
     evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
 
     if profile:
@@ -18,7 +20,7 @@ def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}
         profiler.enable()
 
     evaluate.run(hours, save_stats=True, plot_stats=False)
-    
+
     if profile:
         # Stop profiling and print stats
         profiler.disable()
@@ -29,14 +31,14 @@ def run_evaluation(scenario, simulator_backend, controller, hours=1, add_args={}
             ps = pstats.Stats(profiler, stream=s).sort_stats(pstats.SortKey.TIME)
         except AttributeError:
             # For older versions of Python, use 'time' sorting as a string
-            ps = pstats.Stats(profiler, stream=s).sort_stats('time')
-        
+            ps = pstats.Stats(profiler, stream=s).sort_stats("time")
+
         ps.print_stats()
         # Save the profiling data to a file
         with open(f"profile_{controller}.txt", "w") as f:
             f.write(s.getvalue())
         print(f"Profiling results saved for {controller} to profile_{controller}.txt")
-    
+
     stats = pd.DataFrame(evaluate.log)
     stats["controller"] = controller
     return stats
@@ -82,7 +84,7 @@ def evaluate_controllers(
     hours=1,
     output_folder=None,
     add_args={},
-    profile=False
+    profile=False,
 ):
     if output_folder is None:
         output_folder = "pytsc/results"
@@ -96,7 +98,7 @@ def evaluate_controllers(
             controller,
             hours=hours,
             add_args=add_args.get(controller, {}),
-            profile=profile  # Pass profiling argument
+            profile=profile,  # Pass profiling argument
         )
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
@@ -135,7 +137,7 @@ if __name__ == "__main__":
         controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
     else:
         controllers = [args.controllers]
-    
+
     hours = 1
     add_args = {
         "fixed_time": {"green_time": 25},
@@ -150,5 +152,5 @@ if __name__ == "__main__":
         output_folder="pytsc/results",
         hours=hours,
         add_args=add_args,
-        profile=args.profile  # Pass the profiling flag
+        profile=args.profile,  # Pass the profiling flag
     )

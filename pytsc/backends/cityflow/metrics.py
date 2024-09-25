@@ -54,6 +54,13 @@ class MetricsParser(BaseMetricsParser):
             return total_vehicle_speed / total_vehicles
 
     @property
+    def mean_speed_norm(self):
+        lane_measurements = self.simulator.step_measurements["lane"]
+        return sum(
+            data["norm_mean_speed"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
+
+    @property
     def density(self):
         lane_measurements = self.simulator.step_measurements["lane"]
         total_occupancy = sum(
@@ -112,6 +119,10 @@ class MetricsParser(BaseMetricsParser):
     @property
     def mst(self):
         return compute_max_spanning_tree(self.density_map)
+
+    @property
+    def network_flow(self):
+        return self.density * self.mean_speed_norm
 
     def get_step_stats(self):
         step_stats = {

@@ -51,9 +51,9 @@ class MetricsParser(BaseMetricsParser):
     @property
     def n_queued_norm(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(data["n_queued"] for data in lane_measurements.values()) / len(
-            lane_measurements
-        )
+        return sum(
+            data["norm_queue_length"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
 
     @property
     def mean_wait_time(self):
