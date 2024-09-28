@@ -34,7 +34,7 @@ class Config(BaseConfig):
         self.flow_files_cycle = cycle(self.simulator.get("flow_files", []))
         # self._set_flow_file()
         self._check_assertions()
-        random.seed(self.simulator["seed"])
+        # random.seed(self.simulator["seed"])
 
     def _set_roadnet_file(self, scenario_path, **kwargs):
         self.cityflow_roadnet_file = os.path.abspath(

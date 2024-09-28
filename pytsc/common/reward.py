@@ -26,9 +26,9 @@ class QueueLength(BaseRewardFunction):
     def get_global_reward(self):
         fc = self.config.misc["flickering_coef"]
         reward = 1e-6
-        reward -= fc * self.metrics.flickering_signal
-        reward -= self.metrics.n_queued_norm
-        return np.clip(reward, -1, 0)
+        reward += fc * self.metrics.flickering_signal
+        reward += self.metrics.n_queued_norm
+        return -1 * reward
 
     def get_local_reward(self):
         fc = self.config.misc["flickering_coef"]
@@ -36,7 +36,7 @@ class QueueLength(BaseRewardFunction):
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {
             ts_id: -fc * ts.controller.program.phase_changed
-            - np.mean(ts.queue_lengths)
+            - np.mean(ts.norm_queue_lengths)
             - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }

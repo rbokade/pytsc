@@ -11,11 +11,10 @@ from pytsc.controllers import TRADITIONAL_CONTROLLERS
 
 # EnvLogger.set_log_level(logging.WARNING)
 
+
 class Evaluate:
     def __init__(self, scenario, simulator_backend, controller_name, **kwargs):
-        validate_input_against_allowed(
-            controller_name, TRADITIONAL_CONTROLLERS
-        )
+        validate_input_against_allowed(controller_name, TRADITIONAL_CONTROLLERS)
         self.scenario = scenario
         self.simulator_backend = simulator_backend
         self.controller_name = controller_name
@@ -23,16 +22,14 @@ class Evaluate:
         self._init_network()
         self._init_controllers()
         self.delta_time = self.config.simulator["delta_time"]
-        self.steps_per_hour = int(3600 / self.delta_time)
+        # self.steps_per_hour = int(3600 / self.delta_time)
         self.log = {}
 
     def _init_network(self):
         """
         NOTE: Action space must be set to phase selection
         """
-        self.network = TrafficSignalNetwork(
-            self.scenario, self.simulator_backend
-        )
+        self.network = TrafficSignalNetwork(self.scenario, self.simulator_backend)
         self.network.config.signal["action_space"] = "phase_selection"
         self.network._init_parsers()
         self.config = self.network.config
@@ -40,21 +37,22 @@ class Evaluate:
     def _init_controllers(self):
         self.controllers = {}
         for ts_id, ts in self.network.traffic_signals.items():
-            self.controllers[ts_id] = TRADITIONAL_CONTROLLERS[
-                self.controller_name
-            ](ts, **self.additional_arguments)
+            self.controllers[ts_id] = TRADITIONAL_CONTROLLERS[self.controller_name](
+                ts, **self.additional_arguments
+            )
 
-    def run(
-        self, hours, save_stats=False, plot_stats=False, output_folder=None
-    ):
+    def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
         EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
         output_folder = self._create_output_folder(output_folder)
-        steps = int(hours * self.steps_per_hour)
-        for step in range(1, steps + 1):
+        steps = int(hours * 3600 / self.delta_time)
+        for step in range(steps):
             actions = self._get_actions()
             _, done, stats = self.network.step(actions)
             self._log_stats(step, stats)
-            if done and step < steps:
+            if self.network.simulator.is_terminated:
+                self._init_network()
+                self._init_controllers()
+            if done:
                 self.network.restart()
         if save_stats:
             self._save_stats(output_folder=output_folder)
@@ -71,9 +69,7 @@ class Evaluate:
 
     def _get_actions(self):
         actions = []
-        for idx, (ts_id, ts) in enumerate(
-            self.network.traffic_signals.items()
-        ):
+        for idx, (ts_id, ts) in enumerate(self.network.traffic_signals.items()):
             inp = self._get_controller_input(ts)
             action = self.controllers[ts_id].get_action(inp)
             actions.append(action)

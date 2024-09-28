@@ -49,7 +49,9 @@ class GreedyPhaseSelector(BasePhaseSelector):
                 else:
                     queue = float("-inf")
                 queues.append((queue, act))
-            _, max_queue_phase_index = max(queues)
+            max_queue_value = max(queues, key=lambda x: x[0])[0]
+            tied_actions = [act for queue, act in queues if queue == max_queue_value]
+            max_queue_phase_index = np.random.choice(tied_actions)
         else:
             max_queue_phase_index = self.controller.next_phase_index
         return max_queue_phase_index
@@ -80,7 +82,11 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
                 else:
                     pressure = float("-inf")
                 pressures.append((pressure, act))
-            _, max_pressure_phase_index = max(pressures)
+            max_pressure_value = max(pressures, key=lambda x: x[0])[0]
+            tied_actions = [
+                act for pressure, act in pressures if pressure == max_pressure_value
+            ]
+            max_pressure_phase_index = np.random.choice(tied_actions)
         else:
             max_pressure_phase_index = self.controller.next_phase_index
         return max_pressure_phase_index

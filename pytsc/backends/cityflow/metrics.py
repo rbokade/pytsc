@@ -133,6 +133,7 @@ class MetricsParser(BaseMetricsParser):
             "mean_delay": self.mean_delay,
             "density": self.density,
             "pressure": self.pressure,
+            "network_flow": self.network_flow,
         }
         if self.config.misc["return_agent_stats"]:
             agent_stats = {}

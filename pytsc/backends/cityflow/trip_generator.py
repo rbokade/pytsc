@@ -23,16 +23,14 @@ CONFIG_DIR = os.path.join(
 
 
 def detect_turn_direction(prev_road, curr_road):
-    prev_split = prev_road.split('_')
-    curr_split = curr_road.split('_')
-    if prev_split[1] == curr_split[1]: 
+    prev_split = prev_road.split("_")
+    curr_split = curr_road.split("_")
+    if prev_split[1] == curr_split[1]:
         return "go_straight"
-    elif int(curr_split[1]) > int(prev_split[1]): 
+    elif int(curr_split[1]) > int(prev_split[1]):
         return "turn_right"
-    else: 
+    else:
         return "turn_left"
-
-
 
 
 class CityFlowTripGenerator(TripGenerator):
@@ -491,7 +489,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         "maxSpeed": 11.11,
         "headwayTime": 1.5,
     }
-    
+
     def __init__(self, scenario, start_time, end_time, **kwargs):
         self.scenario = scenario
         self.config = Config(scenario)
@@ -499,44 +497,52 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         self.start_time = start_time
         self.end_time = end_time
         self.lane_connectivity_map = self._get_lane_connectivity_map()
-        turn_ratios, self.flow_info, self.stored_routes, self.route_proportions = self.get_flow_rates()
+        turn_ratios, self.flow_info, self.stored_routes, self.route_proportions = (
+            self.get_flow_rates()
+        )
         self.turn_probabilities = [
-            turn_ratios["turn_left"], turn_ratios["turn_right"], turn_ratios["go_straight"]
+            turn_ratios["turn_left"],
+            turn_ratios["turn_right"],
+            turn_ratios["go_straight"],
         ]
         self.max_trip_length = self._get_max_trip_length()
         self._set_edge_weights(None)
 
     def _get_max_trip_length(self):
-        return max([v['max_route_length'] for v in self.flow_info.values()])
+        return max([v["max_route_length"] for v in self.flow_info.values()])
 
     def get_flow_rates(self):
-        flow_file_dir = os.path.join(CONFIG_DIR, self.scenario, self.config.simulator['flow_file'])
+        flow_file_dir = os.path.join(
+            CONFIG_DIR, self.scenario, self.config.simulator["flow_file"]
+        )
         with open(flow_file_dir, "r") as flow_file:
             flow_data = json.load(flow_file)
-        
+
         road_counts = {}
         start_times = []
         road_start_times = {}
         route_lengths = {}
         stored_routes = {}
-        total_routes_per_start = {}  # New dictionary to store total routes per start road
+        total_routes_per_start = (
+            {}
+        )  # New dictionary to store total routes per start road
         turning_ratios = {"go_straight": 0, "turn_right": 0, "turn_left": 0}
 
         for vehicle in flow_data:
             route = vehicle["route"]
             start_road = route[0]
-            
+
             # Initialize stored_routes and total_routes_per_start
             if start_road not in stored_routes:
                 stored_routes[start_road] = []
             if start_road not in total_routes_per_start:
                 total_routes_per_start[start_road] = {}
-            
+
             # Count the route occurrences for each start_road
             if tuple(route) not in total_routes_per_start[start_road]:
                 total_routes_per_start[start_road][tuple(route)] = 0
             total_routes_per_start[start_road][tuple(route)] += 1
-            
+
             if route not in stored_routes[start_road]:
                 stored_routes[start_road].append(route)
 
@@ -553,23 +559,29 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
 
             # Update turning ratios
             for i in range(1, len(route)):
-                turn_direction = detect_turn_direction(route[i-1], route[i])
+                turn_direction = detect_turn_direction(route[i - 1], route[i])
                 turning_ratios[turn_direction] += 1
-        
+
         # Normalize the route proportions for each start road
         route_proportions = {}
         for start_road, route_count in total_routes_per_start.items():
             road_total_routes = sum(route_count.values())
-            route_proportions[start_road] = {route: count / road_total_routes for route, count in route_count.items()}
-        
-        turning_ratios = {k: v / sum(turning_ratios.values()) for k, v in turning_ratios.items()}
+            route_proportions[start_road] = {
+                route: count / road_total_routes for route, count in route_count.items()
+            }
+
+        turning_ratios = {
+            k: v / sum(turning_ratios.values()) for k, v in turning_ratios.items()
+        }
         total_time_hours = (max(start_times) - min(start_times)) / 3600
-        flow_rates = {road: count / total_time_hours for road, count in road_counts.items()}
+        flow_rates = {
+            road: count / total_time_hours for road, count in road_counts.items()
+        }
         road_arrival_diff_stats = {}
         for road, times in road_start_times.items():
             diffs = np.diff(sorted(times))
             road_arrival_diff_stats[road] = (np.mean(diffs), np.std(diffs))
-        
+
         combined_results = {}
         for road in road_counts:
             combined_results[road] = {
@@ -580,39 +592,53 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                 "min_route_length": np.min(route_lengths[road]),
                 "max_route_length": np.max(route_lengths[road]),
             }
-        
+
         return turning_ratios, combined_results, stored_routes, route_proportions
 
-    def generate_flows(self, filepath, replicate_no=None):
+    def generate_flows(self, filepath, flow_type="low", replicate_no=None):
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
-        total_route_length = 0 
-        num_routes = 0  
-        target_mean_route_length = sum(v['mean_route_length'] for v in self.flow_info.values()) / len(self.flow_info)
+        total_route_length = 0
+        num_routes = 0
+        target_mean_route_length = sum(
+            v["mean_route_length"] for v in self.flow_info.values()
+        ) / len(self.flow_info)
 
         for start_edge in incoming_edges:
             if start_edge not in self.flow_info:
                 continue
             current_time = self.start_time
             while current_time < self.end_time:
+                if flow_type == "low":
+                    mean = self.flow_info[start_edge][
+                        "arrival_diff_mean"
+                    ] + np.random.uniform(-0.5, 0.5)
+                elif flow_type == "medium":
+                    mean = self.flow_info[start_edge]["arrival_diff_mean"] * 0.85
+                elif flow_type == "high":
+                    mean = self.flow_info[start_edge]["arrival_diff_mean"] * 0.75
+                else:
+                    raise ValueError("Invalid flow type")
                 interarrival_time = np.random.normal(
-                    self.flow_info[start_edge]['arrival_diff_mean'], 
-                    self.flow_info[start_edge]['arrival_diff_std'],
+                    mean, self.flow_info[start_edge]["arrival_diff_std"]
                 )
                 interarrival_time = max(0, interarrival_time)
                 vehicle_start_time = int(current_time + interarrival_time)
                 if vehicle_start_time >= self.end_time:
                     break
-                
+
                 if start_edge in self.stored_routes:
                     routes = self.stored_routes[start_edge]
-                    
+
                     # Extract weights from route_proportions
-                    weights = [self.route_proportions[start_edge][tuple(route)] for route in routes]
-                    
+                    weights = [
+                        self.route_proportions[start_edge][tuple(route)]
+                        for route in routes
+                    ]
+
                     # Use weights to select a route
                     route = random.choices(routes, weights=weights, k=1)[0]
-                    
+
                     flow_entry = {
                         "vehicle": self.vehicle_data,
                         "route": route,
@@ -626,20 +652,25 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                     current_time = vehicle_start_time
 
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        # Generate the filename with replicate number if provided
         filename = f"{self.scenario}__gaussian_flows.json"
         if "replicate_no" in self.config._additional_config:
             filename = f"{self.config._additional_config['replicate_no']}__{filename}"
         if replicate_no is not None:
             filename = f"{replicate_no}__{filename}"
-        os.makedirs(filepath, exist_ok=True)
-        filepath = os.path.join(filepath, filename)
-        with open(filepath, "w") as f:
+        # Create the directory if it doesn't exist
+        output_dir = os.path.join(filepath, flow_type)
+        os.makedirs(output_dir, exist_ok=True)
+        file_path = os.path.join(output_dir, filename)
+        with open(file_path, "w") as f:
             json.dump(sorted_flows, f, indent=4)
-        
-        final_mean_route_length = total_route_length / num_routes if num_routes > 0 else 0
+        final_mean_route_length = (
+            total_route_length / num_routes if num_routes > 0 else 0
+        )
         EnvLogger.log_info(
             f"Final mean route length: {final_mean_route_length}, Target: {target_mean_route_length}"
         )
+
 
 if __name__ == "__main__":
 
@@ -680,5 +711,3 @@ if __name__ == "__main__":
         turn_probs=turn_probs,
     )
     flow_generator.generate_flows(filepath="/Users/rohitbokade/repos/pytsc/pytsc/tests")
-
-
