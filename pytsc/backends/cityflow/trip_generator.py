@@ -612,11 +612,11 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                 if flow_type == "low":
                     mean = self.flow_info[start_edge][
                         "arrival_diff_mean"
-                    ] + np.random.uniform(-0.5, 0.5)
+                    ] + np.random.uniform(-0.5, 0.0)
                 elif flow_type == "medium":
-                    mean = self.flow_info[start_edge]["arrival_diff_mean"] * 0.85
-                elif flow_type == "high":
                     mean = self.flow_info[start_edge]["arrival_diff_mean"] * 0.75
+                elif flow_type == "high":
+                    mean = self.flow_info[start_edge]["arrival_diff_mean"] * 0.5
                 else:
                     raise ValueError("Invalid flow type")
                 interarrival_time = np.random.normal(
