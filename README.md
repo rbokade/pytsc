@@ -26,9 +26,10 @@ If you use this repository for your research, please cite it using the following
 
 ```bibtex
 @misc{pytsc,
-  author       = {Rohit Bokade},
+  author       = {Rohit Bokade and Xiaoning Jin},
   title        = {pytsc: Traffic Signal Control Environment for Multi-Agent Reinforcement Learning},
   year         = {2023},
+  institution  = {Northeastern University},
   url          = {https://github.com/rbokade/pytsc},
   note         = {GitHub repository},
 }
