@@ -157,3 +157,14 @@ class SOTLPhaseSelector(BasePhaseSelector):
         for inc_lane in phase_inc_out_lanes.keys():
             total_vehicles += inp["lane"][inc_lane]["occupancy"]
         return total_vehicles
+
+
+class RandomPhaseSelector(BasePhaseSelector):
+    def __init__(self, traffic_signal):
+        super(RandomPhaseSelector, self).__init__(traffic_signal)
+        self.controller = traffic_signal.controller
+
+    def get_action(self, inp):
+        action_mask = self.controller.get_allowable_phase_switches()
+        available_actions = np.where(action_mask)[0]
+        return np.random.choice(available_actions)

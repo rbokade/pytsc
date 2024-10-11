@@ -3,6 +3,7 @@ from pytsc.controllers.traditional_algorithms import (
     GreedyPhaseSelector,
     MaxPressurePhaseSelector,
     SOTLPhaseSelector,
+    RandomPhaseSelector,
 )
 
 
@@ -11,4 +12,5 @@ TRADITIONAL_CONTROLLERS = {
     "greedy": GreedyPhaseSelector,
     "max_pressure": MaxPressurePhaseSelector,
     "sotl": SOTLPhaseSelector,
+    "random": RandomPhaseSelector,
 }
