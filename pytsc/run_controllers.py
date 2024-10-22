@@ -138,7 +138,7 @@ if __name__ == "__main__":
     else:
         controllers = [args.controllers]
 
-    hours = 1
+    hours = 10
     add_args = {
         "fixed_time": {"green_time": 25},
         "sotl": {"mu": 7, "theta": 5, "phi_min": 5},

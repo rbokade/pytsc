@@ -159,6 +159,45 @@ class SOTLPhaseSelector(BasePhaseSelector):
         return total_vehicles
 
 
+class AnalyticPlusPhaseSelector(BasePhaseSelector):
+    def __init__(self, traffic_signal):
+        super(AnalyticPlusPhaseSelector, self).__init__(traffic_signal)
+        self.controller = traffic_signal.controller
+
+    def get_action(self, inp):
+        action_mask = self.controller.get_allowable_phase_switches()
+        pressures = []
+        if self.controller.current_phase_index in self.controller.green_phase_indices:
+            for act, available in enumerate(action_mask):
+                if available:
+                    pressure = self._compute_pressure_for_phase(inp, act)
+                else:
+                    pressure = float("-inf")
+                pressures.append((pressure, act))
+            max_pressure_value = max(pressures, key=lambda x: x[0])[0]
+            tied_actions = [
+                act for pressure, act in pressures if pressure == max_pressure_value
+            ]
+            max_pressure_phase_index = np.random.choice(tied_actions)
+        else:
+            max_pressure_phase_index = self.controller.next_phase_index
+        return max_pressure_phase_index
+
+    def _compute_pressure_for_phase(self, inp, phase_index):
+        pressure = 0
+        phase = self.traffic_signal.config["phases"][phase_index]
+        phase_inc_out_lanes = self.traffic_signal.config["phase_to_inc_out_lanes"][
+            phase
+        ]
+        for inc_lane, out_lanes in phase_inc_out_lanes.items():
+            inc_lane_vehicles = inp["lane"][inc_lane]["occupancy"]
+            out_lane_vehicles = 0
+            for out_lane in out_lanes:
+                out_lane_vehicles += inp["lane"][out_lane]["occupancy"]
+            pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)
+        return pressure
+
+
 class RandomPhaseSelector(BasePhaseSelector):
     def __init__(self, traffic_signal):
         super(RandomPhaseSelector, self).__init__(traffic_signal)
