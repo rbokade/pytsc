@@ -94,17 +94,35 @@ class Config(BaseConfig):
 
 class DisruptedConfig(Config):
     def __init__(self, scenario, **kwargs):
-        super(DisruptedConfig, self).__init__(scenario, **kwargs)
-
-    def _set_roadnet_file(self, scenario_path, **kwargs):
-        disruption_ratio = kwargs.get("disruption_ratio")
-        speed_reduction_factor = kwargs.get("speed_reduction_factor")
-        replicate_no = kwargs.get("replicate_no")
-        self.cityflow_roadnet_file = os.path.abspath(
-            os.path.join(
-                scenario_path,
-                "disrupted",
-                f"r_{disruption_ratio}" + "__" + f"p_{speed_reduction_factor}",
-                f"{replicate_no}" + "__" + f"{self.simulator['roadnet_file']}",
-            )
+        self.scenario = scenario
+        self._additional_config = kwargs
+        self._load_config("cityflow")
+        self.mode = kwargs.get("mode", "train")
+        self.domain = kwargs.get("domain", "normal")
+        # Simulator files
+        scenario_path = os.path.join(CONFIG_DIR, scenario)
+        self._set_roadnet_file(scenario_path, **kwargs)
+        self.dir = os.path.join(os.path.abspath(scenario_path), "")
+        self.temp_dir = tempfile.mkdtemp()
+        self.cityflow_cfg_file = None
+        self.flow_files_cycle = cycle(
+            self.simulator.get(f"{self.mode}_{self.domain}_flow_files", [])
         )
+        self._check_assertions()
+        # random.seed(self.simulator["seed"])
+
+    def _set_flow_file(self):
+        self.flow_rate_type = self.simulator.get("flow_rate_type", "constant")
+        if self.flow_rate_type == "constant":
+            self.flow_file = self.simulator["flow_file"]
+        elif self.flow_rate_type == "random":
+            self.flow_file = random.choice(
+                self.simulator[f"{self.mode}_{self.domain}_flow_files"]
+            )
+        elif self.flow_rate_type == "sequential":
+            self.flow_file = next(self.flow_files_cycle)
+        else:
+            raise ValueError(
+                "Flow files order is not supported. "
+                + "Flow files order must be `random` or `constant`"
+            )

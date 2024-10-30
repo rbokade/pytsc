@@ -18,10 +18,18 @@ class TrafficSignalNetwork:
     def __init__(self, scenario, simulator_backend, **kwargs):
         self.scenario = scenario
         self.simulator_backend = simulator_backend
+        self.disrupted = kwargs.get("disrupted", False)
         assert (
             self.simulator_backend in SUPPORTED_SIMULATOR_BACKENDS
         ), f"Simulator backend {self.simulator_backend} not supported."
-        self.config = SIMULATOR_MODULES[simulator_backend]["config"](scenario, **kwargs)
+        if self.disrupted:
+            self.config = SIMULATOR_MODULES[simulator_backend]["disrupted_config"](
+                scenario, **kwargs
+            )
+        else:
+            self.config = SIMULATOR_MODULES[simulator_backend]["config"](
+                scenario, **kwargs
+            )
         self._validate_config()
         self.parsed_network = SIMULATOR_MODULES[simulator_backend]["network_parser"](
             self.config

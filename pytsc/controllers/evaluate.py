@@ -1,6 +1,7 @@
 import logging
 import os
 
+from numpy import add
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -13,12 +14,21 @@ from pytsc.controllers import TRADITIONAL_CONTROLLERS
 
 
 class Evaluate:
-    def __init__(self, scenario, simulator_backend, controller_name, **kwargs):
+    def __init__(
+        self,
+        scenario,
+        simulator_backend,
+        controller_name,
+        add_env_args,
+        add_controller_args,
+        **kwargs,
+    ):
         validate_input_against_allowed(controller_name, TRADITIONAL_CONTROLLERS)
         self.scenario = scenario
         self.simulator_backend = simulator_backend
         self.controller_name = controller_name
-        self.additional_arguments = kwargs
+        self.add_env_args = add_env_args
+        self.add_controller_args = add_controller_args
         self._init_network()
         self._init_controllers()
         self.delta_time = self.config.simulator["delta_time"]
@@ -29,7 +39,11 @@ class Evaluate:
         """
         NOTE: Action space must be set to phase selection
         """
-        self.network = TrafficSignalNetwork(self.scenario, self.simulator_backend)
+        self.network = TrafficSignalNetwork(
+            self.scenario,
+            self.simulator_backend,
+            **self.add_env_args,
+        )
         self.network.config.signal["action_space"] = "phase_selection"
         self.network._init_parsers()
         self.config = self.network.config
@@ -38,7 +52,7 @@ class Evaluate:
         self.controllers = {}
         for ts_id, ts in self.network.traffic_signals.items():
             self.controllers[ts_id] = TRADITIONAL_CONTROLLERS[self.controller_name](
-                ts, **self.additional_arguments
+                ts, **self.add_controller_args
             )
 
     def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):

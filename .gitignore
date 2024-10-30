@@ -145,3 +145,5 @@ frontend/
 # Ignore the results directory
 pytsc/results/
 randomized/
+train/
+test/

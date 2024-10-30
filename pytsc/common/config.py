@@ -16,10 +16,11 @@ CONFIG_DIR = os.path.join(
 
 # EnvLogger.set_log_level(logging.WARNING)
 
+
 class BaseConfig(ABC):
     def __init__(self, scenario, **kwargs):
         self.scenario = scenario
-        self._additional_config = kwargs        
+        self._additional_config = kwargs
 
     def _load_config(self, simulator_backend):
         # Load default config parameters

@@ -10,9 +10,17 @@ from pytsc.controllers.evaluate import Evaluate
 
 
 def run_evaluation(
-    scenario, simulator_backend, controller, hours=1, add_args={}, profile=False
+    scenario,
+    simulator_backend,
+    controller,
+    hours=1,
+    add_env_args={},
+    add_controller_args={},
+    profile=False,
 ):
-    evaluate = Evaluate(scenario, simulator_backend, controller, **add_args)
+    evaluate = Evaluate(
+        scenario, simulator_backend, controller, add_env_args, add_controller_args
+    )
 
     if profile:
         # Initialize the profiler
@@ -83,7 +91,8 @@ def evaluate_controllers(
     controllers,
     hours=1,
     output_folder=None,
-    add_args={},
+    add_env_args={},
+    add_controller_args={},
     profile=False,
 ):
     if output_folder is None:
@@ -97,7 +106,8 @@ def evaluate_controllers(
             simulator_backend,
             controller,
             hours=hours,
-            add_args=add_args.get(controller, {}),
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args.get(controller, {}),
             profile=profile,  # Pass profiling argument
         )
         all_stats.append(stats)
@@ -138,10 +148,15 @@ if __name__ == "__main__":
     else:
         controllers = [args.controllers]
 
-    hours = 10
-    add_args = {
+    hours = 20
+    add_controller_args = {
         "fixed_time": {"green_time": 25},
         "sotl": {"mu": 7, "theta": 5, "phi_min": 5},
+    }
+    add_env_args = {
+        "disrupted": True,
+        "mode": "test",
+        "domain": "flow_disrupted",
     }
 
     # Pass the profile argument to evaluate_controllers
@@ -151,6 +166,7 @@ if __name__ == "__main__":
         controllers,
         output_folder="pytsc/results",
         hours=hours,
-        add_args=add_args,
+        add_env_args=add_env_args,
+        add_controller_args=add_controller_args,
         profile=args.profile,  # Pass the profiling flag
     )
