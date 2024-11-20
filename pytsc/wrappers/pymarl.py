@@ -30,6 +30,7 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "n_agents": self.tsc_env.n_agents,
             "obs_shape": self.get_obs_size(),
             "state_shape": self.get_state_size(),
+            "n_domains": len(self.tsc_env.config.domain_classes),
         }
         return env_info
 

@@ -1,3 +1,4 @@
+import dis
 import json
 import logging
 import os
@@ -93,36 +94,54 @@ class Config(BaseConfig):
 
 
 class DisruptedConfig(Config):
-    def __init__(self, scenario, **kwargs):
+    def __init__(self, scenario, mode="train", **kwargs):
         self.scenario = scenario
+        self.mode = mode
         self._additional_config = kwargs
         self._load_config("cityflow")
-        self.mode = kwargs.get("mode", "train")
-        self.domain = kwargs.get("domain", "normal")
+        # self.mode = kwargs.get("mode", "train")
+        # self.domain = kwargs.get("domain", "flow_disrupted")
         # Simulator files
         scenario_path = os.path.join(CONFIG_DIR, scenario)
         self._set_roadnet_file(scenario_path, **kwargs)
         self.dir = os.path.join(os.path.abspath(scenario_path), "")
         self.temp_dir = tempfile.mkdtemp()
         self.cityflow_cfg_file = None
-        self.flow_files_cycle = cycle(
-            self.simulator.get(f"{self.mode}_{self.domain}_flow_files", [])
-        )
+        # e.g., ['flow_disrupted', 'link_disrupted']
+        self.domains = list(self.simulator[mode].keys())
+        # e.g., { 'flow_disrupted': ['600', ...], 'link_disrupted': ['0_1', ...] }
+        self.disrup_values = {
+            domain: list(self.simulator[mode][domain].keys()) for domain in self.domains
+        }
+        self.domain_classes = self._get_domain_classes()
         self._check_assertions()
+        self.current_domain_class = None
         # random.seed(self.simulator["seed"])
+
+    def _get_domain_classes(self):
+        combined_labels = []
+        for domain in self.domains:
+            for disrup_value in self.disrup_values[domain]:
+                combined_labels.append((domain, disrup_value))
+        return combined_labels
 
     def _set_flow_file(self):
         self.flow_rate_type = self.simulator.get("flow_rate_type", "constant")
-        if self.flow_rate_type == "constant":
-            self.flow_file = self.simulator["flow_file"]
-        elif self.flow_rate_type == "random":
-            self.flow_file = random.choice(
-                self.simulator[f"{self.mode}_{self.domain}_flow_files"]
-            )
-        elif self.flow_rate_type == "sequential":
-            self.flow_file = next(self.flow_files_cycle)
-        else:
-            raise ValueError(
-                "Flow files order is not supported. "
-                + "Flow files order must be `random` or `constant`"
-            )
+        self._select_random_flow_file()
+
+    def _select_random_flow_file(self):
+        random_domain = random.choice(self.domains)
+        random_disrup_value = random.choice(self.disrup_values[random_domain])
+        self.current_domain_class = self.domain_classes.index(
+            (random_domain, random_disrup_value)
+        )
+        flow_file = random.choice(
+            self.simulator[self.mode][random_domain][random_disrup_value]
+        )
+        self.flow_file = os.path.join(
+            self.mode, random_domain, random_disrup_value, flow_file
+        )
+        print(
+            f"Randomly selected flow file: {self.flow_file} from"
+            + f"domain {random_domain}, disruption {random_disrup_value}"
+        )

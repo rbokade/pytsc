@@ -149,6 +149,9 @@ class TrafficSignalNetwork:
         stats = self.metrics.get_step_stats()
         stats.update({"episode_count": self.episode_count})
         stats.update({"episode_limit": self.episode_limit})
+        if self.disrupted:
+            stats.update({"n_domains": len(self.config.domain_classes)})
+            stats.update({"domain_class": self.config.current_domain_class})
         return stats
 
     def get_env_stats(self):
