@@ -6,6 +6,9 @@ import io
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from copy import deepcopy
+import multiprocessing
+
 from pytsc.controllers.evaluate import Evaluate
 
 
@@ -30,19 +33,15 @@ def run_evaluation(
     evaluate.run(hours, save_stats=True, plot_stats=False)
 
     if profile:
-        # Stop profiling and print stats
         profiler.disable()
         s = io.StringIO()
 
-        # Check Python version and sort stats accordingly
         try:
             ps = pstats.Stats(profiler, stream=s).sort_stats(pstats.SortKey.TIME)
         except AttributeError:
-            # For older versions of Python, use 'time' sorting as a string
             ps = pstats.Stats(profiler, stream=s).sort_stats("time")
 
         ps.print_stats()
-        # Save the profiling data to a file
         with open(f"profile_{controller}.txt", "w") as f:
             f.write(s.getvalue())
         print(f"Profiling results saved for {controller} to profile_{controller}.txt")
@@ -81,7 +80,7 @@ def plot_stats(all_stats, controllers, scenario, output_folder):
     for idx in range(num_stats, nrows * ncols):
         axes[idx // ncols][idx % ncols].axis("off")
     fname = os.path.join(output_folder, f"{scenario}_stats.png")
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.savefig(fname)
 
 
@@ -97,7 +96,9 @@ def evaluate_controllers(
 ):
     if output_folder is None:
         output_folder = "pytsc/results"
-    output_folder = os.path.join(output_folder, simulator_backend, scenario)
+    output_folder = os.path.join(
+        "pytsc", "results", simulator_backend, scenario, output_folder
+    )
     os.makedirs(output_folder, exist_ok=True)
     all_stats = []
     for controller in controllers:
@@ -108,12 +109,36 @@ def evaluate_controllers(
             hours=hours,
             add_env_args=add_env_args,
             add_controller_args=add_controller_args.get(controller, {}),
-            profile=profile,  # Pass profiling argument
+            profile=profile,
         )
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
     save_stats_to_file(all_stats, simulator_backend, scenario, output_folder)
-    plot_stats(all_stats, controllers, scenario, output_folder)
+    # plot_stats(all_stats, controllers, scenario, output_folder)
+
+
+def process_flow_files(
+    scenario,
+    simulator_backend,
+    controllers,
+    add_env_args,
+    add_controller_args,
+    hours,
+    profile,
+    flow_type,
+    disruption_ratio,
+    idx,
+):
+    evaluate_controllers(
+        scenario,
+        simulator_backend,
+        controllers,
+        output_folder=f"{flow_type}/{disruption_ratio}/{idx}",
+        hours=hours,
+        add_env_args=add_env_args,
+        add_controller_args=add_controller_args,
+        profile=profile,
+    )
 
 
 if __name__ == "__main__":
@@ -144,29 +169,259 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.controllers == "all":
-        controllers = ["fixed_time", "greedy", "max_pressure", "sotl", "random"]
+        controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
     else:
         controllers = [args.controllers]
 
-    hours = 20
+    hours = 1
     add_controller_args = {
         "fixed_time": {"green_time": 25},
         "sotl": {"mu": 7, "theta": 5, "phi_min": 5},
     }
     add_env_args = {
-        "disrupted": True,
-        "mode": "test",
-        "domain": "flow_disrupted",
+        "disrupted": False,
+        "misc": {
+            "return_agent_stats": True,
+            "return_lane_stats": True,
+        },
+        # "cityflow": {
+        #     "save_replay": True,
+        #     "flow_rate_type": "constant",
+        #     "flow_file": f"train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+        # },
+        # "mode": "test",
+        # "domain": "flow_disrupted",
+    }
+    # evaluate_controllers(
+    #     args.scenario,
+    #     args.simulator_backend,
+    #     controllers,
+    #     output_folder="pytsc/results/",
+    #     hours=hours,
+    #     add_env_args=add_env_args,
+    #     add_controller_args=add_controller_args,
+    #     profile=args.profile,
+    # )
+
+    flow_files_batch = {
+        "flow_disrupted": {
+            0.1: [
+                f"train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/1__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/2__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/3__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/4__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/5__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/6__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/7__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/8__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_1/9__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+            ],
+            0.2: [
+                f"train/flow_disrupted/0_2/0__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/1__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/2__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/3__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/4__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/5__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/6__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/7__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/8__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_2/9__{args.scenario}__fd_0.2__gaussian_700_flows.json",
+            ],
+            0.3: [
+                f"test/flow_disrupted/0_3/0__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/1__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/2__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/3__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/4__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/5__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/6__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/7__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/8__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_3/9__{args.scenario}__fd_0.3__gaussian_700_flows.json",
+            ],
+            0.4: [
+                f"test/flow_disrupted/0_4/0__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/1__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/2__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/3__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/4__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/5__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/6__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/7__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/8__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_4/9__{args.scenario}__fd_0.4__gaussian_700_flows.json",
+            ],
+            0.5: [
+                f"train/flow_disrupted/0_5/0__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/1__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/2__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/3__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/4__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/5__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/6__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/7__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/8__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_5/9__{args.scenario}__fd_0.5__gaussian_700_flows.json",
+            ],
+            0.6: [
+                f"train/flow_disrupted/0_6/0__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/1__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/2__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/3__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/4__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/5__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/6__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/7__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/8__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+                f"train/flow_disrupted/0_6/9__{args.scenario}__fd_0.6__gaussian_700_flows.json",
+            ],
+            0.7: [
+                f"test/flow_disrupted/0_7/0__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/1__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/2__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/3__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/4__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/5__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/6__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/7__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/8__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_7/9__{args.scenario}__fd_0.7__gaussian_700_flows.json",
+            ],
+            0.8: [
+                f"test/flow_disrupted/0_8/0__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/1__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/2__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/3__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/4__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/5__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/6__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/7__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/8__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+                f"test/flow_disrupted/0_8/9__{args.scenario}__fd_0.8__gaussian_700_flows.json",
+            ],
+        },
+        "link_disrupted": {
+            0.1: [
+                f"train/link_disrupted/0_1/0__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/1__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/2__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/3__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/4__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/5__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/6__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/7__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/8__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+                f"train/link_disrupted/0_1/9__{args.scenario}__dr_0.1__gaussian_700_flows.json",
+            ],
+            0.2: [
+                f"test/link_disrupted/0_2/0__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/1__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/2__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/3__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/4__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/5__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/6__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/7__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/8__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+                f"test/link_disrupted/0_2/9__{args.scenario}__dr_0.2__gaussian_700_flows.json",
+            ],
+            0.3: [
+                f"train/link_disrupted/0_3/0__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/1__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/2__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/3__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/4__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/5__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/6__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/7__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/8__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+                f"train/link_disrupted/0_3/9__{args.scenario}__dr_0.3__gaussian_700_flows.json",
+            ],
+            0.4: [
+                f"test/link_disrupted/0_4/0__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/1__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/2__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/3__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/4__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/5__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/6__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/7__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/8__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+                f"test/link_disrupted/0_4/9__{args.scenario}__dr_0.4__gaussian_700_flows.json",
+            ],
+        },
+        "baseline": {
+            0: [
+                f"train/flow_disrupted/700/0__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/1__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/2__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/3__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/4__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/5__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/6__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/7__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/8__{args.scenario}__gaussian_700_flows.json",
+                f"train/flow_disrupted/700/9__{args.scenario}__gaussian_700_flows.json",
+            ],
+        },
     }
 
-    # Pass the profile argument to evaluate_controllers
-    evaluate_controllers(
-        args.scenario,
-        args.simulator_backend,
-        controllers,
-        output_folder="pytsc/results",
-        hours=hours,
-        add_env_args=add_env_args,
-        add_controller_args=add_controller_args,
-        profile=args.profile,  # Pass the profiling flag
-    )
+    for flow_type, flow_files in flow_files_batch.items():
+        for disruption_ratio, flow_files_ in flow_files.items():
+            add_env_args_list = [
+                deepcopy(add_env_args) for _ in range(len(flow_files_))
+            ]
+            for i, flow_file in enumerate(flow_files_):
+                add_env_args_list[i]["cityflow"] = {
+                    "flow_rate_type": "constant",
+                    "flow_file": flow_file,
+                }
+
+            num_processes = min(len(flow_files_), multiprocessing.cpu_count())
+            with multiprocessing.Pool(processes=num_processes) as pool:
+                pool.starmap(
+                    process_flow_files,
+                    [
+                        (
+                            args.scenario,
+                            args.simulator_backend,
+                            controllers,
+                            add_env_args_,
+                            add_controller_args,
+                            hours,
+                            args.profile,
+                            flow_type,
+                            disruption_ratio,
+                            idx,
+                        )
+                        for idx, add_env_args_ in enumerate(add_env_args_list)
+                    ],
+                )
+
+    # add_env_args_list = [deepcopy(add_env_args) for _ in range(len(flow_files_batch))]
+    # for idx, add_env_args_ in enumerate(add_env_args_list):
+    #     add_env_args_["cityflow"] = {
+    #         "flow_rate_type": "sequential",
+    #         "flow_files": flow_files_batch[idx],
+    #     }
+
+    # num_processes = min(len(flow_files_batch), multiprocessing.cpu_count())
+    # with multiprocessing.Pool(processes=num_processes) as pool:
+    #     pool.starmap(
+    #         process_flow_files,
+    #         [
+    #             (
+    #                 args.scenario,
+    #                 args.simulator_backend,
+    #                 controllers,
+    #                 add_env_args_,
+    #                 add_controller_args,
+    #                 hours,
+    #                 args.profile,
+    #                 idx,
+    #             )
+    #             for idx, add_env_args_ in enumerate(add_env_args_list)
+    #         ],
+    #     )

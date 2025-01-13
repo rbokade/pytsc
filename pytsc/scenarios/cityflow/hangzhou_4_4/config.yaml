@@ -1,13 +1,27 @@
 cityflow:
-  plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
+  # plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
-  roadnet_file: "roadnet_4_4.json"
-  flow_file: "anon_4_4_hangzhou_real.json"
-  roadnet_log_file: "frontend/web/roadnet_log_file.json"
-  replay_log_file: "frontend/web/replay_log_file.txt"
+  roadnet_file: 'roadnet_4_4_tl_plan.json'
+  flow_file: 'anon_4_4_hangzhou_real.json'
+  roadnet_log_file: 'frontend/web/roadnet_log_file.json'
+  replay_log_file: 'frontend/web/replay_log_file.txt'
   save_replay: False
   flow_rate_type: 'random'
   flow_classes: ['flow_disrupted', 'link_disrupted']  
+  # train:
+  #   flow_disrupted:
+  #     '700': [
+  #       '0__hangzhou_4_4__gaussian_700_flows.json',
+  #       '1__hangzhou_4_4__gaussian_700_flows.json',
+  #       '2__hangzhou_4_4__gaussian_700_flows.json',
+  #       '3__hangzhou_4_4__gaussian_700_flows.json',
+  #       '4__hangzhou_4_4__gaussian_700_flows.json',
+  #       '5__hangzhou_4_4__gaussian_700_flows.json',
+  #       '6__hangzhou_4_4__gaussian_700_flows.json',
+  #       '7__hangzhou_4_4__gaussian_700_flows.json',
+  #       '8__hangzhou_4_4__gaussian_700_flows.json',
+  #       '9__hangzhou_4_4__gaussian_700_flows.json',
+  #     ]
   train: 
     link_disrupted:
       '0_1': [
@@ -35,18 +49,18 @@ cityflow:
         '9__hangzhou_4_4__dr_0.3__gaussian_700_flows.json',
       ]
     flow_disrupted: 
-      '600': [
-        '0__hangzhou_4_4__gaussian_600_flows.json',
-        '1__hangzhou_4_4__gaussian_600_flows.json',
-        '2__hangzhou_4_4__gaussian_600_flows.json',
-        '3__hangzhou_4_4__gaussian_600_flows.json',
-        '4__hangzhou_4_4__gaussian_600_flows.json',
-        '5__hangzhou_4_4__gaussian_600_flows.json',
-        '6__hangzhou_4_4__gaussian_600_flows.json',
-        '7__hangzhou_4_4__gaussian_600_flows.json',
-        '8__hangzhou_4_4__gaussian_600_flows.json',
-        '9__hangzhou_4_4__gaussian_600_flows.json',
-      ]
+      # '600': [
+      #   '0__hangzhou_4_4__gaussian_600_flows.json',
+      #   '1__hangzhou_4_4__gaussian_600_flows.json',
+      #   '2__hangzhou_4_4__gaussian_600_flows.json',
+      #   '3__hangzhou_4_4__gaussian_600_flows.json',
+      #   '4__hangzhou_4_4__gaussian_600_flows.json',
+      #   '5__hangzhou_4_4__gaussian_600_flows.json',
+      #   '6__hangzhou_4_4__gaussian_600_flows.json',
+      #   '7__hangzhou_4_4__gaussian_600_flows.json',
+      #   '8__hangzhou_4_4__gaussian_600_flows.json',
+      #   '9__hangzhou_4_4__gaussian_600_flows.json',
+      # ]
       '700': [
         '0__hangzhou_4_4__gaussian_700_flows.json',
         '1__hangzhou_4_4__gaussian_700_flows.json',
@@ -59,29 +73,77 @@ cityflow:
         '8__hangzhou_4_4__gaussian_700_flows.json',
         '9__hangzhou_4_4__gaussian_700_flows.json',
       ]
-      '750': [
-        '0__hangzhou_4_4__gaussian_750_flows.json',
-        '1__hangzhou_4_4__gaussian_750_flows.json',
-        '2__hangzhou_4_4__gaussian_750_flows.json',
-        '3__hangzhou_4_4__gaussian_750_flows.json',
-        '4__hangzhou_4_4__gaussian_750_flows.json',
-        '5__hangzhou_4_4__gaussian_750_flows.json',
-        '6__hangzhou_4_4__gaussian_750_flows.json',
-        '7__hangzhou_4_4__gaussian_750_flows.json',
-        '8__hangzhou_4_4__gaussian_750_flows.json',
-        '9__hangzhou_4_4__gaussian_750_flows.json',
+      # '750': [
+      #   '0__hangzhou_4_4__gaussian_750_flows.json',
+      #   '1__hangzhou_4_4__gaussian_750_flows.json',
+      #   '2__hangzhou_4_4__gaussian_750_flows.json',
+      #   '3__hangzhou_4_4__gaussian_750_flows.json',
+      #   '4__hangzhou_4_4__gaussian_750_flows.json',
+      #   '5__hangzhou_4_4__gaussian_750_flows.json',
+      #   '6__hangzhou_4_4__gaussian_750_flows.json',
+      #   '7__hangzhou_4_4__gaussian_750_flows.json',
+      #   '8__hangzhou_4_4__gaussian_750_flows.json',
+      #   '9__hangzhou_4_4__gaussian_750_flows.json',
+      # ]
+      # '800': [
+      #   '0__hangzhou_4_4__gaussian_800_flows.json',
+      #   '1__hangzhou_4_4__gaussian_800_flows.json',
+      #   '2__hangzhou_4_4__gaussian_800_flows.json',
+      #   '3__hangzhou_4_4__gaussian_800_flows.json',
+      #   '4__hangzhou_4_4__gaussian_800_flows.json',
+      #   '5__hangzhou_4_4__gaussian_800_flows.json',
+      #   '6__hangzhou_4_4__gaussian_800_flows.json',
+      #   '7__hangzhou_4_4__gaussian_800_flows.json',
+      #   '8__hangzhou_4_4__gaussian_800_flows.json',
+      #   '9__hangzhou_4_4__gaussian_800_flows.json',
+      # ]
+      '0_1': [
+        '0__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.1__gaussian_700_flows.json',
       ]
-      '800': [
-        '0__hangzhou_4_4__gaussian_800_flows.json',
-        '1__hangzhou_4_4__gaussian_800_flows.json',
-        '2__hangzhou_4_4__gaussian_800_flows.json',
-        '3__hangzhou_4_4__gaussian_800_flows.json',
-        '4__hangzhou_4_4__gaussian_800_flows.json',
-        '5__hangzhou_4_4__gaussian_800_flows.json',
-        '6__hangzhou_4_4__gaussian_800_flows.json',
-        '7__hangzhou_4_4__gaussian_800_flows.json',
-        '8__hangzhou_4_4__gaussian_800_flows.json',
-        '9__hangzhou_4_4__gaussian_800_flows.json',
+      '0_2': [
+        '0__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.2__gaussian_700_flows.json',
+      ]
+      '0_5': [
+        '0__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.5__gaussian_700_flows.json',
+      ]
+      '0_6': [
+        '0__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.6__gaussian_700_flows.json',
       ]
   test: 
     link_disrupted: 
@@ -110,41 +172,77 @@ cityflow:
         '9__hangzhou_4_4__dr_0.4__gaussian_700_flows.json',
       ]
     flow_disrupted: 
-      '650': [
-        '0__hangzhou_4_4__gaussian_650_flows.json',
-        '1__hangzhou_4_4__gaussian_650_flows.json',
-        '2__hangzhou_4_4__gaussian_650_flows.json',
-        '3__hangzhou_4_4__gaussian_650_flows.json',
-        '4__hangzhou_4_4__gaussian_650_flows.json',
-        '5__hangzhou_4_4__gaussian_650_flows.json',
-        '6__hangzhou_4_4__gaussian_650_flows.json',
-        '7__hangzhou_4_4__gaussian_650_flows.json',
-        '8__hangzhou_4_4__gaussian_650_flows.json',
-        '9__hangzhou_4_4__gaussian_650_flows.json',
+      # '650': [
+      #   '0__hangzhou_4_4__gaussian_650_flows.json',
+      #   '1__hangzhou_4_4__gaussian_650_flows.json',
+      #   '2__hangzhou_4_4__gaussian_650_flows.json',
+      #   '3__hangzhou_4_4__gaussian_650_flows.json',
+      #   '4__hangzhou_4_4__gaussian_650_flows.json',
+      #   '5__hangzhou_4_4__gaussian_650_flows.json',
+      #   '6__hangzhou_4_4__gaussian_650_flows.json',
+      #   '7__hangzhou_4_4__gaussian_650_flows.json',
+      #   '8__hangzhou_4_4__gaussian_650_flows.json',
+      #   '9__hangzhou_4_4__gaussian_650_flows.json',
+      # ]
+      # '850': [
+      #   '0__hangzhou_4_4__gaussian_850_flows.json',
+      #   '1__hangzhou_4_4__gaussian_850_flows.json',
+      #   '2__hangzhou_4_4__gaussian_850_flows.json',
+      #   '3__hangzhou_4_4__gaussian_850_flows.json',
+      #   '4__hangzhou_4_4__gaussian_850_flows.json',
+      #   '5__hangzhou_4_4__gaussian_850_flows.json',
+      #   '6__hangzhou_4_4__gaussian_850_flows.json',
+      #   '7__hangzhou_4_4__gaussian_850_flows.json',
+      #   '8__hangzhou_4_4__gaussian_850_flows.json',
+      #   '9__hangzhou_4_4__gaussian_850_flows.json',
+      # ]
+      # '900': [
+      #   '0__hangzhou_4_4__gaussian_900_flows.json',
+      #   '1__hangzhou_4_4__gaussian_900_flows.json',
+      #   '2__hangzhou_4_4__gaussian_900_flows.json',
+      #   '3__hangzhou_4_4__gaussian_900_flows.json',
+      #   '4__hangzhou_4_4__gaussian_900_flows.json',
+      #   '5__hangzhou_4_4__gaussian_900_flows.json',
+      #   '6__hangzhou_4_4__gaussian_900_flows.json',
+      #   '7__hangzhou_4_4__gaussian_900_flows.json',
+      #   '8__hangzhou_4_4__gaussian_900_flows.json',
+      #   '9__hangzhou_4_4__gaussian_900_flows.json',
+      # ]
+      '0_3': [
+        '0__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.3__gaussian_700_flows.json',
       ]
-      '850': [
-        '0__hangzhou_4_4__gaussian_850_flows.json',
-        '1__hangzhou_4_4__gaussian_850_flows.json',
-        '2__hangzhou_4_4__gaussian_850_flows.json',
-        '3__hangzhou_4_4__gaussian_850_flows.json',
-        '4__hangzhou_4_4__gaussian_850_flows.json',
-        '5__hangzhou_4_4__gaussian_850_flows.json',
-        '6__hangzhou_4_4__gaussian_850_flows.json',
-        '7__hangzhou_4_4__gaussian_850_flows.json',
-        '8__hangzhou_4_4__gaussian_850_flows.json',
-        '9__hangzhou_4_4__gaussian_850_flows.json',
+      '0_4': [
+        '0__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.4__gaussian_700_flows.json',
       ]
-      '900': [
-        '0__hangzhou_4_4__gaussian_900_flows.json',
-        '1__hangzhou_4_4__gaussian_900_flows.json',
-        '2__hangzhou_4_4__gaussian_900_flows.json',
-        '3__hangzhou_4_4__gaussian_900_flows.json',
-        '4__hangzhou_4_4__gaussian_900_flows.json',
-        '5__hangzhou_4_4__gaussian_900_flows.json',
-        '6__hangzhou_4_4__gaussian_900_flows.json',
-        '7__hangzhou_4_4__gaussian_900_flows.json',
-        '8__hangzhou_4_4__gaussian_900_flows.json',
-        '9__hangzhou_4_4__gaussian_900_flows.json',
+      '0_7': [
+        '0__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '1__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '2__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '3__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '4__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '5__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '6__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '7__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '8__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
+        '9__hangzhou_4_4__fd_0.7__gaussian_700_flows.json',
       ]
 
 signal:

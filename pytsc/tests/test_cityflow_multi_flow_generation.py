@@ -3,6 +3,7 @@ import os
 from pytsc.backends.cityflow.trip_generator import (
     CityFlowTripGenerator,
     LinkDisruptedCityFlowTripGenerator,
+    FlowDisruptedCityFlowTripGenerator,
 )
 
 if __name__ == "__main__":
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     #         inter_sigma=0.8,
     #         start_time=0,
     #         end_time=3600,
+    #         seed=i,
     #     )
     #     trip_generator.generate_flows(
     #         filepath=os.path.join(filepath, "train/normal/"),
@@ -41,6 +43,7 @@ if __name__ == "__main__":
                 inter_sigma=0.8,
                 start_time=0,
                 end_time=3600,
+                seed=i,
             )
             trip_generator.generate_flows(filepath=filepath, replicate_no=i)
 
@@ -54,6 +57,7 @@ if __name__ == "__main__":
                 inter_sigma=0.8,
                 start_time=0,
                 end_time=3600,
+                seed=i,
             )
             trip_generator.generate_flows(filepath=filepath, replicate_no=i)
 
@@ -71,8 +75,29 @@ if __name__ == "__main__":
                 start_time=0,
                 end_time=3600,
                 disruption_ratio=disruption_ratio,
+                seed=i,
             )
             link_disrupted_trip_generator.generate_flows(
+                filepath=filepath, replicate_no=i
+            )
+
+    for disruption_ratio in [0.1, 0.2, 0.5, 0.6]:
+        filepath = os.path.join(
+            base_filepath,
+            f"train/flow_disrupted/{str(disruption_ratio).replace('.', '_')}/",
+        )
+        os.makedirs(filepath, exist_ok=True)
+        for i in range(10):
+            flow_disrupted_trip_generator = FlowDisruptedCityFlowTripGenerator(
+                scenario=scenario,
+                inter_mu=3600 / base_flow_rate,
+                inter_sigma=0.8,
+                start_time=0,
+                end_time=3600,
+                disruption_ratio=disruption_ratio,
+                seed=i,
+            )
+            flow_disrupted_trip_generator.generate_flows(
                 filepath=filepath, replicate_no=i
             )
 
@@ -90,7 +115,28 @@ if __name__ == "__main__":
                 start_time=0,
                 end_time=3600,
                 disruption_ratio=disruption_ratio,
+                seed=i,
             )
             link_disrupted_trip_generator.generate_flows(
+                filepath=filepath, replicate_no=i
+            )
+
+    for disruption_ratio in [0.3, 0.4, 0.7, 0.8]:
+        filepath = os.path.join(
+            base_filepath,
+            f"test/flow_disrupted/{str(disruption_ratio).replace('.', '_')}/",
+        )
+        os.makedirs(filepath, exist_ok=True)
+        for i in range(10):
+            flow_disrupted_trip_generator = FlowDisruptedCityFlowTripGenerator(
+                scenario=scenario,
+                inter_mu=3600 / base_flow_rate,
+                inter_sigma=0.8,
+                start_time=0,
+                end_time=3600,
+                disruption_ratio=disruption_ratio,
+                seed=i,
+            )
+            flow_disrupted_trip_generator.generate_flows(
                 filepath=filepath, replicate_no=i
             )

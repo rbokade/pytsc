@@ -13,6 +13,7 @@ class BasePhaseSelector(ABC):
     def __init__(self, traffic_signal, round_robin=True, **kwargs):
         self.traffic_signal = traffic_signal
         self.round_robin = round_robin
+        self.visibility = traffic_signal.config["visibility"]
 
     def __repr__(self):
         return f"{self.__class__.__name__} ({self.traffic_signal.id})"
@@ -63,7 +64,10 @@ class GreedyPhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane in phase_inc_out_lanes.keys():
-            inc_vehicles += inp["lane"][inc_lane]["n_queued"]
+            _, speed_mat = inp["lane"][inc_lane]["position_speed_matrices"]
+            mean_speed = sum(speed_mat[: self.visibility]) / self.visibility
+            n_queued = 1 - mean_speed
+            inc_vehicles += n_queued
         return inc_vehicles
 
 
@@ -101,10 +105,12 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane, out_lanes in phase_inc_out_lanes.items():
-            inc_lane_vehicles = inp["lane"][inc_lane]["occupancy"]
+            inc_pos_mat, _ = inp["lane"][inc_lane]["position_speed_matrices"]
+            inc_lane_vehicles = sum(inc_pos_mat[: self.visibility])
             out_lane_vehicles = 0
             for out_lane in out_lanes:
-                out_lane_vehicles += inp["lane"][out_lane]["occupancy"]
+                out_pos_mat, _ = inp["lane"][out_lane]["position_speed_matrices"]
+                out_lane_vehicles = sum(out_pos_mat[-self.visibility :])
             pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)
         return pressure
 
@@ -155,7 +161,8 @@ class SOTLPhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane in phase_inc_out_lanes.keys():
-            total_vehicles += inp["lane"][inc_lane]["occupancy"]
+            inc_pos_mat, _ = inp["lane"][inc_lane]["position_speed_matrices"]
+            total_vehicles += sum(inc_pos_mat[: self.visibility])
         return total_vehicles
 
 

@@ -19,6 +19,7 @@ class TrafficSignalNetwork:
         self.scenario = scenario
         self.simulator_backend = simulator_backend
         self.disrupted = kwargs.get("disrupted", False)
+        self.domain_class = kwargs.get("domain_class", None)
         assert (
             self.simulator_backend in SUPPORTED_SIMULATOR_BACKENDS
         ), f"Simulator backend {self.simulator_backend} not supported."
@@ -166,6 +167,8 @@ class TrafficSignalNetwork:
         if self.simulator.is_terminated:
             self.simulator.close_simulator()
             self.simulator.start_simulator()
+            if self.domain_class is not None:
+                self.config.set_domain_class(self.domain_class)
             self._init_traffic_signals()
             self._init_parsers()
             self.hour_count += 1

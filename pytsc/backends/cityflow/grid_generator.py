@@ -33,9 +33,7 @@ class CityFlowGridNetworkGenerator:
         )
 
     def _create_scenario_folder(self):
-        self.scenario_dir = os.path.join(
-            CONFIG_DIR, f"syn_{self.nrows}x{self.ncols}"
-        )
+        self.scenario_dir = os.path.join(CONFIG_DIR, f"syn_{self.nrows}x{self.ncols}")
         os.makedirs(self.scenario_dir, exist_ok=True)
 
     def _generate_roadnet_file(self, mean_flow_rate):
@@ -141,8 +139,7 @@ def filter_road_links(road_links, filtered_roads):
     filtered_road_links = [
         link
         for link in road_links
-        if link["startRoad"] in filtered_roads
-        and link["endRoad"] in filtered_roads
+        if link["startRoad"] in filtered_roads and link["endRoad"] in filtered_roads
     ]
     return filtered_road_links
 

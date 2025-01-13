@@ -22,6 +22,8 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
         return self.tsc_env.get_action_mask()
 
     def get_env_info(self):
+        domain_classes = getattr(self.tsc_env.config, "domain_classes", ["baseline"])
+        n_domains = len(domain_classes) if domain_classes is not None else 1
         env_info = {
             "agents": list(self.tsc_env.traffic_signals.keys()),
             "episode_limit": self.episode_limit,
@@ -30,7 +32,8 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
             "n_agents": self.tsc_env.n_agents,
             "obs_shape": self.get_obs_size(),
             "state_shape": self.get_state_size(),
-            "n_domains": len(self.tsc_env.config.domain_classes),
+            "n_domains": n_domains,
+            "domain_classes": domain_classes,
         }
         return env_info
 
@@ -60,6 +63,18 @@ class PyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def get_total_actions(self):
         return self.tsc_env.get_action_size()
+
+    def get_domain_class(self):
+        return self.tsc_env.config.domain_class
+
+    def set_domain_class(self, domain_class):
+        self.tsc_env.config.set_domain_class(domain_class)
+
+    def is_terminated(self):
+        return self.tsc_env.simulator.is_terminated
+
+    def sim_step(self):
+        return self.tsc_env.simulator.sim_step
 
     def reset(self):
         self.tsc_env.episode_count += 1

@@ -116,9 +116,7 @@ class TrafficSignal(BaseTrafficSignal):
         self.norm_mean_wait_times = np.zeros_like(norm_mean_speeds)
         self.time_on_phase = self.controller.norm_time_on_phase
         self.phase_id = np.asarray(self.controller.phase_one_hot)
-        self.pressure = np.abs(
-            np.mean(densities) - np.mean(outgoing_densities)
-        )
+        self.pressure = np.abs(np.mean(densities) - np.mean(outgoing_densities))
         self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, phase_index):

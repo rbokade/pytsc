@@ -57,6 +57,7 @@ class CityFlowTripGenerator(TripGenerator):
         end_time,
         inter_mu,
         inter_sigma,
+        seed=0,
         edge_weights=None,
         turn_probs=[0.1, 0.3, 0.6],
         **kwargs,
@@ -69,6 +70,8 @@ class CityFlowTripGenerator(TripGenerator):
         self.inter_mu = inter_mu
         self.inter_sigma = inter_sigma
         self.turn_probabilities = turn_probs
+        np.random.seed(seed)
+        random.seed(seed)
         self.max_trip_length = self._get_max_trip_length()
         self.lane_connectivity_map = self._get_lane_connectivity_map()
         self._set_edge_weights(edge_weights)
@@ -252,11 +255,11 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
 
     def _generate_disrupted_links(self):
         """
-        Generate a list of disrupted links based on the disruption ratio.
+        Generate a list of disrupted links while ensuring network connectivity.
         Disrupted links cannot be fringe edges.
         """
-        num_intersections = len(self.parsed_network.traffic_signals)
-        num_links_to_disrupt = int(self.disruption_ratio * num_intersections)
+        n_intersections = len(self.parsed_network.traffic_signals)
+        n_links_to_disrupt = int(self.disruption_ratio * n_intersections)
         incoming_fringe_edges, outgoing_fringe_edges = self._find_fringe_edges()
         fringe_edges = set(incoming_fringe_edges + outgoing_fringe_edges)
         non_fringe_roads = [
@@ -265,7 +268,7 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
             if road["id"] not in fringe_edges
         ]
         random.shuffle(non_fringe_roads)
-        disrupted_links = non_fringe_roads[:num_links_to_disrupt]
+        disrupted_links = non_fringe_roads[:n_links_to_disrupt]
         print(set(disrupted_links))
         return set(disrupted_links)
 
@@ -281,19 +284,17 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
         for i, direction in enumerate(self.turns):
             next_edge = self.lane_connectivity_map[current_edge].get(direction)
             if next_edge and next_edge not in self.disrupted_links:
+                turn_prob = self.turn_probabilities[i]
+                edge_weight = self.edge_weights.get(next_edge, 1.0)
                 next_edge_candidates.append(next_edge)
-                combined_weights.append(
-                    self.turn_probabilities[i] * self.edge_weights.get(next_edge, 1.0)
-                )
+                combined_weights.append(turn_prob * edge_weight)
         if not next_edge_candidates:
             return None
         total_weight = sum(combined_weights)
         if total_weight == 0:
             return None
-        normalized_weights = [w / total_weight for w in combined_weights]
-        next_edge = random.choices(
-            next_edge_candidates, weights=normalized_weights, k=1
-        )[0]
+        norm_weights = [w / total_weight for w in combined_weights]
+        next_edge = random.choices(next_edge_candidates, weights=norm_weights, k=1)[0]
         return next_edge
 
     def generate_flows(self, filepath, replicate_no=None):
@@ -331,6 +332,101 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
             json.dump(sorted_flows, f, indent=4)
 
 
+class FlowDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
+    def __init__(
+        self,
+        scenario,
+        start_time,
+        end_time,
+        inter_mu,
+        inter_sigma,
+        disruption_ratio=0.1,
+        **kwargs,
+    ):
+        super().__init__(
+            scenario, start_time, end_time, inter_mu, inter_sigma, **kwargs
+        )
+        self.disruption_ratio = disruption_ratio
+        self.burst_start_min = 0  # Burst start time in minutes
+        self.burst_start_max = 20  # Burst end time in minutes
+        self.burst_duration = 10  # Burst duration in minutes
+        self.burst_multiplier = 4  # Flow rate multiplier during burst
+        self.disrupted_links = self._select_disrupted_links()
+        self.burst_timings = self._generate_burst_timings()
+
+    def _select_disrupted_links(self):
+        """
+        Selects a subset of incoming fringe links to experience
+        flow disruption.
+        """
+        incoming_fringe_edges, _ = self._find_fringe_edges()
+        n_to_disrupt = int(len(incoming_fringe_edges) * self.disruption_ratio)
+        disrupted_links = random.sample(incoming_fringe_edges, n_to_disrupt)
+        return set(disrupted_links)
+
+    def _generate_burst_timings(self):
+        """
+        Generates random start times for the traffic bursts for each
+        disrupted link.
+        """
+        burst_timings = {}
+        for link in self.disrupted_links:
+            burst_start_time = random.randint(
+                self.burst_start_min * 60, self.burst_start_max * 60
+            )
+            burst_end_time = burst_start_time + self.burst_duration * 60
+            burst_timings[link] = (burst_start_time, burst_end_time)
+        return burst_timings
+
+    def generate_flows(self, filepath, replicate_no=None):
+        incoming_edges, _ = self._find_fringe_edges()
+        flows = []
+        for start_edge in incoming_edges:
+            current_time = self.start_time
+            burst_start, burst_end = self.burst_timings.get(
+                start_edge, (float("inf"), float("inf"))
+            )
+            while current_time < self.end_time:
+                if (
+                    start_edge in self.disrupted_links
+                    and burst_start <= current_time < burst_end
+                ):
+                    interarrival_time = np.random.normal(
+                        self.inter_mu / self.burst_multiplier,
+                        self.inter_sigma / self.burst_multiplier,
+                    )
+                else:
+                    interarrival_time = np.random.normal(
+                        self.inter_mu, self.inter_sigma
+                    )
+                interarrival_time = max(0, interarrival_time)
+                vehicle_start_time = int(current_time + interarrival_time)
+                if vehicle_start_time >= self.end_time:
+                    break
+                route = [start_edge]
+                while len(route) <= 1 or len(route) > self.max_trip_length:
+                    route = self._generate_route(start_edge)
+                flow_entry = {
+                    "vehicle": self.vehicle_data,
+                    "route": route,
+                    "interval": 1.0,
+                    "startTime": vehicle_start_time,
+                    "endTime": vehicle_start_time,
+                }
+                flows.append(flow_entry)
+                current_time = vehicle_start_time
+        sorted_flows = sorted(flows, key=lambda x: x["startTime"])
+        flow_rate = (self.end_time - self.start_time) / self.inter_mu
+        filename = f"{self.scenario}__fd_{self.disruption_ratio}__gaussian_{int(flow_rate)}_flows.json"
+        if "replicate_no" in self.config._additional_config:
+            filename = f"{self.config._additional_config['replicate_no']}__{filename}"
+        if replicate_no is not None:
+            filename = f"{replicate_no}__{filename}"
+        filepath = os.path.join(filepath, filename)
+        with open(filepath, "w") as f:
+            json.dump(sorted_flows, f, indent=4)
+
+
 class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
     def generate_flows(
         self,
@@ -350,10 +446,10 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
         )
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
-        num_intervals = (self.end_time - self.start_time) // interval_duration
+        n_intervals = (self.end_time - self.start_time) // interval_duration
         for start_edge in incoming_edges:
             current_time = self.start_time
-            for i, interval in enumerate(range(num_intervals)):
+            for i, interval in enumerate(range(n_intervals)):
                 interval_mean = flow_rate_segment[i]
                 while current_time < (
                     self.start_time + (interval + 1) * interval_duration
@@ -693,7 +789,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         total_route_length = 0
-        num_routes = 0
+        n_routes = 0
         target_mean_route_length = sum(
             v["mean_route_length"] for v in self.flow_info.values()
         ) / len(self.flow_info)
@@ -742,7 +838,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
                     }
                     flows.append(flow_entry)
                     total_route_length += len(route)
-                    num_routes += 1
+                    n_routes += 1
                     current_time = vehicle_start_time
 
         sorted_flows = sorted(flows, key=lambda x: x["startTime"])
@@ -758,9 +854,7 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         file_path = os.path.join(output_dir, filename)
         with open(file_path, "w") as f:
             json.dump(sorted_flows, f, indent=4)
-        final_mean_route_length = (
-            total_route_length / num_routes if num_routes > 0 else 0
-        )
+        final_mean_route_length = total_route_length / n_routes if n_routes > 0 else 0
         EnvLogger.log_info(
             f"Final mean route length: {final_mean_route_length}, Target: {target_mean_route_length}"
         )

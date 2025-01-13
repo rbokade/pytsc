@@ -99,8 +99,6 @@ class DisruptedConfig(Config):
         self.mode = mode
         self._additional_config = kwargs
         self._load_config("cityflow")
-        # self.mode = kwargs.get("mode", "train")
-        # self.domain = kwargs.get("domain", "flow_disrupted")
         # Simulator files
         scenario_path = os.path.join(CONFIG_DIR, scenario)
         self._set_roadnet_file(scenario_path, **kwargs)
@@ -108,6 +106,7 @@ class DisruptedConfig(Config):
         self.temp_dir = tempfile.mkdtemp()
         self.cityflow_cfg_file = None
         # e.g., ['flow_disrupted', 'link_disrupted']
+        self.domain_class = kwargs.get("domain_class", None)
         self.domains = list(self.simulator[mode].keys())
         # e.g., { 'flow_disrupted': ['600', ...], 'link_disrupted': ['0_1', ...] }
         self.disrup_values = {
@@ -130,18 +129,28 @@ class DisruptedConfig(Config):
         self._select_random_flow_file()
 
     def _select_random_flow_file(self):
-        random_domain = random.choice(self.domains)
-        random_disrup_value = random.choice(self.disrup_values[random_domain])
+        if self.domain_class is None:
+            selected_domain = random.choice(self.domains)
+            selected_disrup_value = random.choice(self.disrup_values[selected_domain])
+        else:
+            selected_domain = self.domain_class[0]
+            selected_disrup_value = self.domain_class[1]
+        print(
+            f"Randomly selected domain: {selected_domain}, disruption: {selected_disrup_value}"
+        )
         self.current_domain_class = self.domain_classes.index(
-            (random_domain, random_disrup_value)
+            (selected_domain, selected_disrup_value)
         )
         flow_file = random.choice(
-            self.simulator[self.mode][random_domain][random_disrup_value]
+            self.simulator[self.mode][selected_domain][selected_disrup_value]
         )
         self.flow_file = os.path.join(
-            self.mode, random_domain, random_disrup_value, flow_file
+            self.mode, selected_domain, selected_disrup_value, flow_file
         )
         print(
             f"Randomly selected flow file: {self.flow_file} from"
-            + f"domain {random_domain}, disruption {random_disrup_value}"
+            + f"domain {selected_domain}, disruption {selected_disrup_value}"
         )
+
+    def set_domain_class(self, domain_class):
+        self.domain_class = domain_class
