@@ -54,14 +54,12 @@ class LaneFeatures(BaseObservationSpace):
         """
         observations = []
         for ts in self.traffic_signals.values():
-            norm_queue_lengths = np.log(1 + ts.norm_queue_lengths)
-            norm_densities = np.log(1 + ts.norm_densities)
-            norm_mean_speeds = np.log(1 + ts.norm_mean_speeds)
-            norm_mean_wait_times = np.log(1 + ts.norm_mean_wait_times)
-            obs = pad_array(norm_queue_lengths, self.max_n_controlled_lanes).tolist()
-            obs += pad_array(norm_densities, self.max_n_controlled_lanes).tolist()
-            obs += pad_array(norm_mean_speeds, self.max_n_controlled_lanes).tolist()
-            obs += pad_array(norm_mean_wait_times, self.max_n_controlled_lanes).tolist()
+            obs = pad_array(ts.norm_queue_lengths, self.max_n_controlled_lanes).tolist()
+            obs += pad_array(ts.densities, self.max_n_controlled_lanes).tolist()
+            obs += pad_array(ts.norm_mean_speeds, self.max_n_controlled_lanes).tolist()
+            obs += pad_array(
+                ts.norm_mean_wait_times, self.max_n_controlled_lanes
+            ).tolist()
             obs += pad_array(ts.phase_id, self.max_n_controlled_phases).tolist()
             obs += [np.log(1 + ts.sim_step)]
             observations.append(obs)
@@ -91,36 +89,11 @@ class LaneFeatures(BaseObservationSpace):
         return int((4 * self.max_n_controlled_lanes) + self.max_n_controlled_phases + 1)
 
     def get_state(self):
-        ts = next(iter(self.traffic_signals))
-        sim_step = [np.log(1 + self.traffic_signals[ts].sim_step)]
-        (
-            norm_queue_lengths,
-            norm_densities,
-            norm_mean_speeds,
-        ) = ([], [], [])
-        for lane in self.parsed_network.lanes:
-            lane_results = self.traffic_signals[ts].sub_results["lane"][lane]
-            density = np.log(1 + lane_results["occupancy"])
-            norm_queue_length = np.log(1 + lane_results["norm_queue_length"])
-            norm_mean_speed = np.log(1 + lane_results["norm_mean_speed"])
-            norm_densities.append(density)
-            norm_queue_lengths.append(norm_queue_length)
-            norm_mean_speeds.append(norm_mean_speed)
-        phase_ids = np.concatenate(
-            [ts.phase_id for ts in self.traffic_signals.values()]
-        )
-        state = np.concatenate(
-            (norm_densities, norm_queue_lengths, norm_mean_speeds, phase_ids, sim_step)
-        )
-        return state
+        observations = self.get_observations()
+        return np.concatenate(observations, axis=0).tolist()
 
     def get_state_size(self):
-        lane_features_size = int(
-            len(self.parsed_network.lanes) * 3
-            + self.max_n_controlled_phases * len(self.traffic_signals)
-            + 1
-        )
-        return lane_features_size
+        return len(self.traffic_signals.keys()) * self.get_size()
 
 
 class PositionMatrix(LaneFeatures):

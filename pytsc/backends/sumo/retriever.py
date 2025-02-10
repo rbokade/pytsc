@@ -9,7 +9,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 from pytsc.common.retriever import BaseRetriever
-from pytsc.common.utils import calculate_bin_index
+from pytsc.common.utils import get_vehicle_bin_index
 
 
 class Retriever(BaseRetriever):
@@ -84,23 +84,36 @@ class Retriever(BaseRetriever):
             ts_measurements[ts] = {"phase": results[self.tc["phase"]]}
         return ts_measurements
 
-    def retrieve_lane_measurements(self):
+    def _get_position_and_speed_matrices(self):
+        lane_lengths = self.simulator.parsed_network.lane_lengths
+        lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
+        position_speed_matrices = {lane: [[], []] for lane in lane_lengths.keys()}
+        for lane in lane_lengths.keys():
+            bin_count = int(
+                lane_lengths[lane] / self.config.simulator["veh_size_min_gap"]
+            )
+            position_speed_matrices[lane][0] = [0.0] * bin_count
+            position_speed_matrices[lane][1] = [0.0] * bin_count
+            results = self.traci.lane.getSubscriptionResults(lane)
+            for v in results[self.tc["vehicle_id"]]:
+                lane_position = self.traci.vehicle.getLanePosition(v)
+                bin_idx = get_vehicle_bin_index(
+                    n_bins=bin_count,
+                    lane_length=lane_lengths[lane],
+                    vehicle_position=lane_position,
+                )
+                if bin_idx is not None:
+                    position_speed_matrices[lane][0][bin_idx] = 1.0
+                    speed = self.traci.vehicle.getSpeed(v)
+                    norm_speed = speed / lane_max_speeds[lane]
+                    position_speed_matrices[lane][1][bin_idx] = norm_speed
+        return position_speed_matrices
+
+    def _compute_lane_measurements(self):
+        position_speed_matrices = self._get_position_and_speed_matrices()
         lane_measurements = {}
         for lane in self.parsed_network.lanes:
             results = self.traci.lane.getSubscriptionResults(lane)
-            lane_vehicles_bin_idxs = []
-            for v in results[self.tc["vehicle_id"]]:
-                lane_position = self.traci.vehicle.getLanePosition(v)
-                bin_idx = calculate_bin_index(
-                    n_bins=self.config.signal["visibility"],
-                    bin_size=self.config.simulator["veh_size_min_gap"],
-                    lane_length=self.parsed_network.lane_lengths[lane],
-                    lane_position=lane_position,
-                )
-                if bin_idx is not None:
-                    speed = self.traci.vehicle.getSpeed(v)
-                    norm_speed = speed / self.parsed_network.lane_max_speeds[lane]
-                    lane_vehicles_bin_idxs.append((bin_idx, norm_speed))
             lane_measurements[lane] = {}
             lane_measurements[lane].update(
                 {
@@ -109,7 +122,7 @@ class Retriever(BaseRetriever):
                     "mean_speed": results[self.tc["mean_speed"]] + 1e-6,
                     "occupancy": results[self.tc["occupancy"]] + 1e-6,
                     "wait_time": results[self.tc["wait_time"]] + 1e-6,
-                    "vehicles_bin_idxs": lane_vehicles_bin_idxs,
+                    "position_speed_matrices": position_speed_matrices[lane],
                 }
             )
             lane_measurements[lane].update(
@@ -145,6 +158,9 @@ class Retriever(BaseRetriever):
                 }
             )
         return lane_measurements
+
+    def retrieve_lane_measurements(self):
+        return self._compute_lane_measurements()
 
     def retrieve_sim_measurements(self):
         results = self.traci.simulation.getSubscriptionResults()

@@ -48,9 +48,7 @@ class NetworkParser(BaseNetworkParser):
                 "incoming_lanes": inc_lane_map[ts_id],
                 "outgoing_lanes": out_lane_map[ts_id],
                 "inc_to_out_lanes": inc_to_out_lane_map[ts_id],
-                "phase_to_inc_out_lanes": self.ts_phase_to_inc_out_lanes[
-                    ts_id
-                ],
+                "phase_to_inc_out_lanes": self.ts_phase_to_inc_out_lanes[ts_id],
                 "phases": phase_indices[ts_id],
                 "n_phases": len(phase_indices[ts_id]),
                 "phases_min_max_times": phases_min_max_times[ts_id],
@@ -70,9 +68,7 @@ class NetworkParser(BaseNetworkParser):
                 if node.getType() == "traffic_light"
             ]
             n_traffic_signals = len(nodes_with_tl)
-            node_to_index = {
-                node: idx for idx, node in enumerate(nodes_with_tl)
-            }
+            node_to_index = {node: idx for idx, node in enumerate(nodes_with_tl)}
             adjacency_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
             for node in nodes_with_tl:
                 i = node_to_index[node]
@@ -89,24 +85,22 @@ class NetworkParser(BaseNetworkParser):
     @lru_cache(maxsize=None)
     def network_boundary(self):
         try:
-            xmin, ymin, xmax, ymax = self.net.getBoundary()
+            x_min, y_min, x_max, y_max = self.net.getBoundary()
         except Exception:
-            [xmin, ymin], [xmax, ymax] = self.net.getBBoxXY()
+            [x_min, y_min], [x_max, y_max] = self.net.getBBoxXY()
         return (x_min, y_min), (x_max, y_max)
 
     @property
     @lru_cache(maxsize=None)
     def norm_network_boundary(self):
         (x_min, y_min), (x_max, y_max) = self.network_boundary
-        return [xmax - xmin, ymax - ymin]
+        return [x_max - x_min, y_max - y_min]
 
     @property
     @lru_cache(maxsize=None)
     def traffic_signal_ids(self):
         traffic_signals = self.net.getTrafficLights()
-        ts_ids = [
-            traffic_signals[i].getID() for i in range(len(traffic_signals))
-        ]
+        ts_ids = [traffic_signals[i].getID() for i in range(len(traffic_signals))]
         return sort_alphanumeric_ids(ts_ids)
 
     @property
@@ -146,13 +140,9 @@ class NetworkParser(BaseNetworkParser):
             ts_id = ts.getID()
             ts_phase_to_inc_out_lanes[ts_id] = {}
             controlled_links = ts.getLinks()
-            connection_indices = {
-                i: [] for i in range(len(ts.getConnections()))
-            }
+            connection_indices = {i: [] for i in range(len(ts.getConnections()))}
             for link_no, links in controlled_links.items():
-                connection_indices[link_no] = [
-                    conn[1].getID() for conn in links
-                ]
+                connection_indices[link_no] = [conn[1].getID() for conn in links]
             for program in ts.getPrograms().values():
                 for phase_idx, phase in enumerate(program.getPhases()):
                     phase_inc_out_lanes = []
@@ -160,9 +150,7 @@ class NetworkParser(BaseNetworkParser):
                         if signal_state.lower() in ("g", "g1", "y", "y1"):
                             out_lanes = connection_indices[i]
                             for out_lane in out_lanes:
-                                inc_lanes = self.net.getLane(
-                                    out_lane
-                                ).getIncoming()
+                                inc_lanes = self.net.getLane(out_lane).getIncoming()
                                 for inc_lane in inc_lanes:
                                     phase_inc_out_lanes.append(
                                         (inc_lane.getID(), out_lane)
@@ -174,16 +162,12 @@ class NetworkParser(BaseNetworkParser):
                     for inc_lane, out_lane in phase_inc_out_lanes:
                         if (
                             inc_lane
-                            not in ts_phase_to_inc_out_lanes[ts_id][
-                                phase_idx
-                            ].keys()
+                            not in ts_phase_to_inc_out_lanes[ts_id][phase_idx].keys()
                         ):
-                            ts_phase_to_inc_out_lanes[ts_id][phase_idx][
-                                inc_lane
-                            ] = []
-                        ts_phase_to_inc_out_lanes[ts_id][phase_idx][
-                            inc_lane
-                        ].append(out_lane)
+                            ts_phase_to_inc_out_lanes[ts_id][phase_idx][inc_lane] = []
+                        ts_phase_to_inc_out_lanes[ts_id][phase_idx][inc_lane].append(
+                            out_lane
+                        )
         return ts_phase_to_inc_out_lanes
 
     @property
@@ -194,9 +178,7 @@ class NetworkParser(BaseNetworkParser):
         for ts_id in self.traffic_signal_ids:
             k_hop_neighbors[ts_id] = {}
             for k in range(1, max_hops + 1):
-                k_hop_neighbors[ts_id][k] = self._get_k_hop_neighbors_for_ts(
-                    ts_id, k
-                )
+                k_hop_neighbors[ts_id][k] = self._get_k_hop_neighbors_for_ts(ts_id, k)
         return k_hop_neighbors
 
     @property
@@ -229,13 +211,9 @@ class NetworkParser(BaseNetworkParser):
     def _get_k_hop_neighbors_for_ts(self, ts_id, k):
         if self.adjacency_matrix.shape[0] == 1:
             return []
-        adjacency_matrix_power = np.linalg.matrix_power(
-            self.adjacency_matrix, k
-        )
+        adjacency_matrix_power = np.linalg.matrix_power(self.adjacency_matrix, k)
         ts_index = self.traffic_signal_ids.index(ts_id)
-        k_hop_neighbors_indices = np.where(
-            adjacency_matrix_power[ts_index] > 0
-        )[0]
+        k_hop_neighbors_indices = np.where(adjacency_matrix_power[ts_index] > 0)[0]
         k_hop_neighbors_ids = [
             self.traffic_signal_ids[index] for index in k_hop_neighbors_indices
         ]
@@ -313,6 +291,51 @@ class NetworkParser(BaseNetworkParser):
             green_phase_indices,
             yellow_phase_indices,
         )
+
+    def plot_network(self, figsize=(12, 12)):
+        """
+        Plots the SUMO network with intersections and traffic signals.
+        """
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
+        G = nx.DiGraph()
+
+        # Get all nodes (intersections)
+        for node in self.net.getNodes():
+            node_id = node.getID()
+            coord = node.getCoord()
+            G.add_node(node_id, pos=coord, color="gray")
+
+        # Get all edges (roads connecting intersections)
+        for edge in self.net.getEdges():
+            from_node = edge.getFromNode().getID()
+            to_node = edge.getToNode().getID()
+            G.add_edge(from_node, to_node)
+
+        # Mark traffic signals
+        ts_nodes = {
+            ts_id: self.ts_coordinates[ts_id] for ts_id in self.traffic_signal_ids
+        }
+
+        # Plot network
+        pos = nx.get_node_attributes(G, "pos")
+        fig, ax = plt.subplots(figsize=figsize)
+        nx.draw_networkx(
+            G,
+            pos,
+            node_size=20,
+            with_labels=False,
+            node_color="gray",
+            edge_color="black",
+            ax=ax,
+        )
+        nx.draw_networkx_nodes(
+            G, pos, nodelist=ts_nodes.keys(), node_color="red", node_size=50
+        )
+
+        plt.title("SUMO Road Network")
+        plt.show()
 
     # def _map_ts_phase_to_outgoing_lanes(self):
     #     """

@@ -82,6 +82,7 @@ def pad_array(array, size, pad_value=0):
     the specified size. If the array is already larger than the specified size,
     it is returned unmodified.
     """
+    array = np.asarray(array)
     if len(array) >= size:
         return array
     else:

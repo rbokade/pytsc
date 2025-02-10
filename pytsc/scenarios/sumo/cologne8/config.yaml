@@ -6,3 +6,7 @@ sumo:
 # Network parameters
 network:
   network_type: real # (synthetic, real)
+
+misc:
+  return_lane_stats: False
+  return_agent_stats: False
