@@ -1,5 +1,4 @@
-from collections import deque
-
+from turtle import pos
 import numpy as np
 
 from pytsc.common.traffic_signal import (
@@ -72,68 +71,46 @@ class TrafficSignal(BaseTrafficSignal):
         self.controller = TSController(id, config, simulator)
         self.incoming_lanes = config["incoming_lanes"]
         self.outgoing_lanes = config["outgoing_lanes"]
-        self.position_matrices = deque(maxlen=self.config["input_n_avg"])
-        self.speed_matrices = deque(maxlen=self.config["input_n_avg"])
         # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
-        pos_mat, speed_mat = [], []
-        # self.lane_pos_mats, self.lane_speed_mats = {}, {}
+        # Compute intersection stats
+        self.n_queued = 0
+        self.occupancy = 0
+        self.mean_speed = 0
+        self.mean_delay = 0
+        self.average_wait_time = 0
+        self.average_travel_time = 0
+        self.inc_position_matrices = {}
+        max_speeds = self.simulator.parsed_network.lane_max_speeds
         for lane in self.incoming_lanes:
             lane_results = sub_results["lane"][lane]
-            lane_pos_mat = lane_results["position_speed_matrices"][0][
-                : self.config["visibility"]
-            ]
-            lane_speed_mat = lane_results["position_speed_matrices"][1][
-                : self.config["visibility"]
-            ]
-            pos_mat.append(lane_pos_mat)
-            speed_mat.append(lane_speed_mat)
+            self.n_queued += lane_results["n_queued"]
+            self.occupancy += lane_results["occupancy"]
+            self.mean_speed += lane_results["mean_speed"]
+            self.mean_delay += 1 - lane_results["mean_speed"] / max_speeds[lane]
+            self.average_travel_time += lane_results["average_travel_time"]
+            self.average_wait_time += lane_results["average_wait_time"]
+            pos_mat = sub_results["lane"][lane]["position_matrix"]
+            self.inc_position_matrices[lane] = pos_mat[-self.config["visibility"] :]
+        self.occupancy /= len(self.incoming_lanes)
+        self.mean_speed /= len(self.incoming_lanes)
+        self.mean_delay /= len(self.incoming_lanes)
+        self.average_travel_time /= len(self.incoming_lanes)
+        self.average_wait_time /= len(self.incoming_lanes)
+
+        self.outgoing_occupancy = 0
+        self.out_position_matrices = {}
         for lane in self.outgoing_lanes:
             lane_results = sub_results["lane"][lane]
-            lane_pos_mat = lane_results["position_speed_matrices"][0][
-                -self.config["visibility"] :
-            ]
-            lane_speed_mat = lane_results["position_speed_matrices"][1][
-                -self.config["visibility"] :
-            ]
-            pos_mat.append(lane_pos_mat)
-            speed_mat.append(lane_speed_mat)
-        self.position_matrices.append(np.concatenate(pos_mat, axis=0))
-        self.speed_matrices.append(np.concatenate(speed_mat, axis=0))
-        (
-            queue_lengths,
-            densities,
-            mean_speeds,
-            mean_wait_times,
-            norm_queue_lengths,
-            norm_mean_speeds,
-            norm_mean_wait_times,
-        ) = ([], [], [], [], [], [], [])
-        for lane in self.incoming_lanes:
-            lane_results = sub_results["lane"][lane]
-            queue_lengths.append(lane_results["n_queued"])
-            densities.append(lane_results["occupancy"])
-            mean_speeds.append(lane_results["mean_speed"])
-            mean_wait_times.append(lane_results["mean_wait_time"])
-            norm_queue_lengths.append(lane_results["norm_queue_length"])
-            norm_mean_speeds.append(lane_results["norm_mean_speed"])
-            norm_mean_wait_times.append(lane_results["norm_mean_wait_time"])
-        outgoing_densities = []
-        for lane in self.outgoing_lanes:
-            lane_results = sub_results["lane"][lane]
-            outgoing_densities.append(lane_results["occupancy"])
-        self.queue_lengths = queue_lengths
-        self.densities = densities
-        self.mean_speeds = mean_speeds
-        self.mean_wait_times = mean_wait_times
-        self.norm_densities = np.asarray(densities)
-        self.norm_queue_lengths = np.asarray(norm_queue_lengths)
-        self.norm_mean_speeds = np.asarray(norm_mean_speeds)
-        self.norm_mean_wait_times = np.asarray(norm_mean_wait_times)
+            self.outgoing_occupancy += lane_results["occupancy"]
+            pos_mat = sub_results["lane"][lane]["position_matrix"]
+            self.out_position_matrices[lane] = pos_mat[: self.config["visibility"]]
+        self.outgoing_occupancy /= len(self.outgoing_lanes)
+
         self.time_on_phase = self.controller.norm_time_on_phase
-        self.phase_id = np.asarray(self.controller.phase_one_hot)
-        self.pressure = np.abs(np.mean(densities) - np.mean(outgoing_densities))
+        self.phase_id = self.controller.phase_one_hot
+        self.pressure = np.abs(self.occupancy - self.outgoing_occupancy).item()
         self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, phase_index):

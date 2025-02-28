@@ -1,66 +1,15 @@
 cityflow:
   # plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
-  roadnet_file: 'roadnet_3_4_tl_plan.json'
+  roadnet_file: 'roadnet_3_4.json'
   flow_file: 'anon_3_4_jinan_real.json'
   roadnet_log_file: 'frontend/web/roadnet_log_file.json'
   replay_log_file: 'frontend/web/replay_log_file.txt'
   save_replay: False
   flow_rate_type: 'random'
   flow_classes: ['flow_disrupted', 'link_disrupted']
-  # train:
-  #   flow_disrupted:
-  #     '700': [
-  #       '0__jinan_3_4__gaussian_700_flows.json',
-  #       '1__jinan_3_4__gaussian_700_flows.json',
-  #       '2__jinan_3_4__gaussian_700_flows.json',
-  #       '3__jinan_3_4__gaussian_700_flows.json',
-  #       '4__jinan_3_4__gaussian_700_flows.json',
-  #       '5__jinan_3_4__gaussian_700_flows.json',
-  #       '6__jinan_3_4__gaussian_700_flows.json',
-  #       '7__jinan_3_4__gaussian_700_flows.json',
-  #       '8__jinan_3_4__gaussian_700_flows.json',
-  #       '9__jinan_3_4__gaussian_700_flows.json',
-  #     ]
   train:
-    link_disrupted:
-      '0_1': [
-        '0__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '1__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '2__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '3__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '4__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '5__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '6__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '7__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '8__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-        '9__jinan_3_4__dr_0.1__gaussian_700_flows.json',
-      ]
-      '0_3': [
-        '0__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '1__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '2__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '3__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '4__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '5__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '6__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '7__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '8__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-        '9__jinan_3_4__dr_0.3__gaussian_700_flows.json',
-      ]
     flow_disrupted:
-      # '600': [
-      #   '0__jinan_3_4__gaussian_600_flows.json',
-      #   '1__jinan_3_4__gaussian_600_flows.json',
-      #   '2__jinan_3_4__gaussian_600_flows.json',
-      #   '3__jinan_3_4__gaussian_600_flows.json',
-      #   '4__jinan_3_4__gaussian_600_flows.json',
-      #   '5__jinan_3_4__gaussian_600_flows.json',
-      #   '6__jinan_3_4__gaussian_600_flows.json',
-      #   '7__jinan_3_4__gaussian_600_flows.json',
-      #   '8__jinan_3_4__gaussian_600_flows.json',
-      #   '9__jinan_3_4__gaussian_600_flows.json',
-      # ]
       '700': [
         '0__jinan_3_4__gaussian_700_flows.json',
         '1__jinan_3_4__gaussian_700_flows.json',
@@ -73,177 +22,228 @@ cityflow:
         '8__jinan_3_4__gaussian_700_flows.json',
         '9__jinan_3_4__gaussian_700_flows.json',
       ]
-      # '750': [
-      #   '0__jinan_3_4__gaussian_750_flows.json',
-      #   '1__jinan_3_4__gaussian_750_flows.json',
-      #   '2__jinan_3_4__gaussian_750_flows.json',
-      #   '3__jinan_3_4__gaussian_750_flows.json',
-      #   '4__jinan_3_4__gaussian_750_flows.json',
-      #   '5__jinan_3_4__gaussian_750_flows.json',
-      #   '6__jinan_3_4__gaussian_750_flows.json',
-      #   '7__jinan_3_4__gaussian_750_flows.json',
-      #   '8__jinan_3_4__gaussian_750_flows.json',
-      #   '9__jinan_3_4__gaussian_750_flows.json',
-      # ]
-      # '800': [
-      #   '0__jinan_3_4__gaussian_800_flows.json',
-      #   '1__jinan_3_4__gaussian_800_flows.json',
-      #   '2__jinan_3_4__gaussian_800_flows.json',
-      #   '3__jinan_3_4__gaussian_800_flows.json',
-      #   '4__jinan_3_4__gaussian_800_flows.json',
-      #   '5__jinan_3_4__gaussian_800_flows.json',
-      #   '6__jinan_3_4__gaussian_800_flows.json',
-      #   '7__jinan_3_4__gaussian_800_flows.json',
-      #   '8__jinan_3_4__gaussian_800_flows.json',
-      #   '9__jinan_3_4__gaussian_800_flows.json',
-      # ]
-      '0_1': [
-        '0__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.1__gaussian_700_flows.json',
-      ]
-      '0_2': [
-        '0__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.2__gaussian_700_flows.json',
-      ]
-      '0_5': [
-        '0__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.5__gaussian_700_flows.json',
-      ]
-      '0_6': [
-        '0__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.6__gaussian_700_flows.json',
-      ]
-  test: 
-    link_disrupted: 
-      '0_2': [
-        '0__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '1__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '2__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '3__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '4__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '5__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '6__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '7__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '8__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-        '9__jinan_3_4__dr_0.2__gaussian_700_flows.json',
-      ]
-      '0_4': [
-        '0__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '1__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '2__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '3__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '4__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '5__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '6__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '7__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '8__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-        '9__jinan_3_4__dr_0.4__gaussian_700_flows.json',
-      ]
-    flow_disrupted: 
-      # '650': [
-      #   '0__jinan_3_4__gaussian_650_flows.json',
-      #   '1__jinan_3_4__gaussian_650_flows.json',
-      #   '2__jinan_3_4__gaussian_650_flows.json',
-      #   '3__jinan_3_4__gaussian_650_flows.json',
-      #   '4__jinan_3_4__gaussian_650_flows.json',
-      #   '5__jinan_3_4__gaussian_650_flows.json',
-      #   '6__jinan_3_4__gaussian_650_flows.json',
-      #   '7__jinan_3_4__gaussian_650_flows.json',
-      #   '8__jinan_3_4__gaussian_650_flows.json',
-      #   '9__jinan_3_4__gaussian_650_flows.json',
-      # ]
-      # '850': [
-      #   '0__jinan_3_4__gaussian_850_flows.json',
-      #   '1__jinan_3_4__gaussian_850_flows.json',
-      #   '2__jinan_3_4__gaussian_850_flows.json',
-      #   '3__jinan_3_4__gaussian_850_flows.json',
-      #   '4__jinan_3_4__gaussian_850_flows.json',
-      #   '5__jinan_3_4__gaussian_850_flows.json',
-      #   '6__jinan_3_4__gaussian_850_flows.json',
-      #   '7__jinan_3_4__gaussian_850_flows.json',
-      #   '8__jinan_3_4__gaussian_850_flows.json',
-      #   '9__jinan_3_4__gaussian_850_flows.json',
-      # ]
-      # '900': [
-      #   '0__jinan_3_4__gaussian_900_flows.json',
-      #   '1__jinan_3_4__gaussian_900_flows.json',
-      #   '2__jinan_3_4__gaussian_900_flows.json',
-      #   '3__jinan_3_4__gaussian_900_flows.json',
-      #   '4__jinan_3_4__gaussian_900_flows.json',
-      #   '5__jinan_3_4__gaussian_900_flows.json',
-      #   '6__jinan_3_4__gaussian_900_flows.json',
-      #   '7__jinan_3_4__gaussian_900_flows.json',
-      #   '8__jinan_3_4__gaussian_900_flows.json',
-      #   '9__jinan_3_4__gaussian_900_flows.json',
-      # ]
-      '0_3': [
-        '0__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.3__gaussian_700_flows.json',
-      ]
-      '0_4': [
-        '0__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.4__gaussian_700_flows.json',
-      ]
-      '0_7': [
-        '0__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '1__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '2__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '3__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '4__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '5__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '6__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '7__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '8__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-        '9__jinan_3_4__fd_0.7__gaussian_700_flows.json',
-      ]
+  # train:
+  #   link_disrupted:
+  #     '0_1': [
+  #       '0__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '1__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '2__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '3__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '4__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '5__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '6__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '7__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '8__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #       '9__jinan_3_4__dr_0.1__gaussian_700_flows.json',
+  #     ]
+  #     '0_3': [
+  #       '0__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '1__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '2__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '3__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '4__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '5__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '6__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '7__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '8__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #       '9__jinan_3_4__dr_0.3__gaussian_700_flows.json',
+  #     ]
+  #   flow_disrupted:
+  #     # '600': [
+  #     #   '0__jinan_3_4__gaussian_600_flows.json',
+  #     #   '1__jinan_3_4__gaussian_600_flows.json',
+  #     #   '2__jinan_3_4__gaussian_600_flows.json',
+  #     #   '3__jinan_3_4__gaussian_600_flows.json',
+  #     #   '4__jinan_3_4__gaussian_600_flows.json',
+  #     #   '5__jinan_3_4__gaussian_600_flows.json',
+  #     #   '6__jinan_3_4__gaussian_600_flows.json',
+  #     #   '7__jinan_3_4__gaussian_600_flows.json',
+  #     #   '8__jinan_3_4__gaussian_600_flows.json',
+  #     #   '9__jinan_3_4__gaussian_600_flows.json',
+  #     # ]
+  #     '700': [
+  #       '0__jinan_3_4__gaussian_700_flows.json',
+  #       '1__jinan_3_4__gaussian_700_flows.json',
+  #       '2__jinan_3_4__gaussian_700_flows.json',
+  #       '3__jinan_3_4__gaussian_700_flows.json',
+  #       '4__jinan_3_4__gaussian_700_flows.json',
+  #       '5__jinan_3_4__gaussian_700_flows.json',
+  #       '6__jinan_3_4__gaussian_700_flows.json',
+  #       '7__jinan_3_4__gaussian_700_flows.json',
+  #       '8__jinan_3_4__gaussian_700_flows.json',
+  #       '9__jinan_3_4__gaussian_700_flows.json',
+  #     ]
+  #     # '750': [
+  #     #   '0__jinan_3_4__gaussian_750_flows.json',
+  #     #   '1__jinan_3_4__gaussian_750_flows.json',
+  #     #   '2__jinan_3_4__gaussian_750_flows.json',
+  #     #   '3__jinan_3_4__gaussian_750_flows.json',
+  #     #   '4__jinan_3_4__gaussian_750_flows.json',
+  #     #   '5__jinan_3_4__gaussian_750_flows.json',
+  #     #   '6__jinan_3_4__gaussian_750_flows.json',
+  #     #   '7__jinan_3_4__gaussian_750_flows.json',
+  #     #   '8__jinan_3_4__gaussian_750_flows.json',
+  #     #   '9__jinan_3_4__gaussian_750_flows.json',
+  #     # ]
+  #     # '800': [
+  #     #   '0__jinan_3_4__gaussian_800_flows.json',
+  #     #   '1__jinan_3_4__gaussian_800_flows.json',
+  #     #   '2__jinan_3_4__gaussian_800_flows.json',
+  #     #   '3__jinan_3_4__gaussian_800_flows.json',
+  #     #   '4__jinan_3_4__gaussian_800_flows.json',
+  #     #   '5__jinan_3_4__gaussian_800_flows.json',
+  #     #   '6__jinan_3_4__gaussian_800_flows.json',
+  #     #   '7__jinan_3_4__gaussian_800_flows.json',
+  #     #   '8__jinan_3_4__gaussian_800_flows.json',
+  #     #   '9__jinan_3_4__gaussian_800_flows.json',
+  #     # ]
+  #     '0_1': [
+  #       '0__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.1__gaussian_700_flows.json',
+  #     ]
+  #     '0_2': [
+  #       '0__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.2__gaussian_700_flows.json',
+  #     ]
+  #     '0_5': [
+  #       '0__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.5__gaussian_700_flows.json',
+  #     ]
+  #     '0_6': [
+  #       '0__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.6__gaussian_700_flows.json',
+  #     ]
+  # test: 
+  #   link_disrupted: 
+  #     '0_2': [
+  #       '0__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '1__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '2__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '3__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '4__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '5__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '6__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '7__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '8__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #       '9__jinan_3_4__dr_0.2__gaussian_700_flows.json',
+  #     ]
+  #     '0_4': [
+  #       '0__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '1__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '2__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '3__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '4__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '5__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '6__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '7__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '8__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #       '9__jinan_3_4__dr_0.4__gaussian_700_flows.json',
+  #     ]
+  #   flow_disrupted: 
+  #     # '650': [
+  #     #   '0__jinan_3_4__gaussian_650_flows.json',
+  #     #   '1__jinan_3_4__gaussian_650_flows.json',
+  #     #   '2__jinan_3_4__gaussian_650_flows.json',
+  #     #   '3__jinan_3_4__gaussian_650_flows.json',
+  #     #   '4__jinan_3_4__gaussian_650_flows.json',
+  #     #   '5__jinan_3_4__gaussian_650_flows.json',
+  #     #   '6__jinan_3_4__gaussian_650_flows.json',
+  #     #   '7__jinan_3_4__gaussian_650_flows.json',
+  #     #   '8__jinan_3_4__gaussian_650_flows.json',
+  #     #   '9__jinan_3_4__gaussian_650_flows.json',
+  #     # ]
+  #     # '850': [
+  #     #   '0__jinan_3_4__gaussian_850_flows.json',
+  #     #   '1__jinan_3_4__gaussian_850_flows.json',
+  #     #   '2__jinan_3_4__gaussian_850_flows.json',
+  #     #   '3__jinan_3_4__gaussian_850_flows.json',
+  #     #   '4__jinan_3_4__gaussian_850_flows.json',
+  #     #   '5__jinan_3_4__gaussian_850_flows.json',
+  #     #   '6__jinan_3_4__gaussian_850_flows.json',
+  #     #   '7__jinan_3_4__gaussian_850_flows.json',
+  #     #   '8__jinan_3_4__gaussian_850_flows.json',
+  #     #   '9__jinan_3_4__gaussian_850_flows.json',
+  #     # ]
+  #     # '900': [
+  #     #   '0__jinan_3_4__gaussian_900_flows.json',
+  #     #   '1__jinan_3_4__gaussian_900_flows.json',
+  #     #   '2__jinan_3_4__gaussian_900_flows.json',
+  #     #   '3__jinan_3_4__gaussian_900_flows.json',
+  #     #   '4__jinan_3_4__gaussian_900_flows.json',
+  #     #   '5__jinan_3_4__gaussian_900_flows.json',
+  #     #   '6__jinan_3_4__gaussian_900_flows.json',
+  #     #   '7__jinan_3_4__gaussian_900_flows.json',
+  #     #   '8__jinan_3_4__gaussian_900_flows.json',
+  #     #   '9__jinan_3_4__gaussian_900_flows.json',
+  #     # ]
+  #     '0_3': [
+  #       '0__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.3__gaussian_700_flows.json',
+  #     ]
+  #     '0_4': [
+  #       '0__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.4__gaussian_700_flows.json',
+  #     ]
+  #     '0_7': [
+  #       '0__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '1__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '2__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '3__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '4__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '5__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '6__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '7__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '8__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #       '9__jinan_3_4__fd_0.7__gaussian_700_flows.json',
+  #     ]
 
 signal:
   action_space: phase_selection

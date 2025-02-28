@@ -27,7 +27,7 @@ class QueueLength(BaseRewardFunction):
         fc = self.config.misc["flickering_coef"]
         reward = 1e-6
         reward += fc * self.metrics.flickering_signal
-        reward += self.metrics.n_queued_norm
+        reward += self.metrics.n_queued
         return -1 * reward
 
     def get_local_reward(self):
@@ -35,9 +35,7 @@ class QueueLength(BaseRewardFunction):
         gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {
-            ts_id: -fc * ts.controller.program.phase_changed
-            - np.mean(ts.norm_queue_lengths)
-            - 1e-6
+            ts_id: -fc * ts.controller.program.phase_changed - ts.n_queued - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}
@@ -66,9 +64,7 @@ class MaxPressure(BaseRewardFunction):
         gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
         local_rewards = {
-            ts_id: -fc * ts.controller.program.phase_changed
-            - np.mean(ts.pressure)
-            - 1e-6
+            ts_id: -fc * ts.controller.program.phase_changed - ts.pressure - 1e-6
             for ts_id, ts in self.traffic_signals.items()
         }
         rewards = {}

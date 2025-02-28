@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+  <input>
+    <net-file value="single_top.net.xml"/>
+    <route-files value="single_top.trips.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="360"/>
+  </time>
+  <report>
+    <verbose value="true"/>
+    <no-step-log value="true"/>
+  </report>
+</configuration>

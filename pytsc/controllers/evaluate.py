@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from pytsc import TrafficSignalNetwork
 from pytsc.common.utils import EnvLogger, validate_input_against_allowed
-from pytsc.controllers import TRADITIONAL_CONTROLLERS
+from pytsc.controllers import CONTROLLERS
 
 
 # EnvLogger.set_log_level(logging.WARNING)
@@ -23,7 +23,7 @@ class Evaluate:
         add_controller_args,
         **kwargs,
     ):
-        validate_input_against_allowed(controller_name, TRADITIONAL_CONTROLLERS)
+        validate_input_against_allowed(controller_name, CONTROLLERS)
         self.scenario = scenario
         self.simulator_backend = simulator_backend
         self.controller_name = controller_name
@@ -44,14 +44,17 @@ class Evaluate:
             self.simulator_backend,
             **self.add_env_args,
         )
-        self.network.config.signal["action_space"] = "phase_selection"
+        if self.controller_name == "rl":
+            self.network.config.signal["action_space"] = "phase_switch"
+        else:
+            self.network.config.signal["action_space"] = "phase_selection"
         self.network._init_parsers()
         self.config = self.network.config
 
     def _init_controllers(self):
         self.controllers = {}
         for ts_id, ts in self.network.traffic_signals.items():
-            self.controllers[ts_id] = TRADITIONAL_CONTROLLERS[self.controller_name](
+            self.controllers[ts_id] = CONTROLLERS[self.controller_name](
                 ts, **self.add_controller_args
             )
 
@@ -84,15 +87,17 @@ class Evaluate:
     def _get_actions(self):
         actions = []
         for idx, (ts_id, ts) in enumerate(self.network.traffic_signals.items()):
-            inp = self._get_controller_input(ts)
+            obs = self.network.get_observations()
+            inp = self._get_controller_input(obs[idx], ts)
             action = self.controllers[ts_id].get_action(inp)
             actions.append(action)
         return actions
 
-    def _get_controller_input(self, ts):
+    def _get_controller_input(self, obs, ts):
         inp = self.network.simulator.step_measurements
         inp.update(
             {
+                "observation": obs,
                 "time": self.network.simulator.sim_time,
                 "current_phase_index": ts.controller.program.current_phase_index,
                 "time_on_phase": ts.controller.time_on_phase,

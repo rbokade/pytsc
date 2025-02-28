@@ -1,6 +1,8 @@
 # SUMO parameters
 sumo:
   render: False
+  sumo_config_file: 2x2_sumo_grid.sumocfg
+  sumo_net_file: 2x2_sumo_grid.net.xml
 
 # Network parameters
 network:

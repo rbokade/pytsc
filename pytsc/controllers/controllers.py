@@ -1,15 +1,9 @@
 from abc import ABC
 
-import logging
-
 import numpy as np
 
-from pytsc.common.utils import EnvLogger
 
-# EnvLogger.set_log_level(logging.WARNING)
-
-
-class BasePhaseSelector(ABC):
+class BaseController(ABC):
     def __init__(self, traffic_signal, round_robin=True, **kwargs):
         self.traffic_signal = traffic_signal
         self.round_robin = round_robin
@@ -19,9 +13,9 @@ class BasePhaseSelector(ABC):
         return f"{self.__class__.__name__} ({self.traffic_signal.id})"
 
 
-class FixedTimePhaseSelector(BasePhaseSelector):
+class FixedTimeController(BaseController):
     def __init__(self, traffic_signal, green_time=25):
-        super(FixedTimePhaseSelector, self).__init__(traffic_signal)
+        super(FixedTimeController, self).__init__(traffic_signal)
         self.green_time = green_time
         self.controller = traffic_signal.controller
 
@@ -35,9 +29,9 @@ class FixedTimePhaseSelector(BasePhaseSelector):
             return self.controller.next_phase_index
 
 
-class GreedyPhaseSelector(BasePhaseSelector):
+class GreedyController(BaseController):
     def __init__(self, traffic_signal):
-        super(GreedyPhaseSelector, self).__init__(traffic_signal)
+        super(GreedyController, self).__init__(traffic_signal)
         self.controller = traffic_signal.controller
 
     def get_action(self, inp):
@@ -64,16 +58,15 @@ class GreedyPhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane in phase_inc_out_lanes.keys():
-            _, speed_mat = inp["lane"][inc_lane]["position_speed_matrices"]
-            mean_speed = sum(speed_mat[: self.visibility]) / self.visibility
-            n_queued = 1 - mean_speed
+            pos_mat = inp["lane"][inc_lane]["position_matrix"][-self.visibility :]
+            n_queued = sum([p == 0.0 for p in pos_mat])
             inc_vehicles += n_queued
         return inc_vehicles
 
 
-class MaxPressurePhaseSelector(BasePhaseSelector):
+class MaxPressureController(BaseController):
     def __init__(self, traffic_signal):
-        super(MaxPressurePhaseSelector, self).__init__(traffic_signal)
+        super(MaxPressureController, self).__init__(traffic_signal)
         self.controller = traffic_signal.controller
 
     def get_action(self, inp):
@@ -105,17 +98,19 @@ class MaxPressurePhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane, out_lanes in phase_inc_out_lanes.items():
-            inc_pos_mat, _ = inp["lane"][inc_lane]["position_speed_matrices"]
-            inc_lane_vehicles = sum(inc_pos_mat[: self.visibility])
+            inc_pos_mat = inp["lane"][inc_lane]["position_matrix"][-self.visibility :]
+            inc_lane_vehicles = sum([p >= 0.0 for p in inc_pos_mat])
             out_lane_vehicles = 0
             for out_lane in out_lanes:
-                out_pos_mat, _ = inp["lane"][out_lane]["position_speed_matrices"]
-                out_lane_vehicles = sum(out_pos_mat[-self.visibility :])
+                out_pos_mat = inp["lane"][out_lane]["position_matrix"][
+                    : self.visibility
+                ]
+                out_lane_vehicles = sum([p >= 0.0 for p in out_pos_mat])
             pressure += np.abs(inc_lane_vehicles - out_lane_vehicles)
         return pressure
 
 
-class SOTLPhaseSelector(BasePhaseSelector):
+class SOTLController(BaseController):
     """
     mu: threshold for vehicles on green phase lanes
     theta: threshold for vehicles on red phase lanes
@@ -123,16 +118,12 @@ class SOTLPhaseSelector(BasePhaseSelector):
     """
 
     def __init__(self, traffic_signal, theta=3, mu=4, phi_min=5):
-        super(SOTLPhaseSelector, self).__init__(traffic_signal)
+        super(SOTLController, self).__init__(traffic_signal)
         self.mu = mu
         self.theta = theta
         self.phi_min = phi_min
         self.last_vehicle_time = {}
         self.controller = traffic_signal.controller
-        # EnvLogger.log_info(
-        #     "SOTL parameters:\n"
-        #     + f"\nmu: {self.mu} | phi = {self.phi_min} | theta: {self.theta}"
-        # )
 
     def get_action(self, inp):
         action_mask = self.controller.get_allowable_phase_switches()
@@ -161,14 +152,14 @@ class SOTLPhaseSelector(BasePhaseSelector):
             phase
         ]
         for inc_lane in phase_inc_out_lanes.keys():
-            inc_pos_mat, _ = inp["lane"][inc_lane]["position_speed_matrices"]
-            total_vehicles += sum(inc_pos_mat[: self.visibility])
+            inc_pos_mat = inp["lane"][inc_lane]["position_matrix"][-self.visibility :]
+            total_vehicles += sum([p >= 0.0 for p in inc_pos_mat])
         return total_vehicles
 
 
-class AnalyticPlusPhaseSelector(BasePhaseSelector):
+class AnalyticPlusController(BaseController):
     def __init__(self, traffic_signal):
-        super(AnalyticPlusPhaseSelector, self).__init__(traffic_signal)
+        super(AnalyticPlusController, self).__init__(traffic_signal)
         self.controller = traffic_signal.controller
 
     def get_action(self, inp):
@@ -205,9 +196,9 @@ class AnalyticPlusPhaseSelector(BasePhaseSelector):
         return pressure
 
 
-class RandomPhaseSelector(BasePhaseSelector):
+class RandomController(BaseController):
     def __init__(self, traffic_signal):
-        super(RandomPhaseSelector, self).__init__(traffic_signal)
+        super(RandomController, self).__init__(traffic_signal)
         self.controller = traffic_signal.controller
 
     def get_action(self, inp):

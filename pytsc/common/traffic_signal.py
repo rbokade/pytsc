@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 import pandas as pd
 
 from pytsc.controllers import (
-    FixedTimePhaseSelector,
-    GreedyPhaseSelector,
-    MaxPressurePhaseSelector,
-    SOTLPhaseSelector,
+    FixedTimeController,
+    GreedyController,
+    MaxPressureController,
+    SOTLController,
 )
 
 
@@ -30,10 +30,10 @@ class BaseTrafficSignal(ABC):
 
     def init_rule_based_controllers(self):
         self.controllers = {
-            "fixed_time": FixedTimePhaseSelector(self),
-            "greedy": GreedyPhaseSelector(self),
-            "max_pressure": MaxPressurePhaseSelector(self),
-            "sotl": SOTLPhaseSelector(self),
+            "fixed_time": FixedTimeController(self),
+            "greedy": GreedyController(self),
+            "max_pressure": MaxPressureController(self),
+            "sotl": SOTLController(self),
         }
 
     # def get_controller_action(self, sub_results):

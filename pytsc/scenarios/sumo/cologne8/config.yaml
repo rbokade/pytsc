@@ -2,6 +2,8 @@
 # SUMO parameters
 sumo:
   render: False
+  sumo_config_file: cologne8.sumocfg
+  sumo_net_file: cologne8.net.xml
 
 # Network parameters
 network:

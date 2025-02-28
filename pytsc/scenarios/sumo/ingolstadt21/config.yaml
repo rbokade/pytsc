@@ -2,6 +2,8 @@
 # SUMO parameters
 sumo:
   render: False
+  sumo_config_file: ingolstadt21.sumocfg
+  sumo_net_file: ingolstadt21.net.xml
 
 # Network parameters
 network:

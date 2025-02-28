@@ -30,6 +30,11 @@ sumo:
   vehicle_length: 5  # meters
   veh_size_min_gap: 7.5  # vehicle size (5m) + minimum gap between vehicles (2.5m)
   sim_length: 3600  # length of traffic simulation (in simulation seconds)
+  random_game: False  # If True, random config and random net files are selected from a list of files
+  sumo_config_file: None
+  sumo_net_file: None
+  sumo_config_files: None
+  sumo_net_files: None
 
 # CityFlow specific parameters
 cityflow:
@@ -57,3 +62,4 @@ misc:
   reward_gamma: 0.9  # spatial discount factor for the rewards
   return_agent_stats: False  # return step stats for each agent
   return_lane_stats: False  # return step stats for each lane
+  grid_reduction_factor: 5.0  # reduce the size of the grid by this factor

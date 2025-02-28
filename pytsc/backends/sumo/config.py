@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 import xml.etree.ElementTree as ET
 
@@ -21,14 +22,31 @@ class Config(BaseConfig):
         super().__init__(scenario, **kwargs)
         self._load_config("sumo")
         # Simulator files
-        self.sumo_cfg_dir = os.path.join(
-            CONFIG_DIR, scenario, f"{scenario}.sumocfg"
-        )
-        self.net_dir = os.path.join(
-            CONFIG_DIR, scenario, f"{scenario}.net.xml"
-        )
+        if not self.simulator["random_game"]:
+            self.sumo_cfg_dir = os.path.join(
+                CONFIG_DIR, scenario, self.simulator["sumo_config_file"]
+            )
+            self.net_dir = os.path.join(
+                CONFIG_DIR, scenario, self.simulator["sumo_net_file"]
+            )
+        else:
+            self.sumo_cfg_dirs = [
+                os.path.join(CONFIG_DIR, scenario, f)
+                for f in self.simulator["sumo_config_files"]
+            ]
+            self.net_dirs = [
+                os.path.join(CONFIG_DIR, scenario, f)
+                for f in self.simulator["sumo_net_files"]
+            ]
+            self.reset_config()
         self._check_assertions()
         self._get_start_and_end_times()
+
+    def reset_config(self, **kwargs):
+        if self.simulator["random_game"]:
+            random_idx = random.randint(0, len(self.sumo_cfg_dirs) - 1)
+            self.sumo_cfg_dir = self.sumo_cfg_dirs[random_idx]
+            self.net_dir = self.net_dirs[random_idx]
 
     def _check_assertions(self):
         assert (

@@ -1,6 +1,8 @@
 import os
 import sys
 
+from pytsc.common.utils import calculate_vehicle_bin_index
+
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -8,8 +10,8 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
+
 from pytsc.common.retriever import BaseRetriever
-from pytsc.common.utils import get_vehicle_bin_index
 
 
 class Retriever(BaseRetriever):
@@ -23,7 +25,7 @@ class Retriever(BaseRetriever):
         "mean_speed": tc.LAST_STEP_MEAN_SPEED,
         "occupancy": tc.LAST_STEP_OCCUPANCY,
         "wait_time": tc.VAR_WAITING_TIME,
-        "average_travel_time": tc.VAR_CURRENT_TRAVELTIME,
+        "travel_time": tc.VAR_CURRENT_TRAVELTIME,
         "time_step": tc.VAR_TIME,
         "n_loaded": tc.VAR_LOADED_VEHICLES_NUMBER,
         "n_departed": tc.VAR_DEPARTED_VEHICLES_NUMBER,
@@ -38,6 +40,10 @@ class Retriever(BaseRetriever):
     def __init__(self, simulator):
         super().__init__(simulator)
         self.traci = simulator.traci
+        self.visibility = self.config.signal["visibility"]
+        self.v_size = self.config.simulator["veh_size_min_gap"]
+        self.lane_lengths = self.simulator.parsed_network.lane_lengths
+        self.lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
 
     def _subscribe_to_ts_vars(self):
         for ts in self.parsed_network.traffic_signal_ids:
@@ -53,9 +59,8 @@ class Retriever(BaseRetriever):
                     self.tc["mean_speed"],
                     self.tc["occupancy"],
                     self.tc["wait_time"],
-                    self.tc["average_travel_time"],
+                    self.tc["travel_time"],
                     self.tc["vehicle_id"],
-                    # self.tc["position"],
                 ],
             )
 
@@ -72,10 +77,76 @@ class Retriever(BaseRetriever):
             ]
         )
 
+    def _compute_lane_position_matrix(self, lane_sub_results, lane):
+        bin_count = int(self.lane_lengths[lane] / self.v_size)
+        if bin_count > 0:
+            pos_mat = [-1.0] * bin_count
+            for v in lane_sub_results[lane][self.tc["vehicle_id"]]:
+                vehicle_position = self.traci.vehicle.getLanePosition(v)
+                bin_idx = calculate_vehicle_bin_index(
+                    n_bins=bin_count,
+                    lane_length=self.lane_lengths[lane],
+                    vehicle_position=vehicle_position,
+                )
+                if bin_idx is not None:
+                    speed = self.traci.vehicle.getSpeed(v)
+                    max_speed = self.lane_max_speeds[lane]
+                    norm_speed = speed / max_speed
+                    pos_mat[bin_idx] += 1.0
+                    pos_mat[bin_idx] += norm_speed
+            if len(pos_mat) < self.visibility:
+                pos_mat += [-1.0] * (self.visibility - len(pos_mat))
+        else:
+            pos_mat = [-1.0] * self.visibility
+        return pos_mat
+
+    def _compute_lane_measurements(self, lane_sub_results):
+        lane_measurements = {}
+        for lane in self.parsed_network.lanes:
+            position_matrix = self._compute_lane_position_matrix(lane_sub_results, lane)
+            n_vehicles = lane_sub_results[lane][self.tc["n_vehicles"]] + 1e-6
+            n_queued = lane_sub_results[lane][self.tc["n_queued"]] + 1e-6
+            mean_speed = lane_sub_results[lane][self.tc["mean_speed"]] + 1e-6
+            occupancy = lane_sub_results[lane][self.tc["occupancy"]] + 1e-6
+            tt = lane_sub_results[lane][self.tc["travel_time"]] + 1e-6
+            wt = lane_sub_results[lane][self.tc["wait_time"]] + 1e-6
+            att = tt / n_vehicles
+            awt = wt / n_queued if n_queued > 0 else 0
+            lane_measurements[lane] = {
+                "n_vehicles": n_vehicles,
+                "n_queued": n_queued,
+                "mean_speed": mean_speed,
+                "occupancy": occupancy,
+                "average_travel_time": att,
+                "average_wait_time": awt,
+                "position_matrix": position_matrix,
+            }
+
+        return lane_measurements
+
     def subscribe(self):
         self._subscribe_to_ts_vars()
         self._subscribe_to_lane_vars()
         self._subscribe_to_sim_vars()
+
+    def retrieve_lane_measurements(self):
+        lane_sub_results = {
+            lane: self.traci.lane.getSubscriptionResults(lane)
+            for lane in self.parsed_network.lanes
+        }
+        return self._compute_lane_measurements(lane_sub_results)
+
+    def retrieve_sim_measurements(self):
+        sim_sub_results = self.traci.simulation.getSubscriptionResults()
+        return {
+            "time_step": sim_sub_results[self.tc["time_step"]],
+            "n_loaded": sim_sub_results[self.tc["n_loaded"]],
+            "n_departed": sim_sub_results[self.tc["n_departed"]],
+            "n_teleported": sim_sub_results[self.tc["n_teleported"]],
+            "n_arrived": sim_sub_results[self.tc["n_arrived"]],
+            "n_colliding": sim_sub_results[self.tc["n_colliding"]],
+            "n_emergency_brakes": sim_sub_results[self.tc["n_emergency_brakes"]],
+        }
 
     def retrieve_ts_measurements(self):
         ts_measurements = {}
@@ -83,94 +154,3 @@ class Retriever(BaseRetriever):
             results = self.traci.trafficlight.getSubscriptionResults(ts)
             ts_measurements[ts] = {"phase": results[self.tc["phase"]]}
         return ts_measurements
-
-    def _get_position_and_speed_matrices(self):
-        lane_lengths = self.simulator.parsed_network.lane_lengths
-        lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
-        position_speed_matrices = {lane: [[], []] for lane in lane_lengths.keys()}
-        for lane in lane_lengths.keys():
-            bin_count = int(
-                lane_lengths[lane] / self.config.simulator["veh_size_min_gap"]
-            )
-            position_speed_matrices[lane][0] = [0.0] * bin_count
-            position_speed_matrices[lane][1] = [0.0] * bin_count
-            results = self.traci.lane.getSubscriptionResults(lane)
-            for v in results[self.tc["vehicle_id"]]:
-                lane_position = self.traci.vehicle.getLanePosition(v)
-                bin_idx = get_vehicle_bin_index(
-                    n_bins=bin_count,
-                    lane_length=lane_lengths[lane],
-                    vehicle_position=lane_position,
-                )
-                if bin_idx is not None:
-                    position_speed_matrices[lane][0][bin_idx] = 1.0
-                    speed = self.traci.vehicle.getSpeed(v)
-                    norm_speed = speed / lane_max_speeds[lane]
-                    position_speed_matrices[lane][1][bin_idx] = norm_speed
-        return position_speed_matrices
-
-    def _compute_lane_measurements(self):
-        position_speed_matrices = self._get_position_and_speed_matrices()
-        lane_measurements = {}
-        for lane in self.parsed_network.lanes:
-            results = self.traci.lane.getSubscriptionResults(lane)
-            lane_measurements[lane] = {}
-            lane_measurements[lane].update(
-                {
-                    "n_vehicles": results[self.tc["n_vehicles"]] + 1e-6,
-                    "n_queued": results[self.tc["n_queued"]] + 1e-6,
-                    "mean_speed": results[self.tc["mean_speed"]] + 1e-6,
-                    "occupancy": results[self.tc["occupancy"]] + 1e-6,
-                    "wait_time": results[self.tc["wait_time"]] + 1e-6,
-                    "position_speed_matrices": position_speed_matrices[lane],
-                }
-            )
-            lane_measurements[lane].update(
-                {
-                    "average_travel_time": (
-                        results[self.tc["average_travel_time"]] + 1e-6
-                    )
-                    / lane_measurements[lane]["n_vehicles"],
-                }
-            )
-            lane_measurements[lane].update(
-                {
-                    "mean_wait_time": (
-                        lane_measurements[lane]["wait_time"]
-                        / lane_measurements[lane]["n_queued"]
-                    ),
-                }
-            )
-            lane_measurements[lane].update(
-                {
-                    "norm_queue_length": (
-                        lane_measurements[lane]["n_queued"]
-                        / self.parsed_network.lane_lengths[lane]
-                    ),
-                    "norm_mean_speed": (
-                        lane_measurements[lane]["mean_speed"]
-                        / self.parsed_network.lane_max_speeds[lane]
-                    ),
-                    "norm_mean_wait_time": (
-                        lane_measurements[lane]["mean_wait_time"]
-                        / self.config.misc["max_wait_time"]
-                    ),
-                }
-            )
-        return lane_measurements
-
-    def retrieve_lane_measurements(self):
-        return self._compute_lane_measurements()
-
-    def retrieve_sim_measurements(self):
-        results = self.traci.simulation.getSubscriptionResults()
-        sim_measurements = {
-            "time_step": results[self.tc["time_step"]],
-            "n_loaded": results[self.tc["n_loaded"]],
-            "n_departed": results[self.tc["n_departed"]],
-            "n_teleported": results[self.tc["n_teleported"]],
-            "n_arrived": results[self.tc["n_arrived"]],
-            "n_colliding": results[self.tc["n_colliding"]],
-            "n_emergency_brakes": results[self.tc["n_emergency_brakes"]],
-        }
-        return sim_measurements

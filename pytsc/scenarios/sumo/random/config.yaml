@@ -1,8 +1,8 @@
 # SUMO parameters
 sumo:
   render: False
-  sumo_config_file: 3x3_sumo_grid.sumocfg
-  sumo_net_file: 3x3_sumo_grid.net.xml
+  sumo_config_file: random.sumocfg
+  sumo_net_file: random.net.xml
 
 # Network parameters
 network:
@@ -14,10 +14,3 @@ signal:
   max_green_time: 25
   visibility: 10  # range of visibility in n_bins
   round_robin: True  # if True, the signal cycles through the phases in order
-
-grid_generator:
-  grid_length: 300
-  grid_x_number: 3
-  grid_y_number: 3
-  grid_attach_length: 300
-  add_turn_lane: True

@@ -114,7 +114,7 @@ def evaluate_controllers(
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
     save_stats_to_file(all_stats, simulator_backend, scenario, output_folder)
-    # plot_stats(all_stats, controllers, scenario, output_folder)
+    plot_stats(all_stats, controllers, scenario, output_folder)
 
 
 def process_flow_files(
@@ -179,15 +179,15 @@ if __name__ == "__main__":
         "sotl": {"mu": 7, "theta": 5, "phi_min": 5},
     }
     add_env_args = {
-        "disrupted": False,
-        "misc": {
-            "return_agent_stats": True,
-            "return_lane_stats": True,
-        },
+        # "disrupted": False,
+        # "misc": {
+        #     "return_agent_stats": True,
+        #     "return_lane_stats": True,
+        # },
         # "cityflow": {
         #     "save_replay": True,
         #     "flow_rate_type": "constant",
-        #     "flow_file": f"train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json",
+        #         "flow_file": f"train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json",
         # },
         # "mode": "test",
         # "domain": "flow_disrupted",

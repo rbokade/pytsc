@@ -51,16 +51,18 @@ class MetricsParser(BaseMetricsParser):
     @property
     def n_queued_norm(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(
-            data["norm_queue_length"] for data in lane_measurements.values()
-        ) / len(lane_measurements)
+        n_queued_norm = 0
+        for lane_id, data in lane_measurements.items():
+            lane_length = self.parsed_network.lane_lengths[lane_id]
+            n_queued_norm += data["n_queued"] / lane_length
+        return n_queued_norm / len(lane_measurements)
 
     @property
-    def mean_wait_time(self):
+    def average_wait_time(self):
         lane_measurements = self.simulator.step_measurements["lane"]
-        return sum(data["mean_wait_time"] for data in lane_measurements.values()) / len(
-            lane_measurements
-        )
+        return sum(
+            data["average_wait_time"] for data in lane_measurements.values()
+        ) / len(lane_measurements)
 
     @property
     def average_travel_time(self):
@@ -84,8 +86,17 @@ class MetricsParser(BaseMetricsParser):
         )
 
     @property
+    def norm_mean_speed(self):
+        lane_measurements = self.simulator.step_measurements["lane"]
+        lane_max_speeds = self.parsed_network.lane_max_speeds
+        return sum(
+            data["mean_speed"] / lane_max_speeds[lane_id]
+            for lane_id, data in lane_measurements.items()
+        ) / len(lane_measurements)
+
+    @property
     def mean_delay(self):
-        return 1 - self.mean_speed
+        return 1 - self.norm_mean_speed
 
     @property
     def pressure(self):
@@ -98,40 +109,24 @@ class MetricsParser(BaseMetricsParser):
             "n_teleported": self.n_teleported,
             "n_inserted": self.n_vehicles_inserted,
             "n_exited": self.n_vehicles_exited,
+            "density": self.density,
             "n_queued": self.n_queued,
             "mean_speed": self.mean_speed,
-            "mean_wait_time": self.mean_wait_time,
             "mean_delay": self.mean_delay,
             "average_travel_time": self.average_travel_time,
-            "density": self.density,
+            "average_wait_time": self.average_wait_time,
         }
         if self.config.misc["return_agent_stats"]:
-            agent_stats = {}
-            agent_stats.update(
-                {
-                    f"n_queued_{ts.id}": np.sum(ts.queue_lengths)
-                    for ts in self.traffic_signals.values()
+            for ts in self.traffic_signals.values():
+                ts_stats = {
+                    f"{ts.id}__phase": ts.controller.current_phase,
+                    f"{ts.id}__n_queued": ts.n_queued,
+                    f"{ts.id}__mean_speed": ts.mean_speed,
+                    f"{ts.id}__mean_delay": ts.mean_delay,
+                    f"{ts.id}__density": ts.occupancy,
+                    f"{ts.id}__pressure": ts.pressure,
                 }
-            )
-            agent_stats.update(
-                {
-                    f"mean_speed_{ts.id}": np.mean(ts.mean_speeds)
-                    for ts in self.traffic_signals.values()
-                }
-            )
-            agent_stats.update(
-                {
-                    f"mean_delay_{ts.id}": 1 - np.mean(ts.norm_mean_speeds)
-                    for ts in self.traffic_signals.values()
-                }
-            )
-            agent_stats.update(
-                {
-                    f"mean_density_{ts.id}": np.mean(ts.densities)
-                    for ts in self.traffic_signals.values()
-                }
-            )
-            step_stats.update(agent_stats)
+                step_stats.update(ts_stats)
         if self.config.misc["return_lane_stats"]:
             lane_measurements = self.simulator.step_measurements["lane"]
             stat_keys = ("n_vehicles", "n_queued", "mean_speed", "occupancy")

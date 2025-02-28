@@ -2,7 +2,7 @@ cityflow:
   plan: [5, 30, 30, 30, 30, 30, 30, 30, 30]
   # phase_sequence: [1, 0, 3, 0, 2, 0, 4, 0]  # 0 is a common yellow phase
   roadnet_file: 3x3_roadnet.json
-  flow_file: syn_3x3__gaussian_600_flows.json
+  flow_file: 1__syn_3x3__gaussian_600_flows.json
   flow_files: [
     "1__syn_3x3__gaussian_600_flows.json",
     "2__syn_3x3__gaussian_600_flows.json",
@@ -14,16 +14,6 @@ cityflow:
     "8__syn_3x3__gaussian_600_flows.json",
     "9__syn_3x3__gaussian_600_flows.json",
     "10__syn_3x3__gaussian_600_flows.json",
-    "11__syn_3x3__gaussian_600_flows.json",
-    "12__syn_3x3__gaussian_600_flows.json",
-    "13__syn_3x3__gaussian_600_flows.json",
-    "14__syn_3x3__gaussian_600_flows.json",
-    "15__syn_3x3__gaussian_600_flows.json",
-    "16__syn_3x3__gaussian_600_flows.json",
-    "17__syn_3x3__gaussian_600_flows.json",
-    "18__syn_3x3__gaussian_600_flows.json",
-    "19__syn_3x3__gaussian_600_flows.json",
-    "20__syn_3x3__gaussian_600_flows.json",
   ]
   roadnet_log_file: "roadnet_log_file.json"
   replay_log_file: "replay_log_file.txt"

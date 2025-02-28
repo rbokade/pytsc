@@ -1,16 +1,17 @@
-from pytsc.controllers.traditional_algorithms import (
-    FixedTimePhaseSelector,
-    GreedyPhaseSelector,
-    MaxPressurePhaseSelector,
-    SOTLPhaseSelector,
-    RandomPhaseSelector,
+from pytsc.controllers.controllers import (
+    FixedTimeController,
+    GreedyController,
+    MaxPressureController,
+    SOTLController,
+    RandomController,
 )
+from pytsc.controllers.rl_controller import RLController
 
-
-TRADITIONAL_CONTROLLERS = {
-    "fixed_time": FixedTimePhaseSelector,
-    "greedy": GreedyPhaseSelector,
-    "max_pressure": MaxPressurePhaseSelector,
-    "sotl": SOTLPhaseSelector,
-    "random": RandomPhaseSelector,
+CONTROLLERS = {
+    "fixed_time": FixedTimeController,
+    "greedy": GreedyController,
+    "max_pressure": MaxPressureController,
+    "sotl": SOTLController,
+    "random": RandomController,
+    "rl": RLController,
 }

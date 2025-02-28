@@ -50,6 +50,7 @@ class Simulator(BaseSimulator):
         }
 
     def start_simulator(self):
+        self.config.reset_config()
         if self.config.simulator["render"]:
             sumo_binary = checkBinary("sumo-gui")
         else:
