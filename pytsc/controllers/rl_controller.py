@@ -63,7 +63,7 @@ class TSCAgent(nn.Module):
     def select_action(self, obs, act_mask):
         lane_features, phase_ids = self._prepare_inputs(obs)
         q = self.forward(lane_features, phase_ids)
-        q[act_mask] = -float("inf")
+        q[~act_mask] = -float("inf")
         action = torch.argmax(q.squeeze(0)).item()
         return action
 
@@ -116,4 +116,6 @@ class RLController(BaseController):
         if action == 0:
             return self.controller.current_phase_index
         else:
+            if not act_mask[:, 1]:
+                breakpoint()
             return self.controller.next_phase_index
