@@ -191,6 +191,9 @@ if __name__ == "__main__":
         # },
         # "mode": "test",
         # "domain": "flow_disrupted",
+        "sumo": {
+            "render": True,
+        },
     }
     evaluate_controllers(
         args.scenario,

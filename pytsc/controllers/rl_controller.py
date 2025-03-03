@@ -91,7 +91,7 @@ class RLController(BaseController):
             torch.load(
                 model_path,
                 map_location=lambda storage, loc: storage,
-                weights_only=True,
+                # weights_only=True,
             )
         )
         self.agent.eval()
