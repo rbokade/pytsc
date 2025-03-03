@@ -1,4 +1,5 @@
 import json
+import math
 
 from functools import lru_cache
 
@@ -281,6 +282,34 @@ class NetworkParser(BaseNetworkParser):
                 lane_id = f"{road['id']}_{i}"
                 lane_max_speeds[lane_id] = lane["maxSpeed"]
         return lane_max_speeds
+
+    @property
+    @lru_cache(maxsize=None)
+    def lane_indices(self):
+        lane_indices = {}
+        for road in self.roads:
+            num_lanes = len(road["lanes"])
+            for i in range(num_lanes):
+                lane_id = f"{road['id']}_{i}"
+                lane_indices[lane_id] = i
+        return lane_indices
+
+    @property
+    @lru_cache(maxsize=None)
+    def lane_angles(self):
+        lane_angles = {}
+        for road in self.roads:
+            start_intersection = self._id_to_intersection(road["startIntersection"])
+            end_intersection = self._id_to_intersection(road["endIntersection"])
+            dx = end_intersection["point"]["x"] - start_intersection["point"]["x"]
+            dy = end_intersection["point"]["y"] - start_intersection["point"]["y"]
+            angle_rad = math.atan2(dy, dx)
+            angle_deg = math.degrees(angle_rad)
+            num_lanes = len(road["lanes"])
+            for i in range(num_lanes):
+                lane_id = f"{road['id']}_{i}"
+                lane_angles[lane_id] = angle_deg
+        return lane_angles
 
     @property
     @lru_cache(maxsize=None)

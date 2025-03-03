@@ -1,0 +1,9 @@
+# SUMO parameters
+sumo:
+  render: False
+  sumo_config_file: cologne_1.sumocfg
+  sumo_net_file: cologne_1.net.xml
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)

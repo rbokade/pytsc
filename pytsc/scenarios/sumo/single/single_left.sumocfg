@@ -6,7 +6,7 @@
   </input>
   <time>
     <begin value="0"/>
-    <end value="360"/>
+    <end value="3600"/>
   </time>
   <report>
     <verbose value="true"/>

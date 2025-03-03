@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 
@@ -131,6 +132,38 @@ class NetworkParser(BaseNetworkParser):
                 lane_id = lane.getID()
                 lane_max_speeds[lane_id] = lane.getSpeed()
         return lane_max_speeds
+
+    @property
+    @lru_cache(maxsize=None)
+    def lane_indices(self):
+        """ """
+        lane_indices = {}
+        for edge in self.net.getEdges():
+            lanes = edge.getLanes()
+            for i, lane in enumerate(lanes):
+                lane_id = lane.getID()
+                lane_indices[lane_id] = i
+        return lane_indices
+
+    @property
+    @lru_cache(maxsize=None)
+    def lane_angles(self):
+        lane_angles = {}
+        for edge in self.net.getEdges():
+            lanes = edge.getLanes()
+            for lane in lanes:
+                lane_id = lane.getID()
+                shape = lane.getShape()
+                if len(shape) >= 2:
+                    (x1, y1) = shape[0]
+                    (x2, y2) = shape[-1]
+                    angle_rad = math.atan2(y2 - y1, x2 - x1)
+                    angle_deg = math.degrees(angle_rad)
+                    lane_angles[lane_id] = angle_deg
+                else:
+                    # If shape is not available
+                    lane_angles[lane_id] = 0.0
+        return lane_angles
 
     @property
     @lru_cache(maxsize=None)

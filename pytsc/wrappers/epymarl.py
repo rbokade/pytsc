@@ -33,6 +33,7 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
             "adjacency_matrix": self.tsc_env.parsed_network.adjacency_matrix,
             "n_agents": self.tsc_env.n_agents,
             "obs_shape": self.get_obs_size(),
+            "obs_info": self.tsc_env.observation_space.get_observation_info(),
             "state_shape": self.get_state_size(),
             "n_domains": n_domains,
             "domain_classes": domain_classes,
@@ -91,4 +92,4 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
                 reward = reward / self.tsc_env.n_agents
         else:
             reward = self.get_local_rewards()
-        return reward, eipsode_over, env_info
+        return self.get_obs(), reward, eipsode_over, False, env_info

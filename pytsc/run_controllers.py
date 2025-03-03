@@ -169,7 +169,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.controllers == "all":
-        controllers = ["fixed_time", "greedy", "max_pressure", "sotl"]
+        controllers = ["rl", "fixed_time", "greedy", "max_pressure", "sotl"]
     else:
         controllers = [args.controllers]
 
