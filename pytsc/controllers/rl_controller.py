@@ -113,4 +113,7 @@ class RLController(BaseController):
         act_mask = self._get_action_mask()
         obs = torch.tensor(obs).float().unsqueeze(0)
         action = self.agent.select_action(obs, act_mask)
-        return action
+        if action == 0:
+            return self.controller.current_phase_index
+        else:
+            return self.controller.next_phase_index
