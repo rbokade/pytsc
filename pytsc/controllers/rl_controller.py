@@ -42,8 +42,7 @@ class TSCAgent(nn.Module):
     def __init__(self, hidden_dim, n_actions):
         super(TSCAgent, self).__init__()
         self.hidden_dim = hidden_dim
-        self.lane_obs_encoder = LaneAttentionAggregator(17, hidden_dim)
-        self.phase_encoder = nn.Linear(10, hidden_dim)
+        self.lane_obs_encoder = LaneAttentionAggregator(27, args.hidden_dim)
         self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_actions)
         self.h = self.init_hidden()
@@ -51,29 +50,28 @@ class TSCAgent(nn.Module):
     def init_hidden(self):
         return self.phase_encoder.weight.new(1, self.hidden_dim).zero_()
 
-    def forward(self, lane_features, phase_ids):
-        lane_feats = self.lane_obs_encoder(lane_features)
-        phase_feats = self.phase_encoder(phase_ids)
-        x = lane_feats + phase_feats
+    def forward(self, inputs):
+        x = self.lane_obs_encoder(inputs)
         h_in = self.h.reshape(-1, self.hidden_dim)
         self.h = self.rnn(x, h_in)
         q = self.fc2(self.h)
         return q
 
     def select_action(self, obs, act_mask):
-        lane_features, phase_ids = self._prepare_inputs(obs)
-        q = self.forward(lane_features, phase_ids)
-        q[~act_mask] = -999
-        q = Categorical(logits=q)
-        action = q.sample().item()
+        inputs = self._prepare_inputs(obs)
+        logits = self.forward(inputs)
+        logits[~act_mask] = -999
+        pi = Categorical(logits=logits)
+        action = pi.sample().item()
         return action
 
     def _prepare_inputs(self, obs):
         lane_features = obs[:, :-10]
         phase_ids = obs[:, -10:]
         lane_features = lane_features.reshape(1, -1, 17)
-        phase_ids = phase_ids.reshape(1, 10)
-        return lane_features, phase_ids
+        phase_ids = phase_ids.reshape(1, 1, 10)
+        inputs = torch.cat([lane_features, phase_ids], dim=-1)
+        return inputs
 
 
 class RLController(BaseController):

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configuration>
   <input>
-    <net-file value="cologne_7.net.xml"/>
-    <route-files value="cologne_7.trips.xml"/>
+    <net-file value="cologne_2.net.xml"/>
+    <route-files value="cologne_2_heavy.trips.xml"/>
   </input>
   <time>
     <begin value="0"/>

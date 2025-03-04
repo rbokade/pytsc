@@ -2,7 +2,7 @@
 <configuration>
   <input>
     <net-file value="cologne_6.net.xml"/>
-    <route-files value="cologne_6.trips.xml"/>
+    <route-files value="cologne_6_heavy.trips.xml"/>
   </input>
   <time>
     <begin value="0"/>

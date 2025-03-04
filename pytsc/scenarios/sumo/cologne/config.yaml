@@ -1,8 +1,13 @@
 # SUMO parameters
 sumo:
   render: False
-  sumo_config_file: cologne_1.sumocfg
+  # sumo_config_file: cologne_1.sumocfg
   sumo_net_file: cologne_1.net.xml
+  random_game: True
+  sumo_config_files:
+    - cologne_1_light.sumocfg
+    - cologne_1_medium.sumocfg
+    - cologne_1_heavy.sumocfg
 
 # Network parameters
 network:
