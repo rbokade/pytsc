@@ -42,13 +42,13 @@ class TSCAgent(nn.Module):
     def __init__(self, hidden_dim, n_actions):
         super(TSCAgent, self).__init__()
         self.hidden_dim = hidden_dim
-        self.lane_obs_encoder = LaneAttentionAggregator(27, args.hidden_dim)
+        self.lane_obs_encoder = LaneAttentionAggregator(27, hidden_dim)
         self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_actions)
         self.h = self.init_hidden()
 
     def init_hidden(self):
-        return self.phase_encoder.weight.new(1, self.hidden_dim).zero_()
+        return torch.zeros(1, self.hidden_dim)
 
     def forward(self, inputs):
         x = self.lane_obs_encoder(inputs)
@@ -69,7 +69,7 @@ class TSCAgent(nn.Module):
         lane_features = obs[:, :-10]
         phase_ids = obs[:, -10:]
         lane_features = lane_features.reshape(1, -1, 17)
-        phase_ids = phase_ids.reshape(1, 1, 10)
+        phase_ids = phase_ids.reshape(1, 1, 10).repeat(1, lane_features.shape[1], 1)
         inputs = torch.cat([lane_features, phase_ids], dim=-1)
         return inputs
 

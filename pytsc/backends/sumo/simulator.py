@@ -20,7 +20,7 @@ class Simulator(BaseSimulator):
     def __init__(self, parsed_network):
         super(Simulator, self).__init__(parsed_network)
         self.traci = None
-        self.port = getFreeSocketPort()
+        self.port = getFreeSocketPort()        
 
     @property
     def is_terminated(self):
