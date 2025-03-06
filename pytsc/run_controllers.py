@@ -20,6 +20,7 @@ def run_evaluation(
     add_env_args={},
     add_controller_args={},
     profile=False,
+    output_folder=None,
 ):
     evaluate = Evaluate(
         scenario,
@@ -34,7 +35,7 @@ def run_evaluation(
         profiler = cProfile.Profile()
         profiler.enable()
 
-    evaluate.run(hours, save_stats=True, plot_stats=False)
+    evaluate.run(hours, save_stats=True, plot_stats=False, output_folder=output_folder)
 
     if profile:
         profiler.disable()
@@ -115,6 +116,7 @@ def evaluate_controllers(
             add_env_args=add_env_args,
             add_controller_args=add_controller_args.get(controller, {}),
             profile=profile,
+            output_folder=output_folder,
         )
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
@@ -180,10 +182,10 @@ if __name__ == "__main__":
             "specialized_marl",
             "multi_generalized_agent",
             "single_generalized_agent",
-            "sotl",
-            "greedy",
-            "fixed_time",
-            "max_pressure",
+            # "sotl",
+            # "greedy",
+            # "fixed_time",
+            # "max_pressure",
         ]
     else:
         controllers = [args.controllers]
@@ -216,12 +218,26 @@ if __name__ == "__main__":
         args.simulator_backend,
         controllers,
         # output_folder="pytsc/results/",
-        output_folder="",
+        output_folder="mv_baseline",
         hours=hours,
         add_env_args=add_env_args,
         add_controller_args=add_controller_args,
         profile=args.profile,
     )
+
+    # dropouts = [0.1, 0.25, 0.5, 0.75]
+    # for i, dropout in enumerate(dropouts):
+    #     add_env_args["signal"] = {"obs_dropout_prob": dropout}
+    #     evaluate_controllers(
+    #         args.scenario,
+    #         args.simulator_backend,
+    #         controllers,
+    #         output_folder=f"obs_dropout_{dropout}",
+    #         hours=hours,
+    #         add_env_args=add_env_args,
+    #         add_controller_args=add_controller_args,
+    #         profile=args.profile,
+    #     )
 
     # flow_files_batch = {
     #     "flow_disrupted": {
