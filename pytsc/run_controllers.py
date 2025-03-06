@@ -213,17 +213,38 @@ if __name__ == "__main__":
             # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
-    evaluate_controllers(
-        args.scenario,
-        args.simulator_backend,
-        controllers,
-        # output_folder="pytsc/results/",
-        output_folder="mv_baseline",
-        hours=hours,
-        add_env_args=add_env_args,
-        add_controller_args=add_controller_args,
-        profile=args.profile,
-    )
+    # evaluate_controllers(
+    #     args.scenario,
+    #     args.simulator_backend,
+    #     controllers,
+    #     # output_folder="pytsc/results/",
+    #     output_folder="mv_baseline",
+    #     hours=hours,
+    #     add_env_args=add_env_args,
+    #     add_controller_args=add_controller_args,
+    #     profile=args.profile,
+    # )
+
+    sumo_configs = [
+        "random_grid_0.1_increased_demand.sumocfg",
+        "random_grid_0.2_increased_demand.sumocfg",
+        "random_grid_0.3_increased_demand.sumocfg",
+        "random_grid_0.4_increased_demand.sumocfg",
+        "random_grid_0.5_increased_demand.sumocfg",
+    ]
+    for sumo_config in sumo_configs:
+        demand_increase = sumo_config.split("_")[2]
+        add_env_args["sumo"]["sumo_config_file"] = sumo_config
+        evaluate_controllers(
+            args.scenario,
+            args.simulator_backend,
+            controllers,
+            output_folder=f"demand_increase_{demand_increase}",
+            hours=hours,
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args,
+            profile=args.profile,
+        )
 
     # dropouts = [0.1, 0.25, 0.5, 0.75]
     # for i, dropout in enumerate(dropouts):
