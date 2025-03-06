@@ -57,6 +57,7 @@ class PositionMatrix(BaseObservationSpace):
             config, parsed_network, traffic_signals, simulator_backend
         )
         self.visibility = config.signal["visibility"]
+        self.dropout_prob = config.signal.get("obs_dropout_prob", 0.0)
         self.max_mats_size = self.visibility * self.max_n_controlled_lanes
         self.lane_features = self._get_lane_features()
 
@@ -86,6 +87,13 @@ class PositionMatrix(BaseObservationSpace):
             pos_mats = ts.inc_position_matrices
             for lane, pos_mat in pos_mats.items():
                 obs.extend(self.lane_features[lane])
+                if self.dropout_prob > 0:
+                    drop_idx = np.random.choice(
+                        len(pos_mat),
+                        int(len(pos_mat) * self.dropout_prob),
+                        replace=False,
+                    )
+                    pos_mat = np.delete(pos_mat, drop_idx, axis=0).tolist()
                 obs.extend(pos_mat)
             obs = pad_list(obs, self.get_size() - self.max_phases, self.pad_value)
             phase_id = pad_list(ts.phase_id, self.max_phases)

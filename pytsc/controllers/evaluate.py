@@ -14,6 +14,20 @@ from pytsc.controllers import CONTROLLERS
 
 
 class Evaluate:
+    phase_switch_controllers = [
+        "rl",
+        "mixed_rl",
+        "specialized_marl",
+        "multi_generalized_agent",
+        "single_generalized_agent",
+    ]
+    phase_select_controllers = [
+        "sotl",
+        "greedy",
+        "fixed_time",
+        "max_pressure",
+    ]
+
     def __init__(
         self,
         scenario,
@@ -32,7 +46,6 @@ class Evaluate:
         self._init_network()
         self._init_controllers()
         self.delta_time = self.config.simulator["delta_time"]
-        # self.steps_per_hour = int(3600 / self.delta_time)
         self.log = {}
 
     def _init_network(self):
@@ -44,10 +57,14 @@ class Evaluate:
             self.simulator_backend,
             **self.add_env_args,
         )
-        if self.controller_name == "rl":
+        if self.controller_name in self.phase_switch_controllers:
             self.network.config.signal["action_space"] = "phase_switch"
-        else:
+        elif self.controller_name in self.phase_select_controllers:
             self.network.config.signal["action_space"] = "phase_selection"
+        else:
+            raise ValueError(
+                f"Controller {self.controller_name} not supported for evaluation"
+            )
         self.network._init_parsers()
         self.config = self.network.config
 

@@ -22,7 +22,11 @@ def run_evaluation(
     profile=False,
 ):
     evaluate = Evaluate(
-        scenario, simulator_backend, controller, add_env_args, add_controller_args
+        scenario,
+        simulator_backend,
+        controller,
+        add_env_args,
+        add_controller_args,
     )
 
     if profile:
@@ -93,6 +97,7 @@ def evaluate_controllers(
     add_env_args={},
     add_controller_args={},
     profile=False,
+    plot=False,
 ):
     if output_folder is None:
         output_folder = "pytsc/results"
@@ -114,7 +119,8 @@ def evaluate_controllers(
         all_stats.append(stats)
     all_stats = pd.concat(all_stats, axis=0, ignore_index=True)
     save_stats_to_file(all_stats, simulator_backend, scenario, output_folder)
-    plot_stats(all_stats, controllers, scenario, output_folder)
+    if plot:
+        plot_stats(all_stats, controllers, scenario, output_folder)
 
 
 def process_flow_files(
@@ -169,7 +175,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.controllers == "all":
-        controllers = ["rl", "fixed_time", "greedy", "max_pressure", "sotl"]
+        controllers = [
+            "mixed_rl",
+            "specialized_marl",
+            "multi_generalized_agent",
+            "single_generalized_agent",
+            "sotl",
+            "greedy",
+            "fixed_time",
+            "max_pressure",
+        ]
     else:
         controllers = [args.controllers]
 
@@ -180,10 +195,10 @@ if __name__ == "__main__":
     }
     add_env_args = {
         # "disrupted": False,
-        # "misc": {
-        #     "return_agent_stats": True,
-        #     "return_lane_stats": True,
-        # },
+        "misc": {
+            "return_agent_stats": True,
+            "return_lane_stats": True,
+        },
         # "cityflow": {
         #     "save_replay": True,
         #     "flow_rate_type": "constant",
@@ -193,13 +208,15 @@ if __name__ == "__main__":
         # "domain": "flow_disrupted",
         "sumo": {
             "render": True,
+            # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
     evaluate_controllers(
         args.scenario,
         args.simulator_backend,
         controllers,
-        output_folder="pytsc/results/",
+        # output_folder="pytsc/results/",
+        output_folder="",
         hours=hours,
         add_env_args=add_env_args,
         add_controller_args=add_controller_args,

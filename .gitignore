@@ -148,3 +148,4 @@ pytsc/results/
 randomized/
 train/
 test/
+*.th
