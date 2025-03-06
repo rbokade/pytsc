@@ -16,6 +16,7 @@ signal:
   visibility: 10  # range of visibility in n_bins, each bin = 7.5m
   input_n_avg: 1  # number of timesteps to average over (in position matrix)
   round_robin: True  # if True, the signal cycles through the phases in order
+  obs_dropout_prob: 0.0  # probability of dropping a reading from the observation
   # cycle_length: "adaptive"  # (int) seconds or (str) "adaptive"
 
 # SUMO specific parameters

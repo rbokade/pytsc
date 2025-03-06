@@ -1,0 +1,8 @@
+# SUMO parameters
+sumo:
+  sumo_config_file: random_grid.sumocfg
+  sumo_net_file: random_grid.net.xml
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)
