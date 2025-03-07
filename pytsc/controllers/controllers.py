@@ -59,7 +59,7 @@ class GreedyController(BaseController):
         ]
         for inc_lane in phase_inc_out_lanes.keys():
             pos_mat = inp["lane"][inc_lane]["position_matrix"][-self.visibility :]
-            n_queued = sum([p == 0.0 for p in pos_mat])
+            n_queued = sum([0.0 <= p <= 0.1 for p in pos_mat])
             inc_vehicles += n_queued
         return inc_vehicles
 

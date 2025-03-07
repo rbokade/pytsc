@@ -67,6 +67,8 @@ class Evaluate:
             )
         self.network._init_parsers()
         self.config = self.network.config
+        if "graph" in self.controller_name:
+            self.add_controller_args["adjacency_matrix"] = self.network.adjacency_matrix
 
     def _init_controllers(self):
         self.controllers = {}

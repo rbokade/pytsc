@@ -182,10 +182,10 @@ if __name__ == "__main__":
             "specialized_marl",
             "multi_generalized_agent",
             "single_generalized_agent",
-            # "sotl",
-            # "greedy",
-            # "fixed_time",
-            # "max_pressure",
+            "sotl",
+            "greedy",
+            "fixed_time",
+            "max_pressure",
         ]
     else:
         controllers = [args.controllers]
@@ -225,40 +225,40 @@ if __name__ == "__main__":
     #     profile=args.profile,
     # )
 
-    sumo_configs = [
-        "random_grid_0.1_increased_demand.sumocfg",
-        "random_grid_0.2_increased_demand.sumocfg",
-        "random_grid_0.3_increased_demand.sumocfg",
-        "random_grid_0.4_increased_demand.sumocfg",
-        "random_grid_0.5_increased_demand.sumocfg",
-    ]
-    for sumo_config in sumo_configs:
-        demand_increase = sumo_config.split("_")[2]
-        add_env_args["sumo"]["sumo_config_file"] = sumo_config
-        evaluate_controllers(
-            args.scenario,
-            args.simulator_backend,
-            controllers,
-            output_folder=f"demand_increase_{demand_increase}",
-            hours=hours,
-            add_env_args=add_env_args,
-            add_controller_args=add_controller_args,
-            profile=args.profile,
-        )
-
-    # dropouts = [0.1, 0.25, 0.5, 0.75]
-    # for i, dropout in enumerate(dropouts):
-    #     add_env_args["signal"] = {"obs_dropout_prob": dropout}
+    # sumo_configs = [
+    #     "random_grid_0.1_increased_demand.sumocfg",
+    #     "random_grid_0.2_increased_demand.sumocfg",
+    #     "random_grid_0.3_increased_demand.sumocfg",
+    #     "random_grid_0.4_increased_demand.sumocfg",
+    #     "random_grid_0.5_increased_demand.sumocfg",
+    # ]
+    # for sumo_config in sumo_configs:
+    #     demand_increase = sumo_config.split("_")[2]
+    #     add_env_args["sumo"]["sumo_config_file"] = sumo_config
     #     evaluate_controllers(
     #         args.scenario,
     #         args.simulator_backend,
     #         controllers,
-    #         output_folder=f"obs_dropout_{dropout}",
+    #         output_folder=f"demand_increase_{demand_increase}",
     #         hours=hours,
     #         add_env_args=add_env_args,
     #         add_controller_args=add_controller_args,
     #         profile=args.profile,
     #     )
+
+    dropouts = [0.1, 0.25, 0.5, 0.75]
+    for i, dropout in enumerate(dropouts):
+        add_env_args["signal"] = {"obs_dropout_prob": dropout}
+        evaluate_controllers(
+            args.scenario,
+            args.simulator_backend,
+            controllers,
+            output_folder=f"obs_dropout_{dropout}",
+            hours=hours,
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args,
+            profile=args.profile,
+        )
 
     # flow_files_batch = {
     #     "flow_disrupted": {

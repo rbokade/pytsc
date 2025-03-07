@@ -93,7 +93,8 @@ class PositionMatrix(BaseObservationSpace):
                         int(len(pos_mat) * self.dropout_prob),
                         replace=False,
                     )
-                    pos_mat = np.delete(pos_mat, drop_idx, axis=0).tolist()
+                    for idx in drop_idx:
+                        pos_mat[idx] = -1
                 obs.extend(pos_mat)
             obs = pad_list(obs, self.get_size() - self.max_phases, self.pad_value)
             phase_id = pad_list(ts.phase_id, self.max_phases)
