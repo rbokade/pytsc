@@ -1,6 +1,5 @@
 from abc import ABC
 
-from more_itertools import padded
 import numpy as np
 
 from pytsc.common.utils import pad_list
