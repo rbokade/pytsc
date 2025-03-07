@@ -22,7 +22,6 @@ class BaseConfig(ABC):
     def __init__(self, scenario, **kwargs):
         self.scenario = scenario
         self._additional_config = kwargs
-        random.seed(self.simulator["seed"])
 
     def _load_config(self, simulator_backend):
         # Load default config parameters
@@ -49,6 +48,8 @@ class BaseConfig(ABC):
         self.signal = default_config["signal"]
         self.misc = default_config["misc"]
         self.simulator = default_config[simulator_backend]
+
+        random.seed(self.simulator["seed"])
 
         formatted_config = pprint.pformat(default_config, indent=4)
         EnvLogger.log_info(f"Config:\n{formatted_config}")
