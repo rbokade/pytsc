@@ -1,9 +1,10 @@
-import os
 import logging
+import os
 import pprint
-import yaml
-
+import random
 from abc import ABC
+
+import yaml
 
 from pytsc.common.utils import EnvLogger, recursively_update_dict
 
@@ -21,6 +22,7 @@ class BaseConfig(ABC):
     def __init__(self, scenario, **kwargs):
         self.scenario = scenario
         self._additional_config = kwargs
+        random.seed(self.simulator["seed"])
 
     def _load_config(self, simulator_backend):
         # Load default config parameters

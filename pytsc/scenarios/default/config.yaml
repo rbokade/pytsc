@@ -21,6 +21,7 @@ signal:
 
 # SUMO specific parameters
 sumo:
+  seed: 0
   render: False
   delta_time: 5  # simulation steps between consecutive agent actions
   episode_limit: 360  # simulation seconds  n_steps = episode_limit / delta_time
@@ -39,7 +40,7 @@ sumo:
 
 # CityFlow specific parameters
 cityflow:
-  seed: 42
+  seed: 0
   thread_num: 1
   interval: 1.0
   rl_traffic_light: True
