@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-03-09 19:44:15.606094 by randomTrips.py v1_19_0+1770-8bb5c24c187
+<configuration>
+    <net-file value="random_subnetwork_3.net.xml"/>
+    <output-trip-file value="random_subnetwork_3_low.trips.xml"/>
+    <fringe-factor value="100"/>
+    <remove-loops value="True"/>
+    <validate value="True"/>
+    <period value="12.4024"/>
+    <binomial value="4"/>
+</configuration>
+-->
+
+<!-- generated on 2025-03-09 19:44:15 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="random_subnetwork_3.net.xml"/>
+        <route-files value="random_subnetwork_3_low.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="random_subnetwork_3_low.trips.xml.tmp"/>
+        <alternatives-output value="NUL"/>
+        <write-trips value="true"/>
+    </output>
+
+    <processing>
+        <remove-loops value="true"/>
+    </processing>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="0" depart="4.00" from="301" to="654"/>
+    <trip id="1" depart="24.00" from="-663" to="654"/>
+    <trip id="2" depart="30.00" from="-654" to="-301"/>
+    <trip id="3" depart="65.00" from="301" to="1799"/>
+    <trip id="4" depart="70.00" from="301" to="654"/>
+    <trip id="5" depart="71.00" from="-1799" to="663"/>
+    <trip id="6" depart="89.00" from="301" to="654"/>
+    <trip id="7" depart="95.00" from="-654" to="1799"/>
+    <trip id="8" depart="102.00" from="301" to="663"/>
+    <trip id="9" depart="115.00" from="-654" to="663"/>
+    <trip id="10" depart="124.00" from="-663" to="663"/>
+    <trip id="11" depart="144.00" from="301" to="-301"/>
+    <trip id="12" depart="153.00" from="-663" to="1799"/>
+    <trip id="13" depart="164.00" from="-654" to="654"/>
+    <trip id="14" depart="213.00" from="301" to="663"/>
+    <trip id="15" depart="231.00" from="-663" to="1799"/>
+    <trip id="16" depart="248.00" from="301" to="-301"/>
+    <trip id="17" depart="250.00" from="301" to="-301"/>
+    <trip id="18" depart="274.00" from="301" to="654"/>
+    <trip id="19" depart="282.00" from="-654" to="-301"/>
+    <trip id="20" depart="283.00" from="-663" to="-301"/>
+    <trip id="21" depart="285.00" from="301" to="663"/>
+    <trip id="22" depart="336.00" from="-1799" to="1799"/>
+    <trip id="23" depart="340.00" from="-663" to="-301"/>
+    <trip id="24" depart="345.00" from="301" to="1799"/>
+    <trip id="25" depart="422.00" from="-654" to="-301"/>
+    <trip id="26" depart="438.00" from="-663" to="663"/>
+    <trip id="27" depart="445.00" from="-663" to="-301"/>
+    <trip id="28" depart="454.00" from="-663" to="654"/>
+    <trip id="29" depart="475.00" from="-1799" to="1799"/>
+    <trip id="30" depart="479.00" from="-1799" to="-301"/>
+    <trip id="31" depart="497.00" from="301" to="663"/>
+    <trip id="32" depart="512.00" from="-663" to="1799"/>
+    <trip id="33" depart="513.00" from="-663" to="-301"/>
+    <trip id="34" depart="514.00" from="301" to="654"/>
+    <trip id="35" depart="520.00" from="-1799" to="1799"/>
+    <trip id="36" depart="537.00" from="-654" to="1799"/>
+    <trip id="37" depart="564.00" from="-654" to="654"/>
+    <trip id="38" depart="587.00" from="-1799" to="663"/>
+    <trip id="39" depart="609.00" from="301" to="654"/>
+    <trip id="40" depart="615.00" from="301" to="-301"/>
+    <trip id="41" depart="620.00" from="-654" to="-301"/>
+    <trip id="42" depart="621.00" from="-663" to="663"/>
+    <trip id="43" depart="625.00" from="-663" to="1799"/>
+    <trip id="44" depart="637.00" from="-1799" to="1799"/>
+    <trip id="45" depart="661.00" from="-1799" to="654"/>
+    <trip id="46" depart="664.00" from="-654" to="-301"/>
+    <trip id="47" depart="665.00" from="-663" to="663"/>
+    <trip id="48" depart="682.00" from="301" to="663"/>
+    <trip id="49" depart="706.00" from="301" to="-301"/>
+    <trip id="50" depart="722.00" from="-654" to="654"/>
+    <trip id="51" depart="775.00" from="301" to="663"/>
+    <trip id="52" depart="775.00" from="301" to="654"/>
+    <trip id="53" depart="776.00" from="-500" to="663"/>
+    <trip id="54" depart="801.00" from="-654" to="663"/>
+    <trip id="55" depart="804.00" from="-654" to="663"/>
+    <trip id="56" depart="815.00" from="-663" to="1799"/>
+    <trip id="57" depart="823.00" from="-663" to="663"/>
+    <trip id="58" depart="850.00" from="-1799" to="654"/>
+    <trip id="59" depart="884.00" from="500" to="654"/>
+    <trip id="60" depart="898.00" from="-663" to="1799"/>
+    <trip id="61" depart="904.00" from="-1799" to="654"/>
+    <trip id="62" depart="910.00" from="-663" to="654"/>
+    <trip id="63" depart="918.00" from="-663" to="654"/>
+    <trip id="64" depart="929.00" from="-1799" to="-301"/>
+    <trip id="65" depart="934.00" from="-663" to="-301"/>
+    <trip id="66" depart="958.00" from="-663" to="654"/>
+    <trip id="67" depart="974.00" from="-663" to="654"/>
+    <trip id="68" depart="983.00" from="-1799" to="-301"/>
+    <trip id="69" depart="990.00" from="-1799" to="663"/>
+    <trip id="70" depart="1003.00" from="301" to="353"/>
+    <trip id="71" depart="1016.00" from="-1799" to="654"/>
+    <trip id="72" depart="1029.00" from="-1799" to="663"/>
+    <trip id="73" depart="1051.00" from="301" to="663"/>
+    <trip id="74" depart="1051.00" from="301" to="663"/>
+    <trip id="75" depart="1052.00" from="-654" to="1799"/>
+    <trip id="76" depart="1052.00" from="-654" to="1799"/>
+    <trip id="77" depart="1059.00" from="-1799" to="654"/>
+    <trip id="78" depart="1073.00" from="-1799" to="663"/>
+    <trip id="79" depart="1084.00" from="-663" to="1799"/>
+    <trip id="80" depart="1085.00" from="301" to="663"/>
+    <trip id="81" depart="1120.00" from="301" to="1799"/>
+    <trip id="82" depart="1135.00" from="-663" to="-301"/>
+    <trip id="83" depart="1138.00" from="-663" to="654"/>
+    <trip id="84" depart="1140.00" from="-654" to="1799"/>
+    <trip id="85" depart="1141.00" from="301" to="654"/>
+    <trip id="86" depart="1166.00" from="-654" to="1799"/>
+    <trip id="87" depart="1190.00" from="301" to="-301"/>
+    <trip id="88" depart="1208.00" from="-1799" to="654"/>
+    <trip id="89" depart="1210.00" from="-1799" to="1799"/>
+    <trip id="90" depart="1211.00" from="-663" to="1799"/>
+    <trip id="91" depart="1230.00" from="301" to="654"/>
+    <trip id="92" depart="1234.00" from="-663" to="654"/>
+    <trip id="93" depart="1260.00" from="-1799" to="-301"/>
+    <trip id="94" depart="1264.00" from="301" to="1799"/>
+    <trip id="95" depart="1271.00" from="-663" to="1799"/>
+    <trip id="96" depart="1290.00" from="-1799" to="-301"/>
+    <trip id="97" depart="1300.00" from="301" to="1799"/>
+    <trip id="98" depart="1307.00" from="-1799" to="-301"/>
+    <trip id="99" depart="1325.00" from="301" to="663"/>
+    <trip id="100" depart="1350.00" from="-654" to="-301"/>
+    <trip id="101" depart="1355.00" from="-1799" to="-301"/>
+    <trip id="102" depart="1377.00" from="301" to="-301"/>
+    <trip id="103" depart="1380.00" from="-663" to="663"/>
+    <trip id="104" depart="1417.00" from="-663" to="663"/>
+    <trip id="105" depart="1439.00" from="-654" to="663"/>
+    <trip id="106" depart="1452.00" from="-663" to="1799"/>
+    <trip id="107" depart="1470.00" from="-1799" to="-301"/>
+    <trip id="108" depart="1508.00" from="-654" to="1799"/>
+    <trip id="109" depart="1521.00" from="-663" to="663"/>
+    <trip id="110" depart="1533.00" from="301" to="-301"/>
+    <trip id="111" depart="1576.00" from="-1799" to="1799"/>
+    <trip id="112" depart="1602.00" from="301" to="654"/>
+    <trip id="113" depart="1627.00" from="-1799" to="-301"/>
+    <trip id="114" depart="1631.00" from="-1799" to="-301"/>
+    <trip id="115" depart="1637.00" from="-663" to="654"/>
+    <trip id="116" depart="1652.00" from="301" to="1799"/>
+    <trip id="117" depart="1670.00" from="301" to="663"/>
+    <trip id="118" depart="1675.00" from="-654" to="654"/>
+    <trip id="119" depart="1716.00" from="301" to="-301"/>
+    <trip id="120" depart="1733.00" from="-654" to="663"/>
+    <trip id="121" depart="1734.00" from="301" to="1799"/>
+    <trip id="122" depart="1742.00" from="-663" to="654"/>
+    <trip id="123" depart="1742.00" from="-654" to="663"/>
+    <trip id="124" depart="1747.00" from="-654" to="663"/>
+    <trip id="125" depart="1748.00" from="-654" to="663"/>
+    <trip id="126" depart="1762.00" from="-1799" to="-301"/>
+    <trip id="127" depart="1775.00" from="-654" to="663"/>
+    <trip id="128" depart="1783.00" from="-663" to="654"/>
+    <trip id="129" depart="1790.00" from="-1799" to="-301"/>
+    <trip id="130" depart="1824.00" from="-654" to="663"/>
+    <trip id="131" depart="1832.00" from="301" to="663"/>
+    <trip id="132" depart="1847.00" from="-1799" to="-301"/>
+    <trip id="133" depart="1861.00" from="-1799" to="663"/>
+    <trip id="134" depart="1864.00" from="-1799" to="1799"/>
+    <trip id="135" depart="1869.00" from="301" to="663"/>
+    <trip id="136" depart="1896.00" from="301" to="-301"/>
+    <trip id="137" depart="1904.00" from="-654" to="663"/>
+    <trip id="138" depart="1908.00" from="-663" to="654"/>
+    <trip id="139" depart="1918.00" from="301" to="654"/>
+    <trip id="140" depart="1925.00" from="-1799" to="654"/>
+    <trip id="141" depart="1933.00" from="-663" to="663"/>
+    <trip id="142" depart="1934.00" from="-663" to="663"/>
+    <trip id="143" depart="1943.00" from="-654" to="-301"/>
+    <trip id="144" depart="1963.00" from="-1799" to="654"/>
+    <trip id="145" depart="1982.00" from="-663" to="654"/>
+    <trip id="146" depart="1996.00" from="-663" to="654"/>
+    <trip id="147" depart="2003.00" from="-654" to="663"/>
+    <trip id="148" depart="2018.00" from="-654" to="663"/>
+    <trip id="149" depart="2025.00" from="-663" to="-301"/>
+    <trip id="150" depart="2048.00" from="301" to="-301"/>
+    <trip id="151" depart="2077.00" from="-663" to="663"/>
+    <trip id="152" depart="2099.00" from="-654" to="654"/>
+    <trip id="153" depart="2117.00" from="301" to="663"/>
+    <trip id="154" depart="2132.00" from="301" to="-301"/>
+    <trip id="155" depart="2141.00" from="301" to="-301"/>
+    <trip id="156" depart="2154.00" from="301" to="654"/>
+    <trip id="157" depart="2167.00" from="-654" to="1799"/>
+    <trip id="158" depart="2190.00" from="301" to="1799"/>
+    <trip id="159" depart="2206.00" from="301" to="654"/>
+    <trip id="160" depart="2211.00" from="-654" to="663"/>
+    <trip id="161" depart="2215.00" from="301" to="-301"/>
+    <trip id="162" depart="2228.00" from="-654" to="-301"/>
+    <trip id="163" depart="2230.00" from="-1799" to="1799"/>
+    <trip id="164" depart="2251.00" from="-1799" to="654"/>
+    <trip id="165" depart="2270.00" from="-654" to="1799"/>
+    <trip id="166" depart="2285.00" from="-1799" to="1799"/>
+    <trip id="167" depart="2297.00" from="-1799" to="663"/>
+    <trip id="168" depart="2319.00" from="-654" to="1799"/>
+    <trip id="169" depart="2326.00" from="-654" to="654"/>
+    <trip id="170" depart="2340.00" from="-1799" to="1799"/>
+    <trip id="171" depart="2342.00" from="500" to="1799"/>
+    <trip id="172" depart="2358.00" from="301" to="663"/>
+    <trip id="173" depart="2364.00" from="-654" to="654"/>
+    <trip id="174" depart="2365.00" from="-663" to="-301"/>
+    <trip id="175" depart="2375.00" from="-654" to="654"/>
+    <trip id="176" depart="2424.00" from="-663" to="663"/>
+    <trip id="177" depart="2449.00" from="301" to="663"/>
+    <trip id="178" depart="2486.00" from="-1799" to="1799"/>
+    <trip id="179" depart="2507.00" from="301" to="-301"/>
+    <trip id="180" depart="2517.00" from="-1799" to="1799"/>
+    <trip id="181" depart="2521.00" from="-1799" to="654"/>
+    <trip id="182" depart="2537.00" from="-663" to="663"/>
+    <trip id="183" depart="2542.00" from="301" to="-301"/>
+    <trip id="184" depart="2547.00" from="301" to="654"/>
+    <trip id="185" depart="2553.00" from="-654" to="1799"/>
+    <trip id="186" depart="2561.00" from="-663" to="663"/>
+    <trip id="187" depart="2574.00" from="-654" to="-301"/>
+    <trip id="188" depart="2597.00" from="-654" to="654"/>
+    <trip id="189" depart="2598.00" from="-654" to="-301"/>
+    <trip id="190" depart="2608.00" from="301" to="663"/>
+    <trip id="191" depart="2613.00" from="-654" to="1799"/>
+    <trip id="192" depart="2632.00" from="-654" to="1799"/>
+    <trip id="193" depart="2644.00" from="-1799" to="663"/>
+    <trip id="194" depart="2660.00" from="-654" to="654"/>
+    <trip id="195" depart="2671.00" from="-654" to="654"/>
+    <trip id="196" depart="2686.00" from="-654" to="-301"/>
+    <trip id="197" depart="2688.00" from="-654" to="-301"/>
+    <trip id="198" depart="2690.00" from="-654" to="1799"/>
+    <trip id="199" depart="2720.00" from="-1799" to="654"/>
+    <trip id="200" depart="2742.00" from="301" to="1799"/>
+    <trip id="201" depart="2760.00" from="301" to="654"/>
+    <trip id="202" depart="2778.00" from="-663" to="-301"/>
+    <trip id="203" depart="2797.00" from="-654" to="-301"/>
+    <trip id="204" depart="2805.00" from="301" to="-301"/>
+    <trip id="205" depart="2822.00" from="301" to="1799"/>
+    <trip id="206" depart="2836.00" from="301" to="-301"/>
+    <trip id="207" depart="2862.00" from="-663" to="1799"/>
+    <trip id="208" depart="2870.00" from="500" to="654"/>
+    <trip id="209" depart="2877.00" from="-1799" to="1799"/>
+    <trip id="210" depart="2920.00" from="-1799" to="-301"/>
+    <trip id="211" depart="2940.00" from="-663" to="654"/>
+    <trip id="212" depart="2951.00" from="-654" to="-301"/>
+    <trip id="213" depart="2980.00" from="301" to="-301"/>
+    <trip id="214" depart="2980.00" from="-1799" to="663"/>
+    <trip id="215" depart="3034.00" from="301" to="-301"/>
+    <trip id="216" depart="3043.00" from="-663" to="663"/>
+    <trip id="217" depart="3049.00" from="301" to="1799"/>
+    <trip id="218" depart="3055.00" from="-654" to="663"/>
+    <trip id="219" depart="3063.00" from="-1799" to="663"/>
+    <trip id="220" depart="3068.00" from="301" to="-301"/>
+    <trip id="221" depart="3071.00" from="-1799" to="-301"/>
+    <trip id="222" depart="3080.00" from="-663" to="-301"/>
+    <trip id="223" depart="3089.00" from="301" to="654"/>
+    <trip id="224" depart="3096.00" from="-654" to="-301"/>
+    <trip id="225" depart="3106.00" from="-663" to="-301"/>
+    <trip id="226" depart="3116.00" from="-654" to="-301"/>
+    <trip id="227" depart="3135.00" from="301" to="1799"/>
+    <trip id="228" depart="3137.00" from="-663" to="654"/>
+    <trip id="229" depart="3152.00" from="-1799" to="-301"/>
+    <trip id="230" depart="3153.00" from="-654" to="-301"/>
+    <trip id="231" depart="3164.00" from="301" to="654"/>
+    <trip id="232" depart="3187.00" from="301" to="500"/>
+    <trip id="233" depart="3203.00" from="-1799" to="663"/>
+    <trip id="234" depart="3209.00" from="301" to="663"/>
+    <trip id="235" depart="3223.00" from="-1799" to="663"/>
+    <trip id="236" depart="3224.00" from="301" to="-301"/>
+    <trip id="237" depart="3256.00" from="-1799" to="663"/>
+    <trip id="238" depart="3263.00" from="-654" to="654"/>
+    <trip id="239" depart="3298.00" from="301" to="663"/>
+    <trip id="240" depart="3303.00" from="-654" to="663"/>
+    <trip id="241" depart="3310.00" from="-654" to="654"/>
+    <trip id="242" depart="3312.00" from="-1799" to="1799"/>
+    <trip id="243" depart="3331.00" from="-1799" to="663"/>
+    <trip id="244" depart="3351.00" from="-663" to="1799"/>
+    <trip id="245" depart="3353.00" from="-1799" to="-301"/>
+    <trip id="246" depart="3376.00" from="301" to="663"/>
+    <trip id="247" depart="3380.00" from="-654" to="663"/>
+    <trip id="248" depart="3404.00" from="-1799" to="663"/>
+    <trip id="249" depart="3418.00" from="-654" to="663"/>
+    <trip id="250" depart="3441.00" from="-1799" to="654"/>
+    <trip id="251" depart="3443.00" from="-663" to="1799"/>
+    <trip id="252" depart="3453.00" from="-1799" to="-301"/>
+    <trip id="253" depart="3472.00" from="301" to="1799"/>
+    <trip id="254" depart="3473.00" from="-1799" to="-301"/>
+    <trip id="255" depart="3490.00" from="-663" to="663"/>
+    <trip id="256" depart="3520.00" from="-1799" to="654"/>
+    <trip id="257" depart="3531.00" from="-654" to="-301"/>
+    <trip id="258" depart="3538.00" from="-663" to="654"/>
+    <trip id="259" depart="3541.00" from="-663" to="1799"/>
+    <trip id="260" depart="3571.00" from="-1799" to="663"/>
+    <trip id="261" depart="3576.00" from="-663" to="-301"/>
+    <trip id="262" depart="3588.00" from="-1799" to="-301"/>
+</routes>
