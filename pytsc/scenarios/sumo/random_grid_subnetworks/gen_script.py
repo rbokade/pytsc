@@ -16,7 +16,7 @@ subnetwork_periods = {
 # Define the trip generation command template
 TRIP_CMD_TEMPLATE = (
     "python {random_trips_script} --begin 0 --end 3600 --period {period} "
-    "--binomial 4 --fringe-factor 100 --validate --remove-loops "
+    "--binomial 4 --random-depart --fringe-factor 100 --validate --remove-loops "
     "--net-file {net_file}.net.xml -o {output_file}.trips.xml"
 )
 
