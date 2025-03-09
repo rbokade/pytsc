@@ -11,13 +11,16 @@ class LaneAttentionAggregator(nn.Module):
     Output shape: (bs, n_agents, hidden_dim)
     """
 
+    n_heads = 4
+
     def __init__(self, input_shape, hidden_dim, device="cpu"):
         super(LaneAttentionAggregator, self).__init__()
         self.device = device
         self.hidden_dim = hidden_dim
-        self.fc1 = nn.Linear(input_shape, hidden_dim)
-        self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
-        self.attn = nn.Linear(input_shape + hidden_dim, 1)
+        self.rnn = nn.GRUCell(input_shape, hidden_dim)
+        self.kv = nn.Linear(input_shape + hidden_dim, hidden_dim)
+        self.attn = nn.MultiheadAttention(embed_dim=hidden_dim, num_heads=self.n_heads)
+        self.q = nn.Parameter(torch.randn(1, hidden_dim))
 
     def init_hidden(self, bs, n_agents, max_n_lanes):
         return torch.zeros(bs * n_agents * max_n_lanes, self.hidden_dim).to(self.device)
@@ -28,27 +31,29 @@ class LaneAttentionAggregator(nn.Module):
         # hidden_state: (bs * n_agents * max_n_lanes, hidden_dim)
         """
         h_in = hidden_state.reshape(-1, self.hidden_dim)
-        max_n_lanes = lane_features.shape[-2]
-        x = F.relu(self.fc1(lane_features))
-        x = x.reshape(-1, self.hidden_dim)
+        bs_n, max_n_lanes, inp_shape = lane_features.shape
+        x = lane_features.reshape(-1, inp_shape)
         h = self.rnn(x, h_in)
-        h_out = h.reshape(-1, max_n_lanes, self.hidden_dim)
-        attn_inp = torch.cat((lane_features, h_out), dim=-1)
-        scores = self.attn(attn_inp)
-        attn_weights = F.softmax(scores, dim=-2)
-        aggregated = torch.sum(attn_weights * h_out, dim=-2)
+        kv = self.kv(torch.cat((x, h), dim=-1))
+        kv = kv.reshape(bs_n, max_n_lanes, self.hidden_dim)
+        kv_t = kv.transpose(0, 1)
+        query = self.q.unsqueeze(1).expand(1, bs_n, self.hidden_dim)
+        attn_output, _ = self.attn(query, kv_t, kv_t)
+        aggregated = attn_output.squeeze(0)
         return aggregated, h
 
 
 class TSCAgent(nn.Module):
     def __init__(self, n_agents, n_actions, hidden_dim, max_n_lanes):
         super(TSCAgent, self).__init__()
+        self.n_agents = n_agents
+        self.max_n_lanes = max_n_lanes
+        self.hidden_dim = hidden_dim
         self.lane_obs_encoder = LaneAttentionAggregator(27, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_actions)
-        self.h = self.init_hidden(1, n_agents, max_n_lanes)
 
-    def init_hidden(self, bs, n_agents, max_n_lanes):
-        return self.lane_obs_encoder.init_hidden(bs, n_agents, max_n_lanes)
+    def init_hidden(self):
+        self.h = self.lane_obs_encoder.init_hidden(1, self.n_agents, self.max_n_lanes)
 
     def forward(self, input):
         x, self.h = self.lane_obs_encoder(input, self.h)
@@ -69,20 +74,16 @@ class TSCGraphAgent(nn.Module):
         super(TSCGraphAgent, self).__init__()
         self.n_agents = n_agents
         self.dropout = dropout
+        self.max_n_lanes = max_n_lanes
         self.hidden_dim = hidden_dim
         self.adjacency_matrix = torch.tensor(adjacency_matrix, dtype=torch.float32)
         self.lane_obs_encoder = LaneAttentionAggregator(27, hidden_dim)
-        self.comm = GraphAttentionLayer(
-            input_shape=hidden_dim,
-            output_shape=hidden_dim,
-            hidden_dim=hidden_dim,
-        )
+        self.comm = GraphAttentionLayer(hidden_dim)
         self.fc2 = nn.Linear(2 * hidden_dim, n_actions)
         self.comm_dropout = nn.Dropout(p=self.dropout)
-        self.h = self.init_hidden(1, n_agents, max_n_lanes)
 
-    def init_hidden(self, bs, n_agents, max_n_lanes):
-        return self.lane_obs_encoder.init_hidden(bs, n_agents, max_n_lanes)
+    def init_hidden(self):
+        self.h = self.lane_obs_encoder.init_hidden(1, self.n_agents, self.max_n_lanes)
 
     def forward(self, input):
         x, self.h = self.lane_obs_encoder(input, self.h)
@@ -103,15 +104,13 @@ class TSCGraphAgent(nn.Module):
 
 
 class GraphAttentionLayer(nn.Module):
-    def __init__(self, input_shape, output_shape, hidden_dim):
+    n_heads = 4
+
+    def __init__(self, embed_dim):
         super(GraphAttentionLayer, self).__init__()
-        self.fc = nn.Linear(input_shape, hidden_dim)
-        self.attn = nn.Sequential(
-            nn.Linear(2 * hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, 1),
+        self.attn = nn.MultiheadAttention(
+            embed_dim=embed_dim, num_heads=self.n_heads, batch_first=True
         )
-        self.fc_out = nn.Linear(hidden_dim, output_shape)
 
     def forward(self, x, adj):
         """
@@ -119,17 +118,10 @@ class GraphAttentionLayer(nn.Module):
         adj: (bs, n_agents, n_agents)
         Use adjacency matrix
         """
-        bs, n_agents, _ = x.shape
-        h = self.fc(x)
-        h_i = h.unsqueeze(2).expand(-1, -1, n_agents, -1)
-        h_j = h.unsqueeze(1).expand(-1, n_agents, -1, -1)
-        h_cat = torch.cat((h_i, h_j), dim=-1)
-        e = self.attn(h_cat).squeeze(-1)
-        e = e.masked_fill(adj == 0, -1e9)
-        attn_weights = F.softmax(e, dim=-1)
-        h_prime = torch.bmm(attn_weights, h)
-        out = self.fc_out(h_prime)
-        return out
+        mask = (adj[0] == 0).float() * -1e9
+        attn_output = self.attn(x, x, x, attn_mask=mask)[0]
+        attn_output = attn_output.transpose(0, 1)
+        return attn_output
 
 
 class TSCAgentEnsemble(nn.Module):
@@ -165,6 +157,10 @@ class TSCAgentEnsemble(nn.Module):
                     for _ in range(num_models)
                 ]
             )
+
+    def init_hidden(self):
+        for agent in self.agents:
+            agent.init_hidden()
 
     def forward(self, inputs):
         outputs = [agent(inputs) for agent in self.agents]
@@ -214,6 +210,9 @@ class RLController:
             adjacency_matrix=tsc_env.parsed_network.adjacency_matrix,
         )
         self._load_models()
+
+    def init_hidden(self):
+        self.agent.init_hidden()
 
     def _load_models(self):
         for agent, path in zip(self.agent.agents, self.model_paths):

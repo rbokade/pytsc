@@ -162,6 +162,7 @@ class RLEvaluate(Evaluate):
         self.controller = CONTROLLERS[self.controller_name](
             self.network, **self.add_controller_args
         )
+        self.controller.init_hidden()
 
     def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
         EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
@@ -176,6 +177,7 @@ class RLEvaluate(Evaluate):
                 self._init_controllers()
             if done:
                 self.network.restart()
+                self.controller.init_hidden()
         if save_stats:
             self._save_stats(output_folder=output_folder)
         if plot_stats:

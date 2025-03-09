@@ -1,7 +1,6 @@
 import math
 import os
 import sys
-
 from functools import lru_cache
 
 if "SUMO_HOME" in os.environ:
@@ -14,7 +13,7 @@ else:
 import numpy as np
 
 from pytsc.common.network_parser import BaseNetworkParser
-from pytsc.common.utils import sort_alphanumeric_ids, flatten_list
+from pytsc.common.utils import flatten_list, sort_alphanumeric_ids
 
 
 class NetworkParser(BaseNetworkParser):
