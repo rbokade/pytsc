@@ -19,7 +19,8 @@ CONFIG_DIR = os.path.join(
 
 
 class BaseConfig(ABC):
-    def __init__(self, scenario, **kwargs):
+    def __init__(self, scenario, debug=False, **kwargs):
+        self.debug = debug
         self.scenario = scenario
         self._additional_config = kwargs
 
@@ -51,5 +52,6 @@ class BaseConfig(ABC):
 
         random.seed(self.simulator["seed"])
 
-        formatted_config = pprint.pformat(default_config, indent=4)
-        EnvLogger.log_info(f"Config:\n{formatted_config}")
+        if not self.debug:
+            formatted_config = pprint.pformat(default_config, indent=4)
+            EnvLogger.log_info(f"Config:\n{formatted_config}")
