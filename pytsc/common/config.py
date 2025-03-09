@@ -34,7 +34,8 @@ class BaseConfig(ABC):
         scenario_file_path = os.path.join(
             CONFIG_DIR, simulator_backend, self.scenario, "config.yaml"
         )
-        EnvLogger.log_info(f"Scenario config file: {scenario_file_path}")
+        if not self.debug:
+            EnvLogger.log_info(f"Scenario config file: {scenario_file_path}")
         if os.path.exists(scenario_file_path):
             with open(scenario_file_path, "r") as f:
                 scenario_config = yaml.safe_load(f)
