@@ -10,20 +10,10 @@ RANDOM_TRIPS_SCRIPT = os.path.expanduser("~/sumo/tools/randomTrips.py")
 # List of trip generation command templates for different traffic intensities,
 # along with their respective flow type suffix.
 COMMANDS = [
-    (
-        "light",
-        "python {random_trips_script} --begin 0 --end 3600 --period 3 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_light.trips.xml",
-    ),
-    (
-        "medium",
-        "python {random_trips_script} --begin 0 --end 3600 --period 2 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_medium.trips.xml",
-    ),
-    (
-        "heavy",
-        "python {random_trips_script} --begin 0 --end 3600 --period 1 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_heavy.trips.xml",
-    ),
+    ("light",  "python {random_trips_script} --begin 0 --end 3600 --period 1.75 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_light.trips.xml"),
+    ("medium", "python {random_trips_script} --begin 0 --end 3600 --period 1.50 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_medium.trips.xml"),
+    ("heavy",  "python {random_trips_script} --begin 0 --end 3600 --period 1.25 --binomial 4 --fringe-factor 100 --validate --remove-loops --net-file {net_file}.net.xml -o {output_file}_heavy.trips.xml"),
 ]
-
 
 def run_command(command):
     """Executes a shell command and prints output/errors."""
@@ -32,7 +22,6 @@ def run_command(command):
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
-
 
 def create_sumocfg(net_file, flow_type):
     """Creates a .sumocfg file for the given network file and flow type."""
@@ -57,12 +46,13 @@ def create_sumocfg(net_file, flow_type):
         f.write(sumocfg_content)
     print(f"Created {sumocfg_filename}")
 
-
 # Execute trip generation and create .sumocfg files for each network file and traffic intensity
 for file in files:
     for flow_type, cmd_template in COMMANDS:
         trip_cmd = cmd_template.format(
-            random_trips_script=RANDOM_TRIPS_SCRIPT, net_file=file, output_file=file
+            random_trips_script=RANDOM_TRIPS_SCRIPT,
+            net_file=file,
+            output_file=file
         )
         run_command(trip_cmd)
         create_sumocfg(file, flow_type)

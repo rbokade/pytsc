@@ -1,83 +1,74 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from networkx import adjacency_data
 from torch.distributions import Categorical
-
-from pytsc.controllers.controllers import BaseController
 
 
 class LaneAttentionAggregator(nn.Module):
     """
-    Aggregates lane features (from max_n_controlled_lanes)
+    Aggregates lane features (from max_n_controlled_lanes) using self-attention.
     Input shape: (bs, n_agents, max_n_lanes, lane_feature_dim)
     Output shape: (bs, n_agents, hidden_dim)
     """
 
-    def __init__(self, input_shape, hidden_dim):
+    def __init__(self, input_shape, hidden_dim, device="cpu"):
         super(LaneAttentionAggregator, self).__init__()
+        self.device = device
         self.hidden_dim = hidden_dim
-        self.fc_proj = nn.Sequential(
-            nn.Linear(input_shape, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-        )
-        self.attn = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim // 2),
-            nn.ReLU(),
-            nn.Linear(hidden_dim // 2, 1),
-        )
+        self.fc1 = nn.Linear(input_shape, hidden_dim)
+        self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
+        self.attn = nn.Linear(input_shape + hidden_dim, 1)
 
-    def forward(self, lane_features):
+    def init_hidden(self, bs, n_agents, max_n_lanes):
+        return torch.zeros(bs * n_agents * max_n_lanes, self.hidden_dim).to(self.device)
+
+    def forward(self, lane_features, hidden_state):
         """
         lane_features: (bs * n_agents, max_n_lanes, lane_feature_dim)
+        # hidden_state: (bs * n_agents * max_n_lanes, hidden_dim)
         """
-        proj = self.fc_proj(lane_features)
-        scores = self.attn(proj)
+        h_in = hidden_state.reshape(-1, self.hidden_dim)
+        max_n_lanes = lane_features.shape[-2]
+        x = F.relu(self.fc1(lane_features))
+        x = x.reshape(-1, self.hidden_dim)
+        h = self.rnn(x, h_in)
+        h_out = h.reshape(-1, max_n_lanes, self.hidden_dim)
+        attn_inp = torch.cat((lane_features, h_out), dim=-1)
+        scores = self.attn(attn_inp)
         attn_weights = F.softmax(scores, dim=-2)
-        aggregated = torch.sum(attn_weights * proj, dim=-2)
-        return aggregated
+        aggregated = torch.sum(attn_weights * h_out, dim=-2)
+        return aggregated, h
 
 
 class TSCAgent(nn.Module):
-    def __init__(self, hidden_dim, n_actions):
+    def __init__(self, n_agents, n_actions, hidden_dim, max_n_lanes):
         super(TSCAgent, self).__init__()
-        self.hidden_dim = hidden_dim
         self.lane_obs_encoder = LaneAttentionAggregator(27, hidden_dim)
-        self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_actions)
-        self.h = self.init_hidden()
+        self.h = self.init_hidden(1, n_agents, max_n_lanes)
 
-    def init_hidden(self):
-        return torch.zeros(1, self.hidden_dim)
+    def init_hidden(self, bs, n_agents, max_n_lanes):
+        return self.lane_obs_encoder.init_hidden(bs, n_agents, max_n_lanes)
 
-    def forward(self, inputs):
-        x = self.lane_obs_encoder(inputs)
-        h_in = self.h.reshape(-1, self.hidden_dim)
-        self.h = self.rnn(x, h_in)
-        q = self.fc2(self.h)
+    def forward(self, input):
+        x, self.h = self.lane_obs_encoder(input, self.h)
+        q = self.fc2(x)
         return q
-
-    # def select_action(self, obs, act_mask):
-    #     inputs = self._prepare_inputs(obs)
-    #     logits = self.forward(inputs)
-    #     logits[~act_mask] = -999
-    #     pi = Categorical(logits=logits)
-    #     action = pi.sample().item()
-    #     return action
-
-    # def _prepare_inputs(self, obs):
-    #     lane_features = obs[:, :-10]
-    #     phase_ids = obs[:, -10:]
-    #     lane_features = lane_features.reshape(1, -1, 17)
-    #     phase_ids = phase_ids.reshape(1, 1, 10).repeat(1, lane_features.shape[1], 1)
-    #     inputs = torch.cat([lane_features, phase_ids], dim=-1)
-    #     return inputs
 
 
 class TSCGraphAgent(nn.Module):
-    def __init__(self, hidden_dim, n_actions, adjacency_matrix):
+    def __init__(
+        self,
+        n_agents,
+        n_actions,
+        hidden_dim,
+        max_n_lanes,
+        adjacency_matrix,
+        dropout=0.25,
+    ):
         super(TSCGraphAgent, self).__init__()
+        self.n_agents = n_agents
+        self.dropout = dropout
         self.hidden_dim = hidden_dim
         self.adjacency_matrix = torch.tensor(adjacency_matrix, dtype=torch.float32)
         self.lane_obs_encoder = LaneAttentionAggregator(27, hidden_dim)
@@ -86,28 +77,29 @@ class TSCGraphAgent(nn.Module):
             output_shape=hidden_dim,
             hidden_dim=hidden_dim,
         )
-        self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, n_actions)
-        self.h = self.init_hidden()
+        self.fc2 = nn.Linear(2 * hidden_dim, n_actions)
+        self.comm_dropout = nn.Dropout(p=self.dropout)
+        self.h = self.init_hidden(1, n_agents, max_n_lanes)
 
-    def init_hidden(self):
-        return torch.zeros(1, self.hidden_dim)
+    def init_hidden(self, bs, n_agents, max_n_lanes):
+        return self.lane_obs_encoder.init_hidden(bs, n_agents, max_n_lanes)
 
-    def forward(self, input, hidden_state):
-        x = self.lane_obs_encoder(input)
-        x = self.communicate(x)
-        h_in = hidden_state.reshape(-1, self.args.hidden_dim)
-        self.h = self.rnn(x, h_in)
-        q = self.fc2(self.h)
+    def forward(self, input):
+        x, self.h = self.lane_obs_encoder(input, self.h)
+        x_dropped = self.comm_dropout(x)
+        c = self.communicate(x_dropped)
+        x = torch.cat((x, c), dim=-1)
+        q = self.fc2(x)
         return q
 
     def communicate(self, input):
-        bs, _ = input.shape
-        x = input.view(bs, 1, -1)
+        bs_n, _ = input.shape
+        bs = bs_n // self.n_agents
+        x = input.view(bs, self.n_agents, -1)
         adj = self.adjacency_matrix.unsqueeze(0)
         adj = adj.expand(bs, -1, -1)
         h = self.comm(x, adj)
-        return h.view(bs, -1)
+        return h.view(bs_n, -1)
 
 
 class GraphAttentionLayer(nn.Module):
@@ -141,22 +133,37 @@ class GraphAttentionLayer(nn.Module):
 
 
 class TSCAgentEnsemble(nn.Module):
-    temperature = 1.0
-
     def __init__(
-        self, hidden_dim, n_actions, graph=False, adjacency_matrix=None, num_models=3
+        self, n_agents, n_actions, hidden_dim, max_n_lanes, num_models=3, **kwargs
     ):
         super(TSCAgentEnsemble, self).__init__()
+        self.n_agents = n_agents
+        graph = kwargs.pop("graph", False)
+        adjacency_matrix = kwargs.pop("adjacency_matrix", None)
         if graph:
             self.agents = nn.ModuleList(
                 [
-                    TSCGraphAgent(hidden_dim, n_actions, adjacency_matrix)
+                    TSCGraphAgent(
+                        n_agents,
+                        n_actions,
+                        hidden_dim,
+                        max_n_lanes,
+                        adjacency_matrix,
+                    )
                     for _ in range(num_models)
                 ]
             )
         else:
             self.agents = nn.ModuleList(
-                [TSCAgent(hidden_dim, n_actions) for _ in range(num_models)]
+                [
+                    TSCAgent(
+                        n_agents,
+                        n_actions,
+                        hidden_dim,
+                        max_n_lanes,
+                    )
+                    for _ in range(num_models)
+                ]
             )
 
     def forward(self, inputs):
@@ -165,138 +172,115 @@ class TSCAgentEnsemble(nn.Module):
         return ensemble_output
 
     def _prepare_inputs(self, obs):
-        lane_features = obs[:, :-10]
-        phase_ids = obs[:, -10:]
-        lane_features = lane_features.reshape(1, -1, 17)
-        phase_ids = phase_ids.reshape(1, 1, 10).repeat(1, lane_features.shape[1], 1)
+        lane_features = obs[:, :, :-10]
+        phase_ids = obs[:, :, -10:]
+        lane_features = lane_features.reshape(self.n_agents, -1, 17)
+        phase_ids = phase_ids.reshape(self.n_agents, 1, 10)
+        phase_ids = phase_ids.repeat(1, lane_features.shape[-2], 1)
         inputs = torch.cat([lane_features, phase_ids], dim=-1)
         return inputs
 
-    def select_action(self, obs, act_mask):
+    def select_action(self, obs, avail_actions):
         inputs = self._prepare_inputs(obs)
         logits = self.forward(inputs)
-        logits[~act_mask] = float("-inf")
-        pi = Categorical(logits=logits)
-        action = pi.sample().item()
+        avail_actions = avail_actions.squeeze(0)
+        logits[avail_actions == 0] = -1e10
+        logits = F.softmax(logits, dim=-1)
+        pi = Categorical(logits)
+        action = pi.sample().long()
         return action
 
-    # def select_action(self, obs, act_mask):
-    #     inputs = self._prepare_inputs(obs)
-    #     probs_list = []
-    #     for agent in self.agents:
-    #         logits = agent(inputs)
-    #         logits[~act_mask] = float("-inf")
-    #         # Optionally, apply temperature scaling to each agent's logits
-    #         scaled_logits = logits / self.temperature
-    #         probs = F.softmax(scaled_logits, dim=-1)
-    #         probs_list.append(probs)
-    #     # Average the probabilities across all agents
-    #     avg_probs = torch.mean(torch.stack(probs_list), dim=0)
-    #     pi = Categorical(probs=avg_probs)
-    #     action = pi.sample().item()
-    #     return action
 
-
-class RLController(BaseController):
+class RLController:
+    graph = False
     n_actions = 2
     hidden_dim = 128
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/agent.th",
+        "pytsc/controllers/agent.th",
     ]
 
-    def __init__(self, traffic_signal):
-        super(RLController, self).__init__(traffic_signal)
-        self.controller = traffic_signal.controller
+    def __init__(self, tsc_env, **kwargs):
+        self.tsc_env = tsc_env
+        self.n_actions = tsc_env.get_action_size()
+        self.n_agents = tsc_env.n_agents
+        self.max_n_lanes = tsc_env.observation_space.max_n_controlled_lanes
         self.agent = TSCAgentEnsemble(
-            self.hidden_dim, self.n_actions, num_models=len(self.model_paths)
+            self.n_agents,
+            self.n_actions,
+            self.hidden_dim,
+            self.max_n_lanes,
+            num_models=len(self.model_paths),
+            graph=self.graph,
+            adjacency_matrix=tsc_env.parsed_network.adjacency_matrix,
         )
         self._load_models()
 
     def _load_models(self):
         for agent, path in zip(self.agent.agents, self.model_paths):
-            agent.load_state_dict(
-                torch.load(
-                    path,
-                    map_location=lambda storage, loc: storage,
-                )
-            )
+            checkpoint = torch.load(path, map_location=lambda storage, loc: storage)
+            # print(f"Checkpoint from {path}:")
+            # for key, value in checkpoint.items():
+            #     print(f"  {key}: {value.shape}")
+            # model_state = agent.state_dict()
+            # print("Model state_dict:")
+            # for key, value in model_state.items():
+            #     print(f"  {key}: {value.shape}")
+            agent.load_state_dict(checkpoint)
             agent.eval()
 
-    def _get_action_mask(self):
-        allowable_switches = self.controller.get_allowable_phase_switches()
-        n_phases = self.controller.n_phases
-        current_phase_index = self.controller.program.current_phase_index
-        next_phase_index = (current_phase_index + 1) % n_phases
-        mask = [0, 0]
-        if allowable_switches[current_phase_index]:
-            mask[0] = 1
-        if allowable_switches[next_phase_index]:
-            mask[1] = 1
-        return torch.tensor(mask).unsqueeze(0).bool(), mask
-
-    def get_action(self, inp):
-        obs = inp["observation"]
-        act_mask, mask = self._get_action_mask()
-        obs = torch.tensor(obs).float().unsqueeze(0)
-        action = self.agent.select_action(obs, act_mask)
+    def get_action(self):
+        obs = self.tsc_env.get_observations()
+        avail_actions = self.tsc_env.get_action_mask()
+        obs = torch.tensor(obs).unsqueeze(0)
+        avail_actions = torch.tensor(avail_actions).unsqueeze(0)
+        action = self.agent.select_action(obs, avail_actions)
         return action
 
 
 class SingleGeneralizedAgentRLController(RLController):
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_1.th",
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_2.th",
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_3.th",
+        "pytsc/controllers/single_generalized_agent_1.th",
+        "pytsc/controllers/single_generalized_agent_2.th",
+        "pytsc/controllers/single_generalized_agent_3.th",
     ]
 
 
 class MultiGeneralizedAgentRLController(RLController):
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_1.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_2.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_3.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_4.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_5.th",
+        "pytsc/controllers/multi_generalized_agent_1.th",
+        "pytsc/controllers/multi_generalized_agent_2.th",
+        "pytsc/controllers/multi_generalized_agent_3.th",
+        "pytsc/controllers/multi_generalized_agent_4.th",
+        "pytsc/controllers/multi_generalized_agent_5.th",
     ]
 
 
 class MultiGeneralizedGraphAgentRLController(RLController):
+    graph = True
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_graph_agent_1.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_graph_agent_2.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_graph_agent_3.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_graph_agent_4.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_graph_agent_5.th",
+        "pytsc/controllers/multi_generalized_graph_agent_1.th",
+        "pytsc/controllers/multi_generalized_graph_agent_2.th",
+        "pytsc/controllers/multi_generalized_graph_agent_3.th",
+        "pytsc/controllers/multi_generalized_graph_agent_4.th",
+        "pytsc/controllers/multi_generalized_graph_agent_5.th",
     ]
-
-    def __init__(self, traffic_signal):
-        super(MultiGeneralizedGraphAgentRLController, self).__init__(traffic_signal)
-        sim = traffic_signal.controller.simulator
-        adj = sim.parsed_network.adjacency_matrix
-        self.agent = TSCAgentEnsemble(
-            self.hidden_dim,
-            self.n_actions,
-            graph=True,
-            adjacency_matrix=adj,
-            num_models=len(self.model_paths),
-        )
-        self._load_models()
 
 
 class SpecializedMARLController(RLController):
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/specialized_marl_agent_1.th",
+        "pytsc/controllers/specialized_marl_agent_1.th",
+        "pytsc/controllers/specialized_marl_agent_2.th",
     ]
 
 
 class MixedRLController(RLController):
     model_paths = [
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_1.th",
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_2.th",
-        "pytsc/controllers/demand_burst_controllers/single_generalized_agent_3.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_1.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_2.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_3.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_4.th",
-        "pytsc/controllers/demand_burst_controllers/multi_generalized_agent_5.th",
+        "pytsc/controllers/single_generalized_agent_1.th",
+        "pytsc/controllers/single_generalized_agent_2.th",
+        "pytsc/controllers/single_generalized_agent_3.th",
+        "pytsc/controllers/multi_generalized_agent_1.th",
+        "pytsc/controllers/multi_generalized_agent_2.th",
+        "pytsc/controllers/multi_generalized_agent_3.th",
+        "pytsc/controllers/multi_generalized_agent_4.th",
+        "pytsc/controllers/multi_generalized_agent_5.th",
     ]

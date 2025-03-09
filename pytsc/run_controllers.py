@@ -1,15 +1,15 @@
 import argparse
-import os
 import cProfile
-import pstats
 import io
+import multiprocessing
+import os
+import pstats
+from copy import deepcopy
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from copy import deepcopy
-import multiprocessing
-
-from pytsc.controllers.evaluate import Evaluate
+from pytsc.controllers.evaluate import Evaluate, RLEvaluate
 
 
 def run_evaluation(
@@ -22,7 +22,9 @@ def run_evaluation(
     profile=False,
     output_folder=None,
 ):
-    evaluate = Evaluate(
+
+    eval_class = Evaluate if controller in non_rl_controllers else RLEvaluate
+    evaluate = eval_class(
         scenario,
         simulator_backend,
         controller,
@@ -178,17 +180,31 @@ if __name__ == "__main__":
 
     if args.controllers == "all":
         controllers = [
-            "mixed_rl",
-            "specialized_marl",
-            "multi_generalized_agent",
-            "single_generalized_agent",
-            "sotl",
-            "greedy",
-            "fixed_time",
-            "max_pressure",
+            # # "mixed_rl",
+            # "specialized_marl",
+            # "multi_generalized_agent",
+            "multi_generalized_graph_agent",
+            # "single_generalized_agent",
+            # "sotl",
+            # "greedy",
+            # "fixed_time",
+            # "max_pressure",
         ]
     else:
         controllers = [args.controllers]
+
+    rl_controllers = [
+        "specialized_marl",
+        "multi_generalized_agent",
+        "multi_generalized_graph_agent",
+        "single_generalized_agent",
+    ]
+    non_rl_controllers = [
+        "sotl",
+        "greedy",
+        "fixed_time",
+        "max_pressure",
+    ]
 
     hours = 1
     add_controller_args = {
@@ -213,38 +229,37 @@ if __name__ == "__main__":
             # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
-    # evaluate_controllers(
-    #     args.scenario,
-    #     args.simulator_backend,
-    #     controllers,
-    #     # output_folder="pytsc/results/",
-    #     output_folder="mv_baseline",
-    #     hours=hours,
-    #     add_env_args=add_env_args,
-    #     add_controller_args=add_controller_args,
-    #     profile=args.profile,
-    # )
+    evaluate_controllers(
+        args.scenario,
+        args.simulator_backend,
+        controllers,
+        output_folder="baseline",
+        hours=hours,
+        add_env_args=add_env_args,
+        add_controller_args=add_controller_args,
+        profile=args.profile,
+    )
 
-    # sumo_configs = [
-    #     "random_grid_0.1_increased_demand.sumocfg",
-    #     "random_grid_0.2_increased_demand.sumocfg",
-    #     "random_grid_0.3_increased_demand.sumocfg",
-    #     "random_grid_0.4_increased_demand.sumocfg",
-    #     "random_grid_0.5_increased_demand.sumocfg",
-    # ]
-    # for sumo_config in sumo_configs:
-    #     demand_increase = sumo_config.split("_")[2]
-    #     add_env_args["sumo"]["sumo_config_file"] = sumo_config
-    #     evaluate_controllers(
-    #         args.scenario,
-    #         args.simulator_backend,
-    #         controllers,
-    #         output_folder=f"demand_increase_{demand_increase}",
-    #         hours=hours,
-    #         add_env_args=add_env_args,
-    #         add_controller_args=add_controller_args,
-    #         profile=args.profile,
-    #     )
+    sumo_configs = [
+        "random_grid_0.1_increased_demand.sumocfg",
+        "random_grid_0.2_increased_demand.sumocfg",
+        "random_grid_0.3_increased_demand.sumocfg",
+        "random_grid_0.4_increased_demand.sumocfg",
+        "random_grid_0.5_increased_demand.sumocfg",
+    ]
+    for sumo_config in sumo_configs:
+        demand_increase = sumo_config.split("_")[2]
+        add_env_args["sumo"]["sumo_config_file"] = sumo_config
+        evaluate_controllers(
+            args.scenario,
+            args.simulator_backend,
+            controllers,
+            output_folder=f"demand_increase_{demand_increase}",
+            hours=hours,
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args,
+            profile=args.profile,
+        )
 
     dropouts = [0.1, 0.25, 0.5, 0.75]
     for i, dropout in enumerate(dropouts):

@@ -1,32 +1,19 @@
 import logging
 import os
 
-from numpy import add
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+from numpy import add
 
 from pytsc import TrafficSignalNetwork
 from pytsc.common.utils import EnvLogger, validate_input_against_allowed
 from pytsc.controllers import CONTROLLERS
 
-
 # EnvLogger.set_log_level(logging.WARNING)
 
 
 class Evaluate:
-    phase_switch_controllers = [
-        "rl",
-        "mixed_rl",
-        "specialized_marl",
-        "multi_generalized_agent",
-        "single_generalized_agent",
-    ]
-    phase_select_controllers = [
-        "sotl",
-        "greedy",
-        "fixed_time",
-        "max_pressure",
-    ]
+    action_space = "phase_selection"
 
     def __init__(
         self,
@@ -57,18 +44,9 @@ class Evaluate:
             self.simulator_backend,
             **self.add_env_args,
         )
-        if self.controller_name in self.phase_switch_controllers:
-            self.network.config.signal["action_space"] = "phase_switch"
-        elif self.controller_name in self.phase_select_controllers:
-            self.network.config.signal["action_space"] = "phase_selection"
-        else:
-            raise ValueError(
-                f"Controller {self.controller_name} not supported for evaluation"
-            )
+        self.network.config.signal["action_space"] = self.action_space
         self.network._init_parsers()
         self.config = self.network.config
-        if "graph" in self.controller_name:
-            self.add_controller_args["adjacency_matrix"] = self.network.adjacency_matrix
 
     def _init_controllers(self):
         self.controllers = {}
@@ -157,3 +135,52 @@ class Evaluate:
         plt.tight_layout()
         plt.savefig(file)
         plt.show()
+
+
+class RLEvaluate(Evaluate):
+    action_space = "phase_switch"
+
+    def __init__(
+        self,
+        scenario,
+        simulator_backend,
+        controller_name,
+        add_env_args,
+        add_controller_args,
+        **kwargs,
+    ):
+        super(RLEvaluate, self).__init__(
+            scenario,
+            simulator_backend,
+            controller_name,
+            add_env_args,
+            add_controller_args,
+            **kwargs,
+        )
+
+    def _init_controllers(self):
+        self.controller = CONTROLLERS[self.controller_name](
+            self.network, **self.add_controller_args
+        )
+
+    def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
+        EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
+        output_folder = self._create_output_folder(output_folder)
+        steps = int(hours * 3600 / self.delta_time)
+        for step in range(steps):
+            actions = self._get_actions()
+            _, done, stats = self.network.step(actions)
+            self._log_stats(step, stats)
+            if self.network.simulator.is_terminated:
+                self._init_network()
+                self._init_controllers()
+            if done:
+                self.network.restart()
+        if save_stats:
+            self._save_stats(output_folder=output_folder)
+        if plot_stats:
+            self._plot_stats(output_folder=output_folder)
+
+    def _get_actions(self):
+        actions = self.controller.get_action()
+        return actions.tolist()

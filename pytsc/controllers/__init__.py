@@ -10,6 +10,7 @@ from pytsc.controllers.rl_controller import (
     MixedRLController,
     SpecializedMARLController,
     MultiGeneralizedAgentRLController,
+    MultiGeneralizedGraphAgentRLController,
     SingleGeneralizedAgentRLController,
 )
 
@@ -24,5 +25,6 @@ CONTROLLERS = {
     "mixed_rl": MixedRLController,
     "specialized_marl": SpecializedMARLController,
     "multi_generalized_agent": MultiGeneralizedAgentRLController,
+    "multi_generalized_graph_agent": MultiGeneralizedGraphAgentRLController,
     "single_generalized_agent": SingleGeneralizedAgentRLController,
 }
