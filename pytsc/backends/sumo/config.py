@@ -56,5 +56,5 @@ class Config(BaseConfig):
         self.begin_time = int(time_element.find("begin").get("value"))
         self.end_time = int(time_element.find("end").get("value"))
 
-    def __set_netdir(self, netfile):
+    def _set_netdir(self, netfile):
         self.net_dir = os.path.join(CONFIG_DIR, self.scenario, netfile)
