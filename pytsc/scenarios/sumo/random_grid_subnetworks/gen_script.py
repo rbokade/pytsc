@@ -6,11 +6,11 @@ RANDOM_TRIPS_SCRIPT = os.path.expanduser("~/sumo/tools/randomTrips.py")
 
 # Define subnetwork details with computed period values
 subnetwork_periods = {
-    "random_subnetwork_1": {"low": 4.3851, "medium": 3.5081, "high": 2.6311},
-    "random_subnetwork_2": {"low": 2.4173, "medium": 1.9339, "high": 1.4504},
-    "random_subnetwork_3": {"low": 12.4024, "medium": 9.9219, "high": 7.4414},
-    "random_subnetwork_4": {"low": 14.3946, "medium": 11.5157, "high": 8.6367},
-    "random_subnetwork_5": {"low": 2.7724, "medium": 2.2179, "high": 1.6635},
+    "random_subnetwork_1": {"light": 4.3851, "medium": 3.5081, "heavy": 2.6311},
+    "random_subnetwork_2": {"light": 2.4173, "medium": 1.9339, "hiheavygh": 1.4504},
+    "random_subnetwork_3": {"light": 12.4024, "medium": 9.9219, "heavy": 7.4414},
+    "random_subnetwork_4": {"light": 14.3946, "medium": 11.5157, "heavy": 8.6367},
+    "random_subnetwork_5": {"light": 2.7724, "medium": 2.2179, "heavy": 1.6635},
 }
 
 # Define the trip generation command template
