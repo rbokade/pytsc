@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-03-09 19:55:42.112846 by randomTrips.py v1_19_0+1770-8bb5c24c187
+<!-- generated on 2025-03-10 19:14:55.927015 by randomTrips.py v1_19_0+1770-8bb5c24c187
 <configuration>
     <net-file value="random_subnetwork_3.net.xml"/>
     <output-trip-file value="random_subnetwork_3_heavy.trips.xml"/>
+    <length value="True"/>
     <fringe-factor value="100"/>
     <min-distance value="800.0"/>
     <remove-loops value="True"/>
     <validate value="True"/>
-    <period value="7.4414"/>
+    <period value="1.5496757160075763"/>
     <random-depart value="True"/>
-    <binomial value="4"/>
+    <binomial value="10"/>
 </configuration>
 -->
 
-<!-- generated on 2025-03-09 19:55:42 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
+<!-- generated on 2025-03-10 19:14:55 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
