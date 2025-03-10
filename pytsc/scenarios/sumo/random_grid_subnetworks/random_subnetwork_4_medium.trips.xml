@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-03-10 19:14:57.134497 by randomTrips.py v1_19_0+1770-8bb5c24c187
+<!-- generated on 2025-03-10 19:20:44.581486 by randomTrips.py v1_19_0+1770-8bb5c24c187
 <configuration>
     <net-file value="random_subnetwork_4.net.xml"/>
     <output-trip-file value="random_subnetwork_4_medium.trips.xml"/>
-    <length value="True"/>
     <fringe-factor value="100"/>
     <min-distance value="800.0"/>
     <remove-loops value="True"/>
@@ -15,7 +14,7 @@
 </configuration>
 -->
 
-<!-- generated on 2025-03-10 19:14:57 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
+<!-- generated on 2025-03-10 19:20:44 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
@@ -44,7 +43,7 @@
         <no-step-log value="true"/>
     </report>
 
-</duarouterConfiguration>
+</configuration>
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd"/>
