@@ -229,16 +229,16 @@ if __name__ == "__main__":
             # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
-    evaluate_controllers(
-        args.scenario,
-        args.simulator_backend,
-        controllers,
-        output_folder="baseline",
-        hours=hours,
-        add_env_args=add_env_args,
-        add_controller_args=add_controller_args,
-        profile=args.profile,
-    )
+    # evaluate_controllers(
+    #     args.scenario,
+    #     args.simulator_backend,
+    #     controllers,
+    #     output_folder="baseline",
+    #     hours=hours,
+    #     add_env_args=add_env_args,
+    #     add_controller_args=add_controller_args,
+    #     profile=args.profile,
+    # )
 
     # sumo_configs = [
     #     "random_grid_0.1_increased_demand.sumocfg",
@@ -269,6 +269,21 @@ if __name__ == "__main__":
     #         args.simulator_backend,
     #         controllers,
     #         output_folder=f"obs_dropout_{dropout}",
+    #         hours=hours,
+    #         add_env_args=add_env_args,
+    #         add_controller_args=add_controller_args,
+    #         profile=args.profile,
+    #     )
+
+    # for i in range(1, 6):
+    #     add_env_args["sumo"]["random_game"] = False
+    #     add_env_args["sumo"]["sumo_config_file"] = f"random_subnetwork_{i}_medium.sumocfg"
+    #     add_env_args["sumo"]["sumo_net_file"] = f"random_subnetwork_{i}.net.xml"
+    #     evaluate_controllers(
+    #         args.scenario,
+    #         args.simulator_backend,
+    #         controllers,
+    #         output_folder=f"subnetwork_{i}",
     #         hours=hours,
     #         add_env_args=add_env_args,
     #         add_controller_args=add_controller_args,
