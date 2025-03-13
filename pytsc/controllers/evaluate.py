@@ -162,14 +162,14 @@ class RLEvaluate(Evaluate):
         self.controller = CONTROLLERS[self.controller_name](
             self.network, **self.add_controller_args
         )
-        self.controller.init_hidden()
 
     def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
         EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
         output_folder = self._create_output_folder(output_folder)
         steps = int(hours * 3600 / self.delta_time)
+        hidden_states = self.controller.init_hidden()
         for step in range(steps):
-            actions = self._get_actions()
+            actions, hidden_states = self._get_actions(hidden_states)
             _, done, stats = self.network.step(actions)
             self._log_stats(step, stats)
             if self.network.simulator.is_terminated:
@@ -183,6 +183,6 @@ class RLEvaluate(Evaluate):
         if plot_stats:
             self._plot_stats(output_folder=output_folder)
 
-    def _get_actions(self):
-        actions = self.controller.get_action()
-        return actions.tolist()
+    def _get_actions(self, hidden_states):
+        actions, next_hidden_states = self.controller.get_action(hidden_states)
+        return actions.tolist(), next_hidden_states

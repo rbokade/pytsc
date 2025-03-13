@@ -151,6 +151,33 @@ def process_flow_files(
     )
 
 
+def evaluate_demand_increase_and_dropout(
+    scenario,
+    simulator_backend,
+    controllers,
+    add_env_args,
+    add_controller_args,
+    hours,
+    sumo_config,
+    dropout,
+    profile=False,
+):
+    add_env_args_local = deepcopy(add_env_args)
+    demand_increase = sumo_config.split("_")[2]
+    add_env_args_local["sumo"]["sumo_config_file"] = sumo_config
+    add_env_args_local["signal"] = {"obs_dropout_prob": dropout}
+    evaluate_controllers(
+        scenario,
+        simulator_backend,
+        controllers,
+        output_folder=f"demand_increase_{demand_increase}_obs_dropout_{dropout}",
+        hours=hours,
+        add_env_args=add_env_args_local,
+        add_controller_args=add_controller_args,
+        profile=profile,
+    )
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -180,9 +207,9 @@ if __name__ == "__main__":
 
     if args.controllers == "all":
         controllers = [
-            # # "mixed_rl",
-            # "specialized_marl",
-            # "multi_generalized_agent",
+            # "mixed_rl",
+            "specialized_marl",
+            "multi_generalized_agent",
             "multi_generalized_graph_agent",
             # "single_generalized_agent",
             # "sotl",
@@ -229,16 +256,16 @@ if __name__ == "__main__":
             # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
-    # evaluate_controllers(
-    #     args.scenario,
-    #     args.simulator_backend,
-    #     controllers,
-    #     output_folder="baseline",
-    #     hours=hours,
-    #     add_env_args=add_env_args,
-    #     add_controller_args=add_controller_args,
-    #     profile=args.profile,
-    # )
+    evaluate_controllers(
+        args.scenario,
+        args.simulator_backend,
+        controllers,
+        output_folder="baseline",
+        hours=hours,
+        add_env_args=add_env_args,
+        add_controller_args=add_controller_args,
+        profile=args.profile,
+    )
 
     # sumo_configs = [
     #     "random_grid_0.1_increased_demand.sumocfg",
@@ -261,7 +288,7 @@ if __name__ == "__main__":
     #         profile=args.profile,
     #     )
 
-    # dropouts = [0.1, 0.25, 0.5, 0.75]
+    # dropouts = [0.1, 0.2, 0.5, 0.7, 0.9, 1.0]
     # for i, dropout in enumerate(dropouts):
     #     add_env_args["signal"] = {"obs_dropout_prob": dropout}
     #     evaluate_controllers(
@@ -274,6 +301,26 @@ if __name__ == "__main__":
     #         add_controller_args=add_controller_args,
     #         profile=args.profile,
     #     )
+
+    # n_processes = min(len(sumo_configs) * len(dropouts), multiprocessing.cpu_count())
+    # pool = multiprocessing.Pool(n_processes)
+    # tasks = [
+    #     (
+    #         args.scenario,
+    #         args.simulator_backend,
+    #         controllers,
+    #         add_env_args,
+    #         add_controller_args,
+    #         hours,
+    #         sumo_config,
+    #         dropout,
+    #     )
+    #     for sumo_config in sumo_configs
+    #     for dropout in dropouts
+    # ]
+    # pool.starmap(evaluate_demand_increase_and_dropout, tasks)
+    # pool.close()
+    # pool.join()
 
     # for i in range(1, 6):
     #     add_env_args["sumo"]["random_game"] = False

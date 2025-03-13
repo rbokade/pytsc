@@ -4,6 +4,4 @@
 
 # Trip Generate
 
-python ~/sumo/tools/randomTrips.py --begin 0 --end 3600 --insertion-density 150 --binomial 10 --min-distance 800 --length --random-depart --fringe-factor 100 --validate --remove-loops --net-file random_grid.net.xml -o random_grid.trips.xml 
-
-
+# python ~/sumo/tools/randomTrips.py --begin 0 --end 3600 --period 0.75 --binomial 10 --min-distance 800 --length --random-depart --fringe-factor 100 --validate --remove-loops --net-file random_grid.net.xml -o random_grid.trips.xml

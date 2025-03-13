@@ -1,4 +1,5 @@
 from abc import ABC
+from copy import deepcopy
 
 import numpy as np
 
@@ -83,17 +84,17 @@ class PositionMatrix(BaseObservationSpace):
         observations = []
         for ts in self.traffic_signals.values():
             obs = []
-            pos_mats = ts.inc_position_matrices
+            pos_mats = deepcopy(ts.inc_position_matrices)
             for lane, pos_mat in pos_mats.items():
                 obs.extend(self.lane_features[lane])
                 if self.dropout_prob > 0:
                     drop_idx = np.random.choice(
-                        len(pos_mat),
-                        int(len(pos_mat) * self.dropout_prob),
+                        self.visibility,
+                        int(self.visibility * self.dropout_prob),
                         replace=False,
                     )
                     for idx in drop_idx:
-                        pos_mat[idx] = -1
+                        pos_mat[idx] = -1.0
                 obs.extend(pos_mat)
             obs = pad_list(obs, self.get_size() - self.max_phases, self.pad_value)
             phase_id = pad_list(ts.phase_id, self.max_phases)
