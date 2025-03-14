@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-03-14 13:28:40.471642 by randomTrips.py v1_22_0+0449-9311ec3459f
+<!-- generated on 2025-03-14 13:35:49.439329 by randomTrips.py v1_19_0+1770-8bb5c24c187
 <configuration>
     <net-file value="random_grid_9.net.xml"/>
     <output-trip-file value="random_grid_9_medium.trips.xml"/>
@@ -9,8 +9,8 @@
 </configuration>
 -->
 
-<!-- generated on 2025-03-14 13:28:40 by Eclipse SUMO duarouter Version v1_22_0+0449-9311ec3459f
-<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+<!-- generated on 2025-03-14 13:35:49 by Eclipse SUMO duarouter Version v1_19_0+1770-8bb5c24c187
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
         <net-file value="random_grid_9.net.xml"/>
@@ -34,7 +34,7 @@
         <no-step-log value="true"/>
     </report>
 
-</duarouterConfiguration>
+</configuration>
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
