@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-03-13 16:53:21.772878 by randomTrips.py v1_19_0+1770-8bb5c24c187
+<!-- generated on 2025-03-14 13:28:39.580145 by randomTrips.py v1_22_0+0449-9311ec3459f
 <configuration>
     <net-file value="random_grid_8.net.xml"/>
     <output-trip-file value="random_grid_8_light.trips.xml"/>
+    <validate value="True"/>
     <period value="4.0"/>
 </configuration>
+-->
+
+<!-- generated on 2025-03-14 13:28:39 by Eclipse SUMO duarouter Version v1_22_0+0449-9311ec3459f
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="random_grid_8.net.xml"/>
+        <route-files value="random_grid_8_light.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="random_grid_8_light.trips.xml.tmp"/>
+        <alternatives-output value="NUL"/>
+        <write-trips value="true"/>
+    </output>
+
+    <time>
+        <begin value="0.0"/>
+        <end value="3600.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</duarouterConfiguration>
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
