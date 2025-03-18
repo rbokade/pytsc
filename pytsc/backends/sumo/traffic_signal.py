@@ -1,10 +1,11 @@
 from turtle import pos
+
 import numpy as np
 
 from pytsc.common.traffic_signal import (
-    BaseTSProgram,
-    BaseTSController,
     BaseTrafficSignal,
+    BaseTSController,
+    BaseTSProgram,
 )
 
 
@@ -74,6 +75,7 @@ class TrafficSignal(BaseTrafficSignal):
         # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
+        self.sub_results = sub_results
         # Compute intersection stats
         self.n_queued = 0
         self.occupancy = 0

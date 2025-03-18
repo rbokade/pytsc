@@ -26,8 +26,7 @@ class ObservationEvaluator(Evaluate):
             **kwargs,
         )
         self.obs_info = self.network.observation_space.get_observation_info()
-        self.mat_size = self.obs_info["frame_size"]
-        self.obs_matrix = np.zeros((self.mat_size, self.mat_size))
+        self.mat_size = (self.obs_info["max_n_controlled_lanes"], 10)
 
     # def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
     #     EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
@@ -61,9 +60,10 @@ class ObservationEvaluator(Evaluate):
             obs = self.network.get_observations()
             for idx, (ts_id, ts) in enumerate(self.network.traffic_signals.items()):
                 ts_obs = np.asarray(obs[idx])
-                lane_mats = ts_obs[self.obs_info["lane_mat_idxs"]] - 1
-                pos_mats = ts_obs[self.obs_info["pos_mat_idxs"]] + lane_mats
-                pos_mats = pos_mats.reshape(self.mat_size, self.mat_size)
+                # lane_mats = ts_obs[self.obs_info["lane_mat_idxs"]] - 1
+                # pos_mats = ts_obs[self.obs_info["pos_mat_idxs"]] + lane_mats
+                # pos_mats = pos_mats.reshape(self.mat_size, self.mat_size)
+                pos_mats = ts_obs[:-10].reshape(*self.mat_size)
                 axes[idx].clear()
                 axes[idx].imshow(pos_mats, cmap="viridis")
                 axes[idx].set_title(f"Signal {ts_id} at step {step}")
@@ -123,14 +123,16 @@ def plt_to_image(fig):
 
 if __name__ == "__main__":
 
-    scenario = "pasubio"
+    scenario = "random_grid_singles"
     output_folder = "/home/rohitbokade/repos/pytsc"
-    add_env_args = {"signal": {"observation_space": "position_matrix"}}
+    add_env_args = {
+        "signal": {"observation_space": "position_matrix", "obs_dropout_prob": 0.5}
+    }
 
     obs_evaluator = ObservationEvaluator(
         scenario=scenario,
         simulator_backend="sumo",
-        controller="greedy",
+        controller="sotl",
         add_env_args=add_env_args,
     )
     obs_evaluator.run(hours=0.1, output_folder=output_folder)

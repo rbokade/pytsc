@@ -12,15 +12,15 @@ RANDOM_TRIPS_SCRIPT = os.path.expanduser("~/sumo/tools/randomTrips.py")
 COMMANDS = [
     (
         "light",
-        "python {random_trips_script} --begin 0 --end 3600 --period 4 --validate --net-file {net_file}.net.xml -o {output_file}_light.trips.xml",
+        "python {random_trips_script} --begin 0 --end 3600 --period 5 --binomial 10 --random-depart --fringe-factor 100 --validate --net-file {net_file}.net.xml -o {output_file}_light.trips.xml",
     ),
     (
         "medium",
-        "python {random_trips_script} --begin 0 --end 3600 --period 3 --validate --net-file {net_file}.net.xml -o {output_file}_medium.trips.xml",
+        "python {random_trips_script} --begin 0 --end 3600 --period 4 --binomial 10 --random-depart --fringe-factor 100 --validate --net-file {net_file}.net.xml -o {output_file}_medium.trips.xml",
     ),
     (
         "heavy",
-        "python {random_trips_script} --begin 0 --end 3600 --period 2 --validate --net-file {net_file}.net.xml -o {output_file}_heavy.trips.xml",
+        "python {random_trips_script} --begin 0 --end 3600 --period 3 --binomial 10 --random-depart --fringe-factor 100 --validate --net-file {net_file}.net.xml -o {output_file}_heavy.trips.xml",
     ),
 ]
 

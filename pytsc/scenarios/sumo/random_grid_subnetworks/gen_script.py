@@ -6,11 +6,31 @@ RANDOM_TRIPS_SCRIPT = os.path.expanduser("~/sumo/tools/randomTrips.py")
 
 # Define subnetwork details with computed period values
 subnetwork_periods = {
-    "random_subnetwork_1": {"light": 2.582792860012627, "medium": 2.0662342880101017, "heavy": 1.5496757160075763},
-    "random_subnetwork_2": {"light": 2.364418485042247, "medium": 1.8915347880337976, "heavy": 1.4186510910253483},
-    "random_subnetwork_3": {"light": 2.582792860012627, "medium": 2.0662342880101017, "heavy": 1.5496757160075763},
-    "random_subnetwork_4": {"light": 2.582792860012627, "medium": 2.0662342880101017, "heavy": 1.5496757160075763},
-    "random_subnetwork_5": {"light": 2.567739160596715, "medium": 2.054191328477372, "heavy": 1.5406434963580289},
+    "random_subnetwork_1": {
+        "light": 2.582792860012627,
+        "medium": 2.0662342880101017,
+        "heavy": 1.5496757160075763,
+    },
+    "random_subnetwork_2": {
+        "light": 2.364418485042247,
+        "medium": 1.8915347880337976,
+        "heavy": 1.4186510910253483,
+    },
+    "random_subnetwork_3": {
+        "light": 2.582792860012627,
+        "medium": 2.0662342880101017,
+        "heavy": 1.5496757160075763,
+    },
+    "random_subnetwork_4": {
+        "light": 2.582792860012627,
+        "medium": 2.0662342880101017,
+        "heavy": 1.5496757160075763,
+    },
+    "random_subnetwork_5": {
+        "light": 2.567739160596715,
+        "medium": 2.054191328477372,
+        "heavy": 1.5406434963580289,
+    },
 }
 
 # Define the trip generation command template

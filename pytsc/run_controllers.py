@@ -208,7 +208,7 @@ if __name__ == "__main__":
     if args.controllers == "all":
         controllers = [
             # "mixed_rl",
-            "specialized_marl",
+            # "specialized_marl",
             "multi_generalized_agent",
             "multi_generalized_graph_agent",
             # "single_generalized_agent",
@@ -267,26 +267,26 @@ if __name__ == "__main__":
         profile=args.profile,
     )
 
-    # sumo_configs = [
-    #     "random_grid_0.1_increased_demand.sumocfg",
-    #     "random_grid_0.2_increased_demand.sumocfg",
-    #     "random_grid_0.3_increased_demand.sumocfg",
-    #     "random_grid_0.4_increased_demand.sumocfg",
-    #     "random_grid_0.5_increased_demand.sumocfg",
-    # ]
-    # for sumo_config in sumo_configs:
-    #     demand_increase = sumo_config.split("_")[2]
-    #     add_env_args["sumo"]["sumo_config_file"] = sumo_config
-    #     evaluate_controllers(
-    #         args.scenario,
-    #         args.simulator_backend,
-    #         controllers,
-    #         output_folder=f"demand_increase_{demand_increase}",
-    #         hours=hours,
-    #         add_env_args=add_env_args,
-    #         add_controller_args=add_controller_args,
-    #         profile=args.profile,
-    #     )
+    sumo_configs = [
+        "random_grid_0.1_increased_demand.sumocfg",
+        "random_grid_0.2_increased_demand.sumocfg",
+        "random_grid_0.3_increased_demand.sumocfg",
+        "random_grid_0.4_increased_demand.sumocfg",
+        "random_grid_0.5_increased_demand.sumocfg",
+    ]
+    for sumo_config in sumo_configs:
+        demand_increase = sumo_config.split("_")[2]
+        add_env_args["sumo"]["sumo_config_file"] = sumo_config
+        evaluate_controllers(
+            args.scenario,
+            args.simulator_backend,
+            controllers,
+            output_folder=f"demand_increase_{demand_increase}",
+            hours=hours,
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args,
+            profile=args.profile,
+        )
 
     # dropouts = [0.1, 0.2, 0.5, 0.7, 0.9, 1.0]
     # for i, dropout in enumerate(dropouts):

@@ -1,5 +1,6 @@
-from pytsc import TrafficSignalNetwork
 from smac.env import MultiAgentEnv
+
+from pytsc import TrafficSignalNetwork
 
 
 class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
@@ -24,8 +25,6 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
         return self.tsc_env.get_action_mask()
 
     def get_env_info(self):
-        domain_classes = getattr(self.tsc_env.config, "domain_classes", ["baseline"])
-        n_domains = len(domain_classes) if domain_classes is not None else 1
         env_info = {
             "agents": list(self.tsc_env.traffic_signals.keys()),
             "episode_limit": self.episode_limit,
@@ -35,8 +34,7 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
             "obs_shape": self.get_obs_size(),
             "obs_info": self.tsc_env.observation_space.get_observation_info(),
             "state_shape": self.get_state_size(),
-            "n_domains": n_domains,
-            "domain_classes": domain_classes,
+            "lane_features": self.tsc_env.observation_space.get_per_agent_lane_features(),
         }
         return env_info
 
