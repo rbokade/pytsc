@@ -18,12 +18,12 @@ class BaseObservationSpace(ABC):
         self.traffic_signals = traffic_signals
         self.simulator_backend = simulator_backend
         # Needed to get observation size and padding
-        self.max_n_controlled_lanes = np.max(
-            [len(ts.incoming_lanes) for ts in traffic_signals.values()]
-        ).item()
-        self.max_n_controlled_phases = np.max(
-            [ts.n_phases for ts in traffic_signals.values()]
-        ).item()
+        # self.max_n_controlled_lanes = np.max(
+        #     [len(ts.incoming_lanes) for ts in traffic_signals.values()]
+        # ).item()
+        # self.max_n_controlled_phases = np.max(
+        #     [ts.n_phases for ts in traffic_signals.values()]
+        # ).item()
         self.pad_value = config.misc["pad_value"]
 
     @staticmethod
@@ -51,6 +51,7 @@ class PositionMatrix(BaseObservationSpace):
     max_lane_speed = 15.0  # m/s
     max_lane_length = 500  # m
     max_phases = 10
+    max_n_controlled_lanes = 16
 
     def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
         super(PositionMatrix, self).__init__(
@@ -110,8 +111,8 @@ class PositionMatrix(BaseObservationSpace):
                 if lane in self.dropped_lanes:
                     pos_mat = [-1 for _ in range(len(pos_mat))]
                 obs.extend(pos_mat)
-            obs = pad_list(obs, self.get_size() - self.max_phases, self.pad_value)
-            phase_id = pad_list(ts.phase_id, self.max_phases)
+            obs = pad_list(obs, self.get_size() - self.max_phases, -1)
+            phase_id = pad_list(ts.phase_id, self.max_phases, -1)
             obs.extend(phase_id)
             observations.append(obs)
         return observations

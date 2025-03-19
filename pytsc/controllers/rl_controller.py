@@ -72,7 +72,13 @@ class GraphAttentionComm(nn.Module):
         else:
             x_dropped = x
         attn_mask = (1 - self.adjacency_matrix).to(torch.bool)
-        attn_out, _ = self.comm(x_dropped, x_dropped, x_dropped, attn_mask=attn_mask)
+        attn_out, _ = self.comm(
+            x_dropped,
+            x_dropped,
+            x_dropped,
+            attn_mask=attn_mask,
+            need_weights=False,
+        )
         out = x + attn_out
         return out
 
@@ -100,14 +106,15 @@ class TSCGraphAgent(nn.Module):
         self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
         self.fc_out = nn.Linear(hidden_dim, n_actions)
 
-    def _get_adjcency_matrix(self, adj):
-        identity = torch.eye(self.n_agents, dtype=torch.float32)
-        if not self.graph:
-            return identity
+    def _get_adjcency_matrix(self, args):
+        adjacency_matrix = torch.tensor(
+            args.adjacency_matrix,
+            dtype=torch.float32,
+            device=args.device,
+        )
+        if not args.comm:
+            return torch.zeros_like(adjacency_matrix)
         else:
-            adjacency_matrix = torch.tensor(adj, dtype=torch.float32)
-            adjacency_matrix = adjacency_matrix + identity
-            adjacency_matrix[adjacency_matrix > 1] = 1.0
             return adjacency_matrix
 
     def init_hidden(self):
@@ -280,20 +287,20 @@ class SingleGeneralizedAgentRLController(RLController):
 
 class MultiGeneralizedAgentRLController(RLController):
     model_paths = [
-        "pytsc/controllers/single_generalized_agent_1.th",
+        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_agent_1.th",
-        "pytsc/controllers/multi_generalized_agent_2.th",
-        "pytsc/controllers/multi_generalized_agent_3.th",
+        # "pytsc/controllers/multi_generalized_agent_2.th",
+        # "pytsc/controllers/multi_generalized_agent_3.th",
     ]
 
 
 class MultiGeneralizedGraphAgentRLController(RLController):
     graph = True
     model_paths = [
-        "pytsc/controllers/single_generalized_agent_1.th",
+        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_graph_agent_1.th",
-        "pytsc/controllers/multi_generalized_graph_agent_2.th",
-        "pytsc/controllers/multi_generalized_graph_agent_3.th",
+        # "pytsc/controllers/multi_generalized_graph_agent_2.th",
+        # "pytsc/controllers/multi_generalized_graph_agent_3.th",
     ]
 
 

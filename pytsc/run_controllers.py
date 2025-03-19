@@ -209,7 +209,7 @@ if __name__ == "__main__":
         controllers = [
             # "mixed_rl",
             # "specialized_marl",
-            "multi_generalized_agent",
+            # "multi_generalized_agent",
             "multi_generalized_graph_agent",
             # "single_generalized_agent",
             # "sotl",
@@ -256,6 +256,8 @@ if __name__ == "__main__":
             # "sumo_config_file": "random_grid_increased_demand.sumocfg",
         },
     }
+
+    # Baseline
     evaluate_controllers(
         args.scenario,
         args.simulator_backend,
@@ -267,6 +269,7 @@ if __name__ == "__main__":
         profile=args.profile,
     )
 
+    # Demand Increase
     sumo_configs = [
         "random_grid_0.1_increased_demand.sumocfg",
         "random_grid_0.2_increased_demand.sumocfg",
@@ -288,19 +291,20 @@ if __name__ == "__main__":
             profile=args.profile,
         )
 
-    # dropouts = [0.1, 0.2, 0.5, 0.7, 0.9, 1.0]
-    # for i, dropout in enumerate(dropouts):
-    #     add_env_args["signal"] = {"obs_dropout_prob": dropout}
-    #     evaluate_controllers(
-    #         args.scenario,
-    #         args.simulator_backend,
-    #         controllers,
-    #         output_folder=f"obs_dropout_{dropout}",
-    #         hours=hours,
-    #         add_env_args=add_env_args,
-    #         add_controller_args=add_controller_args,
-    #         profile=args.profile,
-    #     )
+    # Observation dropout
+    dropouts = [0.1, 0.2, 0.5, 0.7, 0.9, 1.0]
+    for i, dropout in enumerate(dropouts):
+        add_env_args["signal"] = {"obs_dropout_prob": dropout}
+        evaluate_controllers(
+            args.scenario,
+            args.simulator_backend,
+            controllers,
+            output_folder=f"obs_dropout_{dropout}",
+            hours=hours,
+            add_env_args=add_env_args,
+            add_controller_args=add_controller_args,
+            profile=args.profile,
+        )
 
     # n_processes = min(len(sumo_configs) * len(dropouts), multiprocessing.cpu_count())
     # pool = multiprocessing.Pool(n_processes)
