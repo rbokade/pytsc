@@ -18,8 +18,8 @@ subnetwork_periods = {
     },
     "random_subnetwork_1": {
         "light": 2.5,
-        "medium": 1.75,
-        "heavy": 1.5,
+        "medium": 2.25,
+        "heavy": 1.75,
     },
     "random_subnetwork_5": {
         "light": 2.25,
@@ -29,7 +29,7 @@ subnetwork_periods = {
     "random_subnetwork_2": {
         "light": 2.0,
         "medium": 1.5,
-        "heavy": 1.00,
+        "heavy": 1.25,
     },
 }
 

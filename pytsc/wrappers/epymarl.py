@@ -1,9 +1,19 @@
+import random
+
+import numpy as np
 from smac.env import MultiAgentEnv
 
 from pytsc import TrafficSignalNetwork
 
 
 class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
+    """
+    A  wrapper for the TrafficSignalNetwork environment that allows for
+    multi-agent reinforcement learning. This environment is designed to
+    be used with the EPyMARL framework, which is a multi-agent reinforcement
+    learning library.
+    """
+
     step_stats = None
 
     def __init__(self, map_name="pasubio", simulator_backend="sumo", **kwargs):
@@ -13,7 +23,7 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
         )
         self.episode_limit = self.tsc_env.episode_limit
         self.common_reward = kwargs.get("common_reward", True)
-        self.reward_scalarlization = kwargs.get("reward_scalarlization", "mean")
+        self.reward_scalarization = kwargs.get("reward_scalarization", "mean")
 
     def apply_actions(self, actions):
         self.tsc_env.action_space.apply(actions)
@@ -84,10 +94,196 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
         return self.get_obs(), self.get_state()
 
     def step(self, actions):
-        reward, eipsode_over, env_info = self.tsc_env.step(actions)
+        reward, episode_over, env_info = self.tsc_env.step(actions)
         if self.common_reward:
-            if self.reward_scalarlization == "mean":
+            if self.reward_scalarization == "mean":
                 reward = reward / self.tsc_env.n_agents
         else:
             reward = self.get_local_rewards()
-        return self.get_obs(), reward, eipsode_over, False, env_info
+        return self.get_obs(), reward, episode_over, False, env_info
+
+
+class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
+    """
+    A wrapper for the TrafficSignalNetwork environment that supports
+    domain randomization. It randomly selects a map from a provided list at
+    each reset, and pads outputs so that the observation and action interfaces
+    remain fixed (with a maximum number of agents).
+    Args:
+        map_names (list): A list of map names to choose from.
+        max_n_agents (int): The maximum number of agents.
+        simulator_backend (str): The simulator backend to use (default "sumo").
+        **kwargs: Additional keyword arguments for TrafficSignalNetwork.
+    """
+
+    step_stats = None
+
+    def __init__(self, map_names, simulator_backend="sumo", **kwargs):
+        kwargs.pop("scenario", None)
+        kwargs.pop("map_name", None)
+        self.kwargs = kwargs
+        self.map_names = map_names
+        self.simulator_backend = simulator_backend
+        self.seed = kwargs.get("seed", 0)
+        random.seed(self.seed)
+        # Initialize first environment instance.
+        self.max_n_agents = self._get_max_n_agents()
+        self.current_env = self._get_traffic_signal_network()
+        self.current_n_agents = len(self.current_env.tsc_env.traffic_signals)
+        self.episode_limit = self.current_env.episode_limit
+
+    def _get_max_n_agents(self):
+        """
+        Get the maximum number of agents from the list of map names.
+        This assumes that all maps have the same number of agents.
+        """
+        max_n_agents = 0
+        for map_name in self.map_names:
+            tsc_env = TrafficSignalNetwork(
+                map_name, simulator_backend=self.simulator_backend, **self.kwargs
+            )
+            max_n_agents = max(max_n_agents, len(tsc_env.traffic_signals))
+            tsc_env.simulator.close_simulator()
+        return max_n_agents
+
+    def _get_map_name(self):
+        return random.choice(self.map_names)
+
+    def _get_traffic_signal_network(self):
+        return EPyMARLTrafficSignalNetwork(
+            map_name=self._get_map_name(),
+            simulator_backend=self.simulator_backend,
+            **self.kwargs,
+        )
+
+    def _pad_adjacency_matrix(self, adjacency_matrix):
+        if isinstance(adjacency_matrix, np.ndarray):
+            pad_rows = self.max_n_agents - adjacency_matrix.shape[0]
+            pad_cols = self.max_n_agents - adjacency_matrix.shape[1]
+            padded_matrix = np.pad(
+                adjacency_matrix,
+                ((0, pad_rows), (0, pad_cols)),
+                mode="constant",
+                constant_values=0,
+            )
+            return padded_matrix.tolist()
+        else:
+            padded_matrix = []
+            for row in adjacency_matrix:
+                padded_row = row + [0] * (self.max_n_agents - len(row))
+                padded_matrix.append(padded_row)
+            for _ in range(self.max_n_agents - len(adjacency_matrix)):
+                padded_matrix.append([0] * self.max_n_agents)
+            return padded_matrix
+
+    def _pad_list(self, lst, pad_value=0):
+        """
+        Pad a list to length max_n_agents.
+        """
+        return lst + [pad_value] * (self.max_n_agents - len(lst))
+
+    def apply_actions(self, actions):
+        """
+        Apply actions and remove padding if necessary.
+        """
+        valid_actions = actions[: self.current_n_agents]
+        self.current_env.apply_actions(valid_actions)
+
+    def get_avail_actions(self):
+        """
+        Get available actions from the current environment and pad the list.
+        """
+        action_mask = self.current_env.get_avail_actions()
+        return self._pad_list(action_mask, pad_value=1)
+
+    def get_env_info(self):
+        """
+        Get environment info from the current environment and pad the
+        adjacency matrix. Also, set n_agents to max_n_agents.
+        """
+        env_info = self.current_env.get_env_info()
+        env_info["adjacency_matrix"] = self._pad_adjacency_matrix(
+            env_info["adjacency_matrix"]
+        )
+        env_info["n_agents"] = self.max_n_agents
+        return env_info
+
+    def get_obs(self):
+        """
+        Get observations from the current environment and pad the list of
+        observations.
+        """
+        obs = self.current_env.get_obs()
+        if len(obs) < self.max_n_agents:
+            pad_obs = [
+                [-1] * self.current_env.get_obs_size()
+                for _ in range(self.max_n_agents - len(obs))
+            ]
+            obs = obs + pad_obs
+        return obs
+
+    def get_obs_size(self):
+        return self.current_env.get_obs_size()
+
+    def get_state(self):
+        """
+        Get the state from the current environment. The state is padded
+        to match the max_n_agents.
+        """
+        state = self.current_env.get_state()
+        if len(state) < self.max_n_agents:
+            pad_state = [
+                [-1] * self.current_env.get_state_size()
+                for _ in range(self.max_n_agents - len(state))
+            ]
+            state = state + pad_state
+        return state
+
+    def get_local_rewards(self):
+        """
+        Get local rewards from the current environment and pad the list.
+        """
+        local_rewards = self.current_env.get_local_rewards()
+        if len(local_rewards) < self.max_n_agents:
+            pad_rewards = [0] * (self.max_n_agents - len(local_rewards))
+            local_rewards = local_rewards + pad_rewards
+        return local_rewards
+
+    def get_state_size(self):
+        return self.current_env.get_state_size()
+
+    def get_total_actions(self):
+        return self.current_env.get_total_actions()
+
+    def get_stats(self):
+        return self.current_env.get_stats()
+
+    def reset(self):
+        """
+        Reset the environment. Reinitialize the underlying TrafficSignalNetwork
+        using a (potentially) different map to achieve domain randomization.
+        """
+        self.current_env = self._get_traffic_signal_network()
+        self.current_n_agents = len(self.current_env.tsc_env.traffic_signals)
+        _, _ = self.current_env.reset()
+        padded_obs = self.get_obs()
+        padded_state = self.get_state()
+        return padded_obs, padded_state
+
+    def step(self, actions):
+        """
+        Step through the environment using valid (unpadded) actions,
+        then pad the observations before returning.
+        """
+        valid_actions = actions[: self.current_n_agents]
+        _, reward, episode_over, _, env_info = self.current_env.step(valid_actions)
+        if self.current_env.common_reward:
+            if self.current_env.reward_scalarization == "mean":
+                reward = reward / self.current_env.n_agents
+        else:
+            reward = self.get_local_rewards()
+        padded_obs = self.get_obs()
+        return padded_obs, reward, episode_over, False, env_info
+
+    def close(self):
+        self.current_env.close()

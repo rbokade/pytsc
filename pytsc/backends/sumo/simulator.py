@@ -12,15 +12,16 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from pytsc.common.simulator import BaseSimulator
 from pytsc.backends.sumo.retriever import Retriever
+from pytsc.common.simulator import BaseSimulator
 
 
 class Simulator(BaseSimulator):
     def __init__(self, parsed_network):
         super(Simulator, self).__init__(parsed_network)
         self.traci = None
-        self.port = getFreeSocketPort()        
+        self.traci_retriever = None
+        self.port = getFreeSocketPort()
 
     @property
     def is_terminated(self):

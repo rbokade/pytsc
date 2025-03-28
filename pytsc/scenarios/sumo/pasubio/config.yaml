@@ -1,6 +1,8 @@
 # SUMO parameters
 sumo:
   render: False
+  sumo_config_file: pasubio.sumocfg
+  sumo_net_file: pasubio.net.xml
 
 # Network parameters
 network:

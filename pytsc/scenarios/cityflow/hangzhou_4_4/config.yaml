@@ -6,22 +6,22 @@ cityflow:
   roadnet_log_file: 'frontend/web/roadnet_log_file.json'
   replay_log_file: 'frontend/web/replay_log_file.txt'
   save_replay: False
-  flow_rate_type: 'random'
-  flow_classes: ['flow_disrupted', 'link_disrupted']  
-  train:
-    flow_disrupted:
-      '700': [
-        '0__hangzhou_4_4__gaussian_700_flows.json',
-        '1__hangzhou_4_4__gaussian_700_flows.json',
-        '2__hangzhou_4_4__gaussian_700_flows.json',
-        '3__hangzhou_4_4__gaussian_700_flows.json',
-        '4__hangzhou_4_4__gaussian_700_flows.json',
-        '5__hangzhou_4_4__gaussian_700_flows.json',
-        '6__hangzhou_4_4__gaussian_700_flows.json',
-        '7__hangzhou_4_4__gaussian_700_flows.json',
-        '8__hangzhou_4_4__gaussian_700_flows.json',
-        '9__hangzhou_4_4__gaussian_700_flows.json',
-      ]
+  # flow_rate_type: 'random'
+  # flow_classes: ['flow_disrupted', 'link_disrupted']  
+  # train:
+  #   flow_disrupted:
+  #     '700': [
+  #       '0__hangzhou_4_4__gaussian_700_flows.json',
+  #       '1__hangzhou_4_4__gaussian_700_flows.json',
+  #       '2__hangzhou_4_4__gaussian_700_flows.json',
+  #       '3__hangzhou_4_4__gaussian_700_flows.json',
+  #       '4__hangzhou_4_4__gaussian_700_flows.json',
+  #       '5__hangzhou_4_4__gaussian_700_flows.json',
+  #       '6__hangzhou_4_4__gaussian_700_flows.json',
+  #       '7__hangzhou_4_4__gaussian_700_flows.json',
+  #       '8__hangzhou_4_4__gaussian_700_flows.json',
+  #       '9__hangzhou_4_4__gaussian_700_flows.json',
+  #     ]
   # train: 
   #   link_disrupted:
   #     '0_1': [

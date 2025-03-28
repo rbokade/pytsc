@@ -47,10 +47,10 @@ class PositionMatrix(BaseObservationSpace):
         - one hot encoding of current phase
     """
 
-    max_lanes_per_direction = 4
+    max_lanes_per_direction = 6
     max_lane_speed = 15.0  # m/s
     max_lane_length = 500  # m
-    max_phases = 10
+    max_phases = 20
     max_n_controlled_lanes = 16
 
     def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
@@ -59,7 +59,7 @@ class PositionMatrix(BaseObservationSpace):
         )
         self.visibility = config.signal["visibility"]
         self.dropout_prob = config.signal.get("obs_dropout_prob", 0.0)
-        self.max_mats_size = self.visibility * self.max_n_controlled_lanes
+        # self.max_mats_size = self.visibility * self.max_n_controlled_lanes
         self.lane_features = self._get_lane_features()
         self.reset_dropped_lanes()
         # self.dropout_prob lanes are dropped
@@ -98,7 +98,9 @@ class PositionMatrix(BaseObservationSpace):
             if len(ts.incoming_lanes) < self.max_n_controlled_lanes:
                 n_pad_lanes = self.max_n_controlled_lanes - len(ts.incoming_lanes)
                 for _ in range(n_pad_lanes):
-                    lane_features.append([self.pad_value] * 7)
+                    lane_features.append(
+                        [self.pad_value] * (self.max_lanes_per_direction + 3)
+                    )
             per_agent_lane_features.append(lane_features)
         return per_agent_lane_features
 
@@ -108,6 +110,7 @@ class PositionMatrix(BaseObservationSpace):
             obs = []
             pos_mats = deepcopy(ts.inc_position_matrices)
             for lane, pos_mat in pos_mats.items():
+                obs.extend(self.lane_features[lane])
                 if lane in self.dropped_lanes:
                     pos_mat = [-1 for _ in range(len(pos_mat))]
                 obs.extend(pos_mat)
@@ -119,20 +122,21 @@ class PositionMatrix(BaseObservationSpace):
 
     def get_observation_info(self):
         info = {
-            "lane_obs_dim": 7 + self.visibility,
+            "lane_obs_dim": 9 + self.visibility,
             "max_n_controlled_lanes": self.max_n_controlled_lanes,
             "max_phases": self.max_phases,
         }
         return info
 
     def get_size(self):
-        return self.max_n_controlled_lanes * self.visibility + self.max_phases
+        return self.max_n_controlled_lanes * (self.visibility + 9) + self.max_phases
 
     def get_state(self):
         states = []
         for ts in self.traffic_signals.values():
             state = []
             for lane in ts.incoming_lanes:
+                state.extend(self.lane_features[lane])
                 lane_results = ts.sub_results["lane"][lane]
                 n_queued = lane_results["n_queued"]
                 occupancy = lane_results["occupancy"]
@@ -145,4 +149,4 @@ class PositionMatrix(BaseObservationSpace):
         return states
 
     def get_state_size(self):
-        return self.max_n_controlled_lanes * 3 + self.max_phases
+        return self.max_n_controlled_lanes * (3 + 9) + self.max_phases
