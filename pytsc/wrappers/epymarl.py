@@ -89,9 +89,10 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def reset(self):
         self.tsc_env.episode_count += 1
+        obs, state  = self.get_obs(), self.get_state()
         if self.tsc_env.episode_over:
             self.tsc_env.restart()
-        return self.get_obs(), self.get_state()
+        return obs, state
 
     def step(self, actions):
         reward, episode_over, env_info = self.tsc_env.step(actions)
@@ -144,6 +145,7 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
             )
             max_n_agents = max(max_n_agents, len(tsc_env.traffic_signals))
             tsc_env.simulator.close_simulator()
+            del tsc_env
         return max_n_agents
 
     def _get_map_name(self):
@@ -265,9 +267,9 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
         """
         self.current_env = self._get_traffic_signal_network()
         self.current_n_agents = len(self.current_env.tsc_env.traffic_signals)
-        _, _ = self.current_env.reset()
         padded_obs = self.get_obs()
         padded_state = self.get_state()
+        _, _ = self.current_env.reset()
         return padded_obs, padded_state
 
     def step(self, actions):

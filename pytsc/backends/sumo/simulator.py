@@ -1,3 +1,4 @@
+import gc
 import os
 import subprocess
 import sys
@@ -19,9 +20,9 @@ from pytsc.common.simulator import BaseSimulator
 class Simulator(BaseSimulator):
     def __init__(self, parsed_network):
         super(Simulator, self).__init__(parsed_network)
+        self.port = None
         self.traci = None
         self.traci_retriever = None
-        self.port = getFreeSocketPort()
 
     @property
     def is_terminated(self):
@@ -51,6 +52,7 @@ class Simulator(BaseSimulator):
         }
 
     def start_simulator(self):
+        self.port = getFreeSocketPort()
         self.config.reset_config()
         if self.config.simulator["render"]:
             sumo_binary = checkBinary("sumo-gui")
@@ -88,3 +90,7 @@ class Simulator(BaseSimulator):
     def close_simulator(self):
         if self.traci is not None:
             self.traci.close()
+            gc.collect()
+        self.port = None
+        self.traci = None
+        self.traci_retriever = None
