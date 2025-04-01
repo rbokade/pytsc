@@ -155,7 +155,7 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
 
     def _reset_traffic_signal_network(self):
         if self.current_env is not None:
-            self.current_env.simulator.close_simulator()
+            self.current_env.tsc_env.simulator.close_simulator()
             del self.current_env
             gc.collect()
         self.current_env = EPyMARLTrafficSignalNetwork(
@@ -295,7 +295,7 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
         _, reward, episode_over, _, env_info = self.current_env.step(valid_actions)
         if self.current_env.common_reward:
             if self.current_env.reward_scalarization == "mean":
-                reward = reward / self.current_env.n_agents
+                reward = reward / self.current_env.tsc_env.n_agents
         else:
             reward = self.get_local_rewards()
         padded_obs = self.get_obs()
