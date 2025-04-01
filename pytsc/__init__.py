@@ -1,5 +1,3 @@
-import gc
-
 import numpy as np
 
 from pytsc.backends.cityflow import CITYFLOW_MODULES
@@ -163,19 +161,19 @@ class TrafficSignalNetwork:
             stats.update(v)
         return stats
 
-    def restart(self):
+    def restart(self, reset=True):
         if self.episode_over:
             self.episode_count += 1
             self.observation_space.reset_dropped_lanes()
         if self.simulator.is_terminated:
-            self.simulator.close_simulator()
-            gc.collect()
-            self.simulator.start_simulator()
-            if self.domain_class is not None:
-                self.config.set_domain_class(self.domain_class)
-            self._init_traffic_signals()
-            self._init_parsers()
             self.hour_count += 1
+            self.simulator.close_simulator()
+            if reset:
+                self.simulator.start_simulator()
+                if self.domain_class is not None:
+                    self.config.set_domain_class(self.domain_class)
+                self._init_traffic_signals()
+                self._init_parsers()
 
     def step(self, actions):
         self.action_space.apply(actions)
