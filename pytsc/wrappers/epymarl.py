@@ -196,7 +196,13 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
         Get available actions from the current environment and pad the list.
         """
         action_mask = self.current_env.get_avail_actions()
-        return self._pad_list(action_mask, pad_value=1)
+        if len(action_mask) < self.max_n_agents:
+            pad_action_mask = [
+                [1] * self.current_env.get_total_actions()
+                for _ in range(self.max_n_agents - len(action_mask))
+            ]
+            action_mask = action_mask + pad_action_mask
+        return action_mask
 
     def get_env_info(self):
         """

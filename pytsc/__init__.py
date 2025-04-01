@@ -1,3 +1,5 @@
+import gc
+
 import numpy as np
 
 from pytsc.backends.cityflow import CITYFLOW_MODULES
@@ -167,6 +169,7 @@ class TrafficSignalNetwork:
             self.observation_space.reset_dropped_lanes()
         if self.simulator.is_terminated:
             self.simulator.close_simulator()
+            gc.collect()
             self.simulator.start_simulator()
             if self.domain_class is not None:
                 self.config.set_domain_class(self.domain_class)
