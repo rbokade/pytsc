@@ -148,10 +148,13 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
             tsc_env = TrafficSignalNetwork(
                 map_name, simulator_backend=self.simulator_backend, **self.kwargs
             )
-            if isinstance(tsc_env.config.simulator["sumo_config_files"], list):
-                self.cfg_files[map_name] = tsc_env.config.simulator["sumo_config_files"]
-            else:
-                self.cfg_files[map_name] = None
+            if tsc_env.config.simulator.get("sumo_config_files", None) is not None:
+                if isinstance(tsc_env.config.simulator["sumo_config_files"], list):
+                    self.cfg_files[map_name] = tsc_env.config.simulator[
+                        "sumo_config_files"
+                    ]
+                else:
+                    self.cfg_files[map_name] = None
             max_n_agents = max(max_n_agents, len(tsc_env.traffic_signals))
             tsc_env.simulator.close_simulator()
             del tsc_env
