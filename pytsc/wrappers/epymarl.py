@@ -155,6 +155,8 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
                     ]
                 else:
                     self.cfg_files[map_name] = None
+            else:
+                self.cfg_files[map_name] = None
             max_n_agents = max(max_n_agents, len(tsc_env.traffic_signals))
             tsc_env.simulator.close_simulator()
             del tsc_env
