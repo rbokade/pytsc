@@ -1,0 +1,15 @@
+# SUMO parameters
+sumo:
+  render: False
+  # sumo_config_file: cologne_1.sumocfg
+  sumo_net_file: random_subnetwork_3.net.xml
+  random_game: True
+  sumo_config_file: random_subnetwork_3_medium.sumocfg
+  sumo_config_files:
+    - random_subnetwork_3_light.sumocfg
+    - random_subnetwork_3_medium.sumocfg
+    - random_subnetwork_3_heavy.sumocfg
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)

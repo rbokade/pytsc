@@ -144,6 +144,7 @@ frontend/
 !pytsc_logo.png
 
 # Ignore the results directory
+e2output.xml
 pytsc/results/
 randomized/
 train/

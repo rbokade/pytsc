@@ -7,9 +7,9 @@ from torch.distributions import Categorical
 class LaneAttentionAggregator(nn.Module):
     def __init__(
         self,
-        static_feat_dim=7,
+        static_feat_dim=9,
         pos_mat_dim=10,
-        phase_id_dim=10,
+        phase_id_dim=20,
         hidden_dim=128,
         n_heads=4,
         device="cpu",
@@ -17,9 +17,7 @@ class LaneAttentionAggregator(nn.Module):
         super(LaneAttentionAggregator, self).__init__()
         self.device = device
         self.hidden_dim = hidden_dim
-        # self.q_encoder = nn.Linear(phase_id_dim + hidden_dim, hidden_dim)
-        # self.kv_encoder = nn.Linear(static_feat_dim + pos_mat_dim, hidden_dim)
-        # self.enc = nn.Sequential(
+        # self.kqv = nn.Sequential(
         #     nn.Linear(static_feat_dim + pos_mat_dim + phase_id_dim, hidden_dim),
         #     nn.LeakyReLU(),
         # )
@@ -43,8 +41,8 @@ class LaneAttentionAggregator(nn.Module):
         bs_n, max_n_lanes, inp_shape = pos_mats.shape
         phase_ids = phase_ids.expand(-1, max_n_lanes, -1)
         x = torch.cat((static_feats, pos_mats, phase_ids), dim=-1)
-        # x = self.q_encoder(x, dim=-1))
-        # x, _ = self.lane_aggregator(x, x, x)
+        # x = self.kqv(x)
+        # x, _ = self.lane_aggregator(x, x, x, need_weights=False)
         # x = x.squeeze(1)
         x = self.lane_mlp(x)
         x = x.view(bs_n, max_n_lanes, -1).mean(dim=1).view(bs_n, -1)
@@ -64,14 +62,15 @@ class GraphAttentionComm(nn.Module):
         )
 
     def forward(self, x, dropout=0.0):
-        """
-        x: (bs, n_agents, hidden_dim)
-        """
         if dropout > 0:
             x_dropped = F.dropout(x, p=dropout, training=True)
         else:
             x_dropped = x
-        attn_mask = (1 - self.adjacency_matrix).to(torch.bool)
+        attn_mask = (1 - self.adjacency_matrix).clone()
+        num_agents = attn_mask.shape[0]
+        for i in range(num_agents):
+            attn_mask[i, i] = 0
+        attn_mask = attn_mask.to(torch.bool)
         attn_out, _ = self.comm(
             x_dropped,
             x_dropped,
@@ -81,6 +80,35 @@ class GraphAttentionComm(nn.Module):
         )
         out = x + attn_out
         return out
+
+
+class TSCAgent(nn.Module):
+    def __init__(self, n_agents, n_actions, hidden_dim, max_n_lanes):
+        super(TSCAgent, self).__init__()
+        self.n_agents = n_agents
+        self.n_actions = n_actions
+        self.hidden_dim = hidden_dim
+        self.max_n_lanes = max_n_lanes
+        self.lane_obs_encoder = LaneAttentionAggregator(hidden_dim=hidden_dim)
+        self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
+        self.fc_out = nn.Linear(hidden_dim, n_actions)
+
+    def init_hidden(self):
+        return torch.zeros(self.n_agents, self.hidden_dim)
+
+    def forward(
+        self,
+        static_lane_feats,
+        pos_mats,
+        phase_ids,
+        hidden_state,
+        **kwargs,
+    ):
+        x = self.lane_obs_encoder(static_lane_feats, pos_mats, phase_ids)
+        h_in = hidden_state.reshape(-1, self.hidden_dim)
+        h = self.rnn(x, h_in)
+        q = self.fc_out(h)
+        return q, h
 
 
 class TSCGraphAgent(nn.Module):
@@ -106,16 +134,13 @@ class TSCGraphAgent(nn.Module):
         self.rnn = nn.GRUCell(hidden_dim, hidden_dim)
         self.fc_out = nn.Linear(hidden_dim, n_actions)
 
-    def _get_adjcency_matrix(self, args):
-        adjacency_matrix = torch.tensor(
-            args.adjacency_matrix,
-            dtype=torch.float32,
-            device=args.device,
-        )
-        if not args.comm:
-            return torch.zeros_like(adjacency_matrix)
-        else:
-            return adjacency_matrix
+    def _get_adjcency_matrix(self, adjacency_matrix):
+        adjacency_matrix = torch.tensor(adjacency_matrix, dtype=torch.float32)
+        # add self loops if not present
+        if not torch.all(adjacency_matrix.diagonal() == 1):
+            adjacency_matrix = adjacency_matrix + torch.eye(adjacency_matrix.shape[0])
+            adjacency_matrix = torch.clamp(adjacency_matrix, 0, 1)
+        return adjacency_matrix
 
     def init_hidden(self):
         return torch.zeros(self.n_agents, self.hidden_dim)
@@ -135,6 +160,9 @@ class TSCGraphAgent(nn.Module):
 
 
 class TSCAgentEnsemble(nn.Module):
+    max_phases = 20
+    max_n_controlled_lanes = 16
+
     def __init__(
         self,
         n_agents,
@@ -151,32 +179,46 @@ class TSCAgentEnsemble(nn.Module):
         self.n_agents = n_agents
         self.max_n_lanes = max_n_lanes
         self.action_selection_strategy = action_selection_strategy
-        self.agents = nn.ModuleList(
-            [
-                TSCGraphAgent(
-                    n_agents,
-                    n_actions,
-                    hidden_dim,
-                    max_n_lanes,
-                    adjacency_matrix,
-                    graph,
-                )
-                for _ in range(n_models)
-            ]
-        )
+        if graph:
+            self.agents = nn.ModuleList(
+                [
+                    TSCGraphAgent(
+                        n_agents,
+                        n_actions,
+                        hidden_dim,
+                        max_n_lanes,
+                        adjacency_matrix,
+                        graph,
+                    )
+                    for _ in range(n_models)
+                ]
+            )
+        else:
+            self.agents = nn.ModuleList(
+                [
+                    TSCAgent(
+                        n_agents,
+                        n_actions,
+                        hidden_dim,
+                        max_n_lanes,
+                    )
+                    for _ in range(n_models)
+                ]
+            )
         self.static_lane_feats = torch.tensor(
             static_lane_feats,
             dtype=torch.float32,
         )
 
     def _prepare_inputs(self, obs):
-        pos_mats = obs[:, :, :-10]
-        phase_ids = obs[:, :, -10:]
-        pos_mats = pos_mats.reshape(self.n_agents, self.max_n_lanes, 10)
-        phase_ids = phase_ids.reshape(self.n_agents, 1, 10).repeat(
-            1, pos_mats.shape[-2], 1
+        lane_feats = obs[:, :, : -self.max_phases].view(
+            self.n_agents, self.max_n_lanes, -1
         )
-        static_lane_feats = self.static_lane_feats
+        pos_mats = lane_feats[:, :, -10:].to(torch.float32)
+        static_lane_feats = lane_feats[:, :, :-10].to(torch.float32)
+        phase_ids = (
+            obs[:, :, -self.max_phases :].to(torch.float32).view(self.n_agents, 1, -1)
+        )
         return static_lane_feats, pos_mats, phase_ids
 
     def init_hidden(self):
@@ -233,7 +275,7 @@ class TSCAgentEnsemble(nn.Module):
 class RLController:
     graph = False
     n_actions = 2
-    hidden_dim = 128
+    hidden_dim = 64
     model_paths = ["pytsc/controllers/agent.th"]
 
     def __init__(self, tsc_env, **kwargs):
@@ -299,6 +341,25 @@ class MultiGeneralizedGraphAgentRLController(RLController):
     model_paths = [
         # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_graph_agent_1.th",
+        # "pytsc/controllers/multi_generalized_graph_agent_2.th",
+        # "pytsc/controllers/multi_generalized_graph_agent_3.th",
+    ]
+
+
+class MultiGeneralizedVarRobustAgentRLController(RLController):
+    model_paths = [
+        # "pytsc/controllers/single_generalized_agent_1.th",
+        "pytsc/controllers/multi_generalized_var_robust_agent_1.th",
+        # "pytsc/controllers/multi_generalized_agent_2.th",
+        # "pytsc/controllers/multi_generalized_agent_3.th",
+    ]
+
+
+class MultiGeneralizedVarRobustGraphAgentRLController(RLController):
+    graph = True
+    model_paths = [
+        # "pytsc/controllers/single_generalized_agent_1.th",
+        "pytsc/controllers/multi_generalized_var_robust_graph_agent_1.th",
         # "pytsc/controllers/multi_generalized_graph_agent_2.th",
         # "pytsc/controllers/multi_generalized_graph_agent_3.th",
     ]

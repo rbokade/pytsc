@@ -1,0 +1,14 @@
+# SUMO parameters
+sumo:
+  render: False
+  # sumo_config_file: cologne_1.sumocfg
+  sumo_net_file: random_grid_9.net.xml
+  random_game: True
+  sumo_config_files:
+    - random_grid_9_light.sumocfg
+    - random_grid_9_medium.sumocfg
+    - random_grid_9_heavy.sumocfg
+
+# Network parameters
+network:
+  network_type: real # (synthetic, real)

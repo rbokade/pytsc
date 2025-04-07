@@ -1,5 +1,6 @@
 import gc
 import random
+import time
 
 import numpy as np
 from smac.env import MultiAgentEnv
@@ -126,14 +127,15 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
         self.kwargs = kwargs
         self.map_names = map_names
         self.simulator_backend = simulator_backend
-        self.seed = kwargs.get("seed", 0)
-        random.seed(self.seed)
+        # self.seed = kwargs.get("seed", 0)
+        # random.seed(self.seed)
         self.current_env = None
+        self.cfg_files = None
+        self.current_n_agents = None
+        self.episode_limit = None
         # Initialize first environment instance.
         self.max_n_agents = self._get_max_n_agents()
         self._reset_traffic_signal_network()
-        self.current_n_agents = len(self.current_env.tsc_env.traffic_signals)
-        self.episode_limit = self.current_env.episode_limit
 
     def _get_max_n_agents(self):
         """
@@ -141,10 +143,13 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
         This assumes that all maps have the same number of agents.
         """
         max_n_agents = 0
+        self.cfg_files = {}
         for map_name in self.map_names:
             tsc_env = TrafficSignalNetwork(
                 map_name, simulator_backend=self.simulator_backend, **self.kwargs
             )
+            if len(tsc_env.config.simulator["sumo_config_files"]):
+                self.cfg_files[map_name] = tsc_env.config.simulator["sumo_config_files"]
             max_n_agents = max(max_n_agents, len(tsc_env.traffic_signals))
             tsc_env.simulator.close_simulator()
             del tsc_env
@@ -153,16 +158,29 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
     def _get_map_name(self):
         return random.choice(self.map_names)
 
+    def _get_random_config_file(self, map_name):
+        return random.choice(self.cfg_files[map_name])
+
     def _reset_traffic_signal_network(self):
         if self.current_env is not None:
             self.current_env.tsc_env.simulator.close_simulator()
             del self.current_env
             gc.collect()
+
+        random.seed(time.time())
+        map_name = self._get_map_name()
+        if self.cfg_files is not None:
+            cfg_file = self._get_random_config_file(map_name)
+            self.kwargs["sumo"]["sumo_config_file"] = cfg_file
+        print(f"\n Selected map: {map_name}")
+        print(f"Selected config: {cfg_file} \n")
         self.current_env = EPyMARLTrafficSignalNetwork(
-            map_name=self._get_map_name(),
+            map_name=map_name,
             simulator_backend=self.simulator_backend,
             **self.kwargs,
         )
+        self.current_n_agents = len(self.current_env.tsc_env.traffic_signals)
+        self.episode_limit = self.current_env.episode_limit
 
     def _pad_adjacency_matrix(self, adjacency_matrix):
         if isinstance(adjacency_matrix, np.ndarray):

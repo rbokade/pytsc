@@ -21,16 +21,21 @@ class Config(BaseConfig):
     def __init__(self, scenario, **kwargs):
         super().__init__(scenario, **kwargs)
         self._load_config("sumo")
-        if not self.simulator["random_game"]:
-            self.sumo_cfg_dir = os.path.join(
-                CONFIG_DIR, scenario, self.simulator["sumo_config_file"]
-            )
-        else:
-            self.sumo_cfg_dirs = [
-                os.path.join(CONFIG_DIR, scenario, f)
-                for f in self.simulator["sumo_config_files"]
-            ]
-            self.reset_config()
+        # if not self.simulator["random_game"]:
+        #     self.sumo_cfg_dir = os.path.join(
+        #         CONFIG_DIR, scenario, self.simulator["sumo_config_file"]
+        #     )
+        # else:
+        #     self.sumo_cfg_dirs = [
+        #         os.path.join(CONFIG_DIR, scenario, f)
+        #         for f in self.simulator["sumo_config_files"]
+        #     ]
+        #     self.reset_config()
+        if kwargs["sumo"].get("sumo_config_file", None) is not None:
+            self.simulator["sumo_config_file"] = kwargs["sumo"]["sumo_config_file"]
+        self.sumo_cfg_dir = os.path.join(
+            CONFIG_DIR, scenario, self.simulator["sumo_config_file"]
+        )
         self.net_dir = os.path.join(
             CONFIG_DIR, scenario, self.simulator["sumo_net_file"]
         )
@@ -39,8 +44,7 @@ class Config(BaseConfig):
 
     def reset_config(self, **kwargs):
         if self.simulator["random_game"]:
-            random_idx = random.randint(0, len(self.sumo_cfg_dirs) - 1)
-            self.sumo_cfg_dir = self.sumo_cfg_dirs[random_idx]
+            self.sumo_cfg_dir = random.choice(self.sumo_cfg_dirs)
 
     def _check_assertions(self):
         assert (
