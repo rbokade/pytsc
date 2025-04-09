@@ -208,16 +208,16 @@ if __name__ == "__main__":
     if args.controllers == "all":
         controllers = [
             # "mixed_rl",
-            # "specialized_marl",
-            # "multi_generalized_agent",
-            # "multi_generalized_graph_agent",
-            # "single_generalized_agent",
+            "specialized_marl",
+            "multi_generalized_agent",
+            "multi_generalized_graph_agent",
+            "single_generalized_agent",
             "multi_generalized_var_robust_agent",
-            # "multi_generalized_var_robust_graph_agent",
-            # "sotl",
-            # "greedy",
-            # "fixed_time",
-            # "max_pressure",
+            "multi_generalized_var_robust_graph_agent",
+            "sotl",
+            "greedy",
+            "fixed_time",
+            "max_pressure",
         ]
     else:
         controllers = [args.controllers]
@@ -296,14 +296,14 @@ if __name__ == "__main__":
     #     )
 
     # Observation dropout
-    dropouts = [0.1, 0.2, 0.5, 0.7, 0.9, 1.0]
-    for i, dropout in enumerate(dropouts):
-        add_env_args["signal"] = {"obs_dropout_prob": dropout}
+    noise_stds = [0.0, 0.01, 0.05, 0.1, 0.2]
+    for i, noise_std in enumerate(noise_stds):
+        add_env_args["signal"] = {"obs_noise_std": noise_std}
         evaluate_controllers(
             args.scenario,
             args.simulator_backend,
             controllers,
-            output_folder=f"obs_dropout_{dropout}",
+            output_folder=f"obs_noise_std_{noise_std}",
             hours=hours,
             add_env_args=add_env_args,
             add_controller_args=add_controller_args,

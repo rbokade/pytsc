@@ -164,7 +164,7 @@ class TrafficSignalNetwork:
     def restart(self, reset=True):
         if self.episode_over:
             self.episode_count += 1
-            self.observation_space.reset_dropped_lanes()
+            # self.observation_space.reset_dropped_lanes()
         if self.simulator.is_terminated:
             self.hour_count += 1
             self.simulator.close_simulator()

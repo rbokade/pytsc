@@ -8,57 +8,79 @@ class LaneAttentionAggregator(nn.Module):
     def __init__(
         self,
         static_feat_dim=9,
-        pos_mat_dim=10,
+        dynamic_feat_dim=10,
         phase_id_dim=20,
-        hidden_dim=128,
+        hidden_dim=64,
         n_heads=4,
         device="cpu",
     ):
         super(LaneAttentionAggregator, self).__init__()
         self.device = device
         self.hidden_dim = hidden_dim
-        # self.kqv = nn.Sequential(
-        #     nn.Linear(static_feat_dim + pos_mat_dim + phase_id_dim, hidden_dim),
-        #     nn.LeakyReLU(),
-        # )
-        # self.lane_aggregator = nn.MultiheadAttention(
-        #     embed_dim=hidden_dim, num_heads=n_heads, batch_first=True
-        # )
-        self.lane_mlp = nn.Sequential(
-            nn.Linear(static_feat_dim + pos_mat_dim + phase_id_dim, hidden_dim),
-            nn.LeakyReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.LeakyReLU(),
+        self.k = nn.Linear(static_feat_dim + dynamic_feat_dim, hidden_dim)
+        self.v = nn.Linear(static_feat_dim + dynamic_feat_dim, hidden_dim)
+        self.q = nn.Linear(phase_id_dim, hidden_dim)
+        self.attn = nn.MultiheadAttention(
+            embed_dim=hidden_dim, num_heads=n_heads, batch_first=True
         )
 
-    def forward(self, static_feats, pos_mats, phase_ids):
+    def forward(self, static_feats, dynamic_feats, phase_ids):
         """
         static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)
-        pos_mats: (bs * n_agents, max_n_lanes, pos_mat_dim)
+        dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)
         phase_ids: (bs * n_agents, 1, phase_id_dim)
         # hidden_state: (bs * n_agents, hidden_dim)
         """
-        bs_n, max_n_lanes, inp_shape = pos_mats.shape
-        phase_ids = phase_ids.expand(-1, max_n_lanes, -1)
-        x = torch.cat((static_feats, pos_mats, phase_ids), dim=-1)
-        # x = self.kqv(x)
-        # x, _ = self.lane_aggregator(x, x, x, need_weights=False)
-        # x = x.squeeze(1)
-        x = self.lane_mlp(x)
-        x = x.view(bs_n, max_n_lanes, -1).mean(dim=1).view(bs_n, -1)
+        # bs_n, max_n_lanes, inp_shape = dynamic_feats.shape
+        lane_feats = torch.cat((static_feats, dynamic_feats), dim=-1)
+        k, q, v = self.k(lane_feats), self.q(phase_ids), self.v(lane_feats)
+        x, _ = self.attn(q, k, v, need_weights=False)
+        x = x.squeeze(1)
         return x
 
 
+class LaneAggregator(nn.Module):
+    def __init__(
+        self,
+        static_feat_dim=9,
+        dynamic_feat_dim=10,
+        phase_id_dim=20,
+        hidden_dim=64,
+        n_heads=4,
+        device="cpu",
+    ):
+        super(LaneAggregator, self).__init__()
+        self.device = device
+        self.hidden_dim = hidden_dim
+        self.lane_embed = nn.Linear(static_feat_dim + dynamic_feat_dim, hidden_dim // 2)
+        self.phase_embed = nn.Linear(phase_id_dim, hidden_dim // 2)
+        self.fc = nn.Linear(hidden_dim, hidden_dim)
+
+    def forward(self, static_feats, dynamic_feats, phase_ids):
+        """
+        static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)
+        dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)
+        phase_ids: (bs * n_agents, 1, phase_id_dim)
+        # hidden_state: (bs * n_agents, hidden_dim)
+        """
+        bs_n, max_n_lanes, inp_shape = dynamic_feats.shape
+        lane_feats = torch.cat((static_feats, dynamic_feats), dim=-1)
+        lane_emb = self.lane_embed(lane_feats)
+        lane_emb_agg = lane_emb.mean(dim=1, keepdim=True)
+        phase_emb = self.phase_embed(phase_ids)
+        x = torch.cat((lane_emb_agg, phase_emb), dim=-1)
+        x = F.relu(self.fc(x))
+        return x.squeeze(1)
+
+
 class GraphAttentionComm(nn.Module):
-    def __init__(self, adjacency_matrix, hidden_dim=128, n_heads=4):
+    def __init__(self, adjacency_matrix, hidden_dim=64, n_heads=4):
         super(GraphAttentionComm, self).__init__()
         self.n_heads = n_heads
         self.hidden_dim = hidden_dim
         self.adjacency_matrix = adjacency_matrix  # (n_agents, n_agents)
         self.comm = nn.MultiheadAttention(
-            embed_dim=hidden_dim,
-            num_heads=n_heads,
-            batch_first=True,
+            embed_dim=hidden_dim, num_heads=n_heads, batch_first=True
         )
 
     def forward(self, x, dropout=0.0):
@@ -150,12 +172,12 @@ class TSCGraphAgent(nn.Module):
     ):
         x = self.lane_obs_encoder(static_lane_feats, pos_mats, phase_ids)
         bs = x.shape[0] // self.n_agents
-        x = x.view(bs, self.n_agents, -1)
-        x = self.communicate(x, dropout=dropout)
-        x = x.view(bs * self.n_agents, -1)
         h_in = hidden_state.reshape(-1, self.hidden_dim)
         h = self.rnn(x, h_in)
-        q = self.fc_out(x)
+        h_ = h.view(bs, self.n_agents, -1)
+        h_ = self.communicate(h_, dropout=dropout)
+        h_ = h_.view(bs * self.n_agents, -1)
+        q = self.fc_out(h_)
         return q, h
 
 
@@ -329,43 +351,32 @@ class SingleGeneralizedAgentRLController(RLController):
 
 class MultiGeneralizedAgentRLController(RLController):
     model_paths = [
-        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_agent_1.th",
-        # "pytsc/controllers/multi_generalized_agent_2.th",
-        # "pytsc/controllers/multi_generalized_agent_3.th",
     ]
 
 
 class MultiGeneralizedGraphAgentRLController(RLController):
     graph = True
     model_paths = [
-        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_graph_agent_1.th",
-        # "pytsc/controllers/multi_generalized_graph_agent_2.th",
-        # "pytsc/controllers/multi_generalized_graph_agent_3.th",
     ]
 
 
 class MultiGeneralizedVarRobustAgentRLController(RLController):
     model_paths = [
-        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_var_robust_agent_1.th",
-        # "pytsc/controllers/multi_generalized_agent_2.th",
-        # "pytsc/controllers/multi_generalized_agent_3.th",
     ]
 
 
 class MultiGeneralizedVarRobustGraphAgentRLController(RLController):
     graph = True
     model_paths = [
-        # "pytsc/controllers/single_generalized_agent_1.th",
         "pytsc/controllers/multi_generalized_var_robust_graph_agent_1.th",
-        # "pytsc/controllers/multi_generalized_graph_agent_2.th",
-        # "pytsc/controllers/multi_generalized_graph_agent_3.th",
     ]
 
 
 class SpecializedMARLController(RLController):
+    graph = True
     model_paths = ["pytsc/controllers/specialized_marl_agent_1.th"]
 
 

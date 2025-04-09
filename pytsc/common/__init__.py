@@ -1,9 +1,6 @@
-from pytsc.common.actions import (
-    PhaseSwitchActionSpace,
-    PhaseSelectionActionSpace,
-)
-from pytsc.common.observations import PositionMatrix
-from pytsc.common.reward import QueueLength, MaxPressure
+from pytsc.common.actions import PhaseSelectionActionSpace, PhaseSwitchActionSpace
+from pytsc.common.observations import LaneFeatures, PositionMatrix
+from pytsc.common.reward import MaxPressure, QueueLength
 
 ACTION_SPACES = {
     "phase_switch": PhaseSwitchActionSpace,
@@ -12,6 +9,7 @@ ACTION_SPACES = {
 
 OBSERVATION_SPACES = {
     "position_matrix": PositionMatrix,
+    "lane_features": LaneFeatures,
 }
 
 REWARD_FUNCTIONS = {

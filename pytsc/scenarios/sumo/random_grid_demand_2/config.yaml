@@ -1,7 +1,7 @@
 # SUMO parameters
 sumo:
   sumo_net_file: random_grid.net.xml
-  sumo_config_file: random_grid.sumocfg
+  sumo_config_file: random_grid_0.2_increased_demand.sumocfg
   random_game: False
 
 # Network parameters
