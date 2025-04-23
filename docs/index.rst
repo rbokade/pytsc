@@ -23,8 +23,18 @@ Welcome to PyTSC's documentation page!
 
 .. sidebar:: Citation
 
-   If you use this repository for your research, please cite it using the following BibTeX entry: :cite:`bokade2025pytsc`.
+   If you use this repository for your research, please cite it using the following BibTeX entry: 
 
-.. bibliography::
-   :style: plain
+   .. code-block:: bibtex
+
+      @article{bokade2025pytsc,
+        title={Pytsc: A unified platform for multi-agent reinforcement learning in traffic signal control},
+        author={Bokade, Rohit and Jin, Xiaoning},
+        journal={Sensors},
+        volume={25},
+        number={5},
+        pages={1302},
+        year={2025},
+        publisher={MDPI}
+      }
 
