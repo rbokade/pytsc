@@ -124,6 +124,30 @@
 <section id="using-pytsc-with-pymarl-epymarl">
 <h2>Using PyTSC with PyMARL/EPyMARL<a class="headerlink" href="#using-pytsc-with-pymarl-epymarl" title="Permalink to this headline"></a></h2>
 <p>To use PyTSC with PyMARL or EPyMARL, you can use the <cite>pymarl</cite> or <cite>epymarl</cite> wrappers. Here’s an example of how to use PyTSC with PyMARL:</p>
+<p>In <cite>src/envs/__init__.py</cite>, you can register the PyTSC environment with EPyMARL:
+.. code-block:: python</p>
+<blockquote>
+<div><p>def register_pytsc():
+from pytsc.wrappers.epymarl import (</p>
+<blockquote>
+<div><p>DomainRandomizedEPyMARLTrafficSignalNetwork,
+EPyMARLTrafficSignalNetwork,</p>
+</div></blockquote>
+<p>)</p>
+<dl>
+<dt>def pytsc_fn(<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs) -&gt; MultiAgentEnv:</dt><dd><p>kwargs = __check_and_prepare_pytsc_kwargs(<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)
+if kwargs.get(“domain_randomization”, False):</p>
+<blockquote>
+<div><p>return DomainRandomizedEPyMARLTrafficSignalNetwork(<a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>else:</dt><dd><p>return EPyMARLTrafficSignalNetwork(<a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>REGISTRY[“pytsc”] = pytsc_fn</p>
+</div></blockquote>
 </section>
 </section>
 
