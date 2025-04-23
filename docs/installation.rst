@@ -15,15 +15,15 @@ To install **PyTSC**, clone the repository and install its dependencies:
     cd pytsc
     pip install -e .
 
-Simulation Backends Required
------------------------------
+Required Simulators:
+--------------------
 
 PyTSC supports multiple simulation backends. You can choose one based on your requirements:
 
 - `SUMO <https://www.eclipse.org/sumo/>`__
 - `CityFlow <https://cityflow-project.github.io/>`__
 
-MARL Libraries Required
+Required MARL Libraries:
 ------------------------
 
 PyTSC is compatible with several Multi-Agent Reinforcement Learning (MARL) frameworks. You can use any of the following frameworks to train your agents:
