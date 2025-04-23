@@ -1,4 +1,5 @@
 ![PyTSC Logo](./pytsc_logo.png)
+[![Docs](https://img.shields.io/badge/docs-pytsc-blue)](https://rbokade.github.io/pytsc/)
 
 ## `PyTSC`: Traffic Signal Control Environment for Multi-Agent Reinforcement Learning (Experimental)
 
