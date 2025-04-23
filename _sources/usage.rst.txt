@@ -55,6 +55,7 @@ To use PyTSC with PyMARL or EPyMARL, you can use the `pymarl` or `epymarl` wrapp
 
 
 In `src/envs/__init__.py`, you can register the PyTSC environment with EPyMARL: 
+
 .. code-block:: python
 
     def register_pytsc():
