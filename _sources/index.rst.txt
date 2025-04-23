@@ -20,3 +20,11 @@ Welcome to PyTSC's documentation page!
    installation
    usage
    api
+
+.. sidebar:: Citation
+
+   If you use this repository for your research, please cite it using the following BibTeX entry: :cite:`bokade2025pytsc`.
+
+.. bibliography::
+   :style: plain
+
