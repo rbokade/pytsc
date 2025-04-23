@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc package &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pytsc.backends package" href="pytsc.backends.html" />
+    <link rel="prev" title="pytsc" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pytsc package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pytsc">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pytsc package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-1">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/generated/pytsc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytsc-package">
+<h1>pytsc package<a class="headerlink" href="#pytsc-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id1">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id2">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id3">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id4">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id5">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id6">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id7">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id8">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id9">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#id10">pytsc.backends.cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.config">pytsc.backends.cityflow.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.grid_disruptor">pytsc.backends.cityflow.grid_disruptor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.grid_generator">pytsc.backends.cityflow.grid_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.metrics">pytsc.backends.cityflow.metrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.network_parser">pytsc.backends.cityflow.network_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.randomize_flows">pytsc.backends.cityflow.randomize_flows module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.retriever">pytsc.backends.cityflow.retriever module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.simulator">pytsc.backends.cityflow.simulator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.traffic_signal">pytsc.backends.cityflow.traffic_signal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-pytsc.backends.cityflow.trip_generator">pytsc.backends.cityflow.trip_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.cityflow.html#module-10">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id1">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id2">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id3">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id4">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id5">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#id6">pytsc.backends.sumo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.config">pytsc.backends.sumo.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.metrics">pytsc.backends.sumo.metrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.network_parser">pytsc.backends.sumo.network_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.retriever">pytsc.backends.sumo.retriever module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.simulator">pytsc.backends.sumo.simulator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-pytsc.backends.sumo.traffic_signal">pytsc.backends.sumo.traffic_signal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.sumo.html#module-6">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html#module-pytsc.backends">pytsc.backends module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html#module-0">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id1">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id2">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id3">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id4">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id5">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id6">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id7">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id8">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id9">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id10">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#id11">pytsc.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.actions">pytsc.common.actions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.config">pytsc.common.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.metrics">pytsc.common.metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.network_parser">pytsc.common.network_parser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.observations">pytsc.common.observations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.retriever">pytsc.common.retriever module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.reward">pytsc.common.reward module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.simulator">pytsc.common.simulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.traffic_signal">pytsc.common.traffic_signal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.trip_generator">pytsc.common.trip_generator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.utils">pytsc.common.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html#module-11">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers">pytsc.controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#id1">pytsc.controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#id2">pytsc.controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#id3">pytsc.controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.controllers">pytsc.controllers.controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.evaluate">pytsc.controllers.evaluate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.rl_controller">pytsc.controllers.rl_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html#module-3">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#id1">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#id2">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#id3">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#id4">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#id5">pytsc.generators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.cityflow_arterial_network_generation">pytsc.generators.cityflow_arterial_network_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.convert_sumo_trips_to_cityflow">pytsc.generators.convert_sumo_trips_to_cityflow module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.grid_generator">pytsc.generators.grid_generator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.laneareadetector_generator">pytsc.generators.laneareadetector_generator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.trip_generator">pytsc.generators.trip_generator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html#module-5">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html#module-pytsc.scenarios">pytsc.scenarios module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html#module-0">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id1">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id2">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id3">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id4">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id5">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id6">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#id7">pytsc.tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_flow_generation">pytsc.tests.test_cityflow_flow_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_grid_disruptor">pytsc.tests.test_cityflow_grid_disruptor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_grid_generation">pytsc.tests.test_cityflow_grid_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_multi_flow_generation">pytsc.tests.test_cityflow_multi_flow_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_oneway_flow_generation">pytsc.tests.test_cityflow_oneway_flow_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_weibull_flow_generation">pytsc.tests.test_cityflow_weibull_flow_generation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_observations">pytsc.tests.test_observations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html#module-7">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers">pytsc.wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#id1">pytsc.wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#id2">pytsc.wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#id3">pytsc.wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.epymarl">pytsc.wrappers.epymarl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.pymarl">pytsc.wrappers.pymarl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.rllib">pytsc.wrappers.rllib module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html#module-3">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pytsc">
+<span id="pytsc-module"></span><h2>pytsc module<a class="headerlink" href="#module-pytsc" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.</span></span><span class="sig-name descname"><span class="pre">TrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.episode_limit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_limit</span></span><a class="headerlink" href="#pytsc.TrafficSignalNetwork.episode_limit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.episode_over">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_over</span></span><a class="headerlink" href="#pytsc.TrafficSignalNetwork.episode_over" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_action_mask">
+<span class="sig-name descname"><span class="pre">get_action_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_action_mask" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_action_size">
+<span class="sig-name descname"><span class="pre">get_action_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_action_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_env_info">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_env_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_env_stats">
+<span class="sig-name descname"><span class="pre">get_env_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_env_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_observation_size">
+<span class="sig-name descname"><span class="pre">get_observation_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observation_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_observation_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_observations">
+<span class="sig-name descname"><span class="pre">get_observations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_observations" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_reward">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_rewards">
+<span class="sig-name descname"><span class="pre">get_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_rewards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.get_state_size">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.get_state_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.restart">
+<span class="sig-name descname"><span class="pre">restart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.restart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.restart" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.TrafficSignalNetwork.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.TrafficSignalNetwork.step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="id1">
+<h2>pytsc module<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-0"></span><dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.</span></span><span class="sig-name descname"><span class="pre">TrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_limit</span></span><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_over</span></span><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">get_action_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">get_action_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">get_env_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">get_observation_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observation_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">get_observations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">get_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">restart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.restart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id14" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id15" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.run_controllers">
+<span id="pytsc-run-controllers-module"></span><h2>pytsc.run_controllers module<a class="headerlink" href="#module-pytsc.run_controllers" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.evaluate_controllers">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">evaluate_controllers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controllers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#evaluate_controllers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.evaluate_controllers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.evaluate_demand_increase_and_dropout">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">evaluate_demand_increase_and_dropout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controllers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#evaluate_demand_increase_and_dropout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.evaluate_demand_increase_and_dropout" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.plot_stats">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">plot_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controllers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#plot_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.plot_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.process_flow_files">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">process_flow_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controllers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disruption_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#process_flow_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.process_flow_files" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.run_evaluation">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">run_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#run_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.run_evaluation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.run_controllers.save_stats_to_file">
+<span class="sig-prename descclassname"><span class="pre">pytsc.run_controllers.</span></span><span class="sig-name descname"><span class="pre">save_stats_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/run_controllers.html#save_stats_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.run_controllers.save_stats_to_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-1">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-1" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id16">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.</span></span><span class="sig-name descname"><span class="pre">TrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id16" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="id17">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_limit</span></span><a class="headerlink" href="#id17" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id18">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">episode_over</span></span><a class="headerlink" href="#id18" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">get_action_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id19" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">get_action_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_action_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id20" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id21" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">get_env_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_env_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id22" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">get_observation_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observation_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id23" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">get_observations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id24" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id25" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">get_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id26" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id27" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id28" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">restart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.restart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id29" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc.html#TrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id30" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="pytsc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pytsc.backends.html" class="btn btn-neutral float-right" title="pytsc.backends package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

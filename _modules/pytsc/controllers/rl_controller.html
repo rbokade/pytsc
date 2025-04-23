@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.controllers.rl_controller &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.controllers.rl_controller</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.controllers.rl_controller</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.distributions</span> <span class="kn">import</span> <span class="n">Categorical</span>
+
+
+<div class="viewcode-block" id="LaneAttentionAggregator"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.LaneAttentionAggregator">[docs]</a><span class="k">class</span> <span class="nc">LaneAttentionAggregator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">static_feat_dim</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="n">dynamic_feat_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">phase_id_dim</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">n_heads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LaneAttentionAggregator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">static_feat_dim</span> <span class="o">+</span> <span class="n">dynamic_feat_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">static_feat_dim</span> <span class="o">+</span> <span class="n">dynamic_feat_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">phase_id_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MultiheadAttention</span><span class="p">(</span>
+            <span class="n">embed_dim</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="n">n_heads</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="LaneAttentionAggregator.forward"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.LaneAttentionAggregator.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">static_feats</span><span class="p">,</span> <span class="n">dynamic_feats</span><span class="p">,</span> <span class="n">phase_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)</span>
+<span class="sd">        dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)</span>
+<span class="sd">        phase_ids: (bs * n_agents, 1, phase_id_dim)</span>
+<span class="sd">        # hidden_state: (bs * n_agents, hidden_dim)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># bs_n, max_n_lanes, inp_shape = dynamic_feats.shape</span>
+        <span class="n">lane_feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">static_feats</span><span class="p">,</span> <span class="n">dynamic_feats</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">(</span><span class="n">lane_feats</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">(</span><span class="n">phase_ids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">lane_feats</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">need_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div></div>
+
+
+<div class="viewcode-block" id="LaneAggregator"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.LaneAggregator">[docs]</a><span class="k">class</span> <span class="nc">LaneAggregator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">static_feat_dim</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="n">dynamic_feat_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">phase_id_dim</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">n_heads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LaneAggregator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">static_feat_dim</span> <span class="o">+</span> <span class="n">dynamic_feat_dim</span><span class="p">,</span> <span class="n">hidden_dim</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase_embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">phase_id_dim</span><span class="p">,</span> <span class="n">hidden_dim</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LaneAggregator.forward"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.LaneAggregator.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">static_feats</span><span class="p">,</span> <span class="n">dynamic_feats</span><span class="p">,</span> <span class="n">phase_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)</span>
+<span class="sd">        dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)</span>
+<span class="sd">        phase_ids: (bs * n_agents, 1, phase_id_dim)</span>
+<span class="sd">        # hidden_state: (bs * n_agents, hidden_dim)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bs_n</span><span class="p">,</span> <span class="n">max_n_lanes</span><span class="p">,</span> <span class="n">inp_shape</span> <span class="o">=</span> <span class="n">dynamic_feats</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">lane_feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">static_feats</span><span class="p">,</span> <span class="n">dynamic_feats</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">lane_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_embed</span><span class="p">(</span><span class="n">lane_feats</span><span class="p">)</span>
+        <span class="n">lane_emb_agg</span> <span class="o">=</span> <span class="n">lane_emb</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">phase_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase_embed</span><span class="p">(</span><span class="n">phase_ids</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">lane_emb_agg</span><span class="p">,</span> <span class="n">phase_emb</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GraphAttentionComm"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.GraphAttentionComm">[docs]</a><span class="k">class</span> <span class="nc">GraphAttentionComm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">n_heads</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphAttentionComm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_heads</span> <span class="o">=</span> <span class="n">n_heads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">adjacency_matrix</span>  <span class="c1"># (n_agents, n_agents)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MultiheadAttention</span><span class="p">(</span>
+            <span class="n">embed_dim</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="o">=</span><span class="n">n_heads</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GraphAttentionComm.forward"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.GraphAttentionComm.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dropout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x_dropped</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_dropped</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">attn_mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">num_agents</span> <span class="o">=</span> <span class="n">attn_mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_agents</span><span class="p">):</span>
+            <span class="n">attn_mask</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">attn_mask</span> <span class="o">=</span> <span class="n">attn_mask</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">attn_out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">(</span>
+            <span class="n">x_dropped</span><span class="p">,</span>
+            <span class="n">x_dropped</span><span class="p">,</span>
+            <span class="n">x_dropped</span><span class="p">,</span>
+            <span class="n">attn_mask</span><span class="o">=</span><span class="n">attn_mask</span><span class="p">,</span>
+            <span class="n">need_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">attn_out</span>
+        <span class="k">return</span> <span class="n">out</span></div></div>
+
+
+<div class="viewcode-block" id="TSCAgent"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgent">[docs]</a><span class="k">class</span> <span class="nc">TSCAgent</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_agents</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">max_n_lanes</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TSCAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="n">n_agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span> <span class="o">=</span> <span class="n">n_actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span> <span class="o">=</span> <span class="n">max_n_lanes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_obs_encoder</span> <span class="o">=</span> <span class="n">LaneAttentionAggregator</span><span class="p">(</span><span class="n">hidden_dim</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRUCell</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TSCAgent.init_hidden"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgent.init_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TSCAgent.forward"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgent.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">static_lane_feats</span><span class="p">,</span>
+        <span class="n">pos_mats</span><span class="p">,</span>
+        <span class="n">phase_ids</span><span class="p">,</span>
+        <span class="n">hidden_state</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_obs_encoder</span><span class="p">(</span><span class="n">static_lane_feats</span><span class="p">,</span> <span class="n">pos_mats</span><span class="p">,</span> <span class="n">phase_ids</span><span class="p">)</span>
+        <span class="n">h_in</span> <span class="o">=</span> <span class="n">hidden_state</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h_in</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="n">h</span></div></div>
+
+
+<div class="viewcode-block" id="TSCGraphAgent"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCGraphAgent">[docs]</a><span class="k">class</span> <span class="nc">TSCGraphAgent</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_agents</span><span class="p">,</span>
+        <span class="n">n_actions</span><span class="p">,</span>
+        <span class="n">hidden_dim</span><span class="p">,</span>
+        <span class="n">max_n_lanes</span><span class="p">,</span>
+        <span class="n">adjacency_matrix</span><span class="p">,</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">n_heads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TSCGraphAgent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="n">n_agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span> <span class="o">=</span> <span class="n">n_actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="n">hidden_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span> <span class="o">=</span> <span class="n">max_n_lanes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_obs_encoder</span> <span class="o">=</span> <span class="n">LaneAttentionAggregator</span><span class="p">(</span><span class="n">hidden_dim</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_adjcency_matrix</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">communicate</span> <span class="o">=</span> <span class="n">GraphAttentionComm</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GRUCell</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_adjcency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="p">):</span>
+        <span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="c1"># add self loops if not present</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">adjacency_matrix</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">adjacency_matrix</span>
+
+<div class="viewcode-block" id="TSCGraphAgent.init_hidden"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCGraphAgent.init_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TSCGraphAgent.forward"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCGraphAgent.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">static_lane_feats</span><span class="p">,</span> <span class="n">pos_mats</span><span class="p">,</span> <span class="n">phase_ids</span><span class="p">,</span> <span class="n">hidden_state</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_obs_encoder</span><span class="p">(</span><span class="n">static_lane_feats</span><span class="p">,</span> <span class="n">pos_mats</span><span class="p">,</span> <span class="n">phase_ids</span><span class="p">)</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span>
+        <span class="n">h_in</span> <span class="o">=</span> <span class="n">hidden_state</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h_in</span><span class="p">)</span>
+        <span class="n">h_</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">h_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">h_</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="n">h_</span> <span class="o">=</span> <span class="n">h_</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">bs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span><span class="p">(</span><span class="n">h_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="n">h</span></div></div>
+
+
+<div class="viewcode-block" id="TSCAgentEnsemble"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgentEnsemble">[docs]</a><span class="k">class</span> <span class="nc">TSCAgentEnsemble</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">max_phases</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">max_n_controlled_lanes</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_agents</span><span class="p">,</span>
+        <span class="n">n_actions</span><span class="p">,</span>
+        <span class="n">hidden_dim</span><span class="p">,</span>
+        <span class="n">max_n_lanes</span><span class="p">,</span>
+        <span class="n">n_models</span><span class="p">,</span>
+        <span class="n">adjacency_matrix</span><span class="p">,</span>
+        <span class="n">static_lane_feats</span><span class="p">,</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">action_selection_strategy</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TSCAgentEnsemble</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="n">n_agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span> <span class="o">=</span> <span class="n">max_n_lanes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_selection_strategy</span> <span class="o">=</span> <span class="n">action_selection_strategy</span>
+        <span class="k">if</span> <span class="n">graph</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">TSCGraphAgent</span><span class="p">(</span>
+                        <span class="n">n_agents</span><span class="p">,</span>
+                        <span class="n">n_actions</span><span class="p">,</span>
+                        <span class="n">hidden_dim</span><span class="p">,</span>
+                        <span class="n">max_n_lanes</span><span class="p">,</span>
+                        <span class="n">adjacency_matrix</span><span class="p">,</span>
+                        <span class="n">graph</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_models</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">TSCAgent</span><span class="p">(</span>
+                        <span class="n">n_agents</span><span class="p">,</span>
+                        <span class="n">n_actions</span><span class="p">,</span>
+                        <span class="n">hidden_dim</span><span class="p">,</span>
+                        <span class="n">max_n_lanes</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_models</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_lane_feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="n">static_lane_feats</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="n">lane_feats</span> <span class="o">=</span> <span class="n">obs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">pos_mats</span> <span class="o">=</span> <span class="n">lane_feats</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">static_lane_feats</span> <span class="o">=</span> <span class="n">lane_feats</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">phase_ids</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">obs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span> <span class="p">:]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">static_lane_feats</span><span class="p">,</span> <span class="n">pos_mats</span><span class="p">,</span> <span class="n">phase_ids</span>
+
+<div class="viewcode-block" id="TSCAgentEnsemble.init_hidden"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgentEnsemble.init_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">hidden_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="n">hidden_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">hidden_states</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_mean_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">avail_actions</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_inputs</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">next_hidden_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">hidden_state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+            <span class="n">agent_out</span><span class="p">,</span> <span class="n">hidden_state</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">hidden_state</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent_out</span><span class="p">)</span>
+            <span class="n">next_hidden_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hidden_state</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">avail_actions</span> <span class="o">=</span> <span class="n">avail_actions</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">logits</span><span class="p">[</span><span class="n">avail_actions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_hidden_states</span>
+
+    <span class="k">def</span> <span class="nf">_get_max_vote_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">avail_actions</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_inputs</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">next_hidden_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">hidden_state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+            <span class="n">logits</span><span class="p">,</span> <span class="n">hidden_state</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">hidden_state</span><span class="p">)</span>
+            <span class="n">avail_actions</span> <span class="o">=</span> <span class="n">avail_actions</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">logits</span><span class="p">[</span><span class="n">avail_actions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">pi</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+            <span class="n">votes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="n">next_hidden_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hidden_state</span><span class="p">)</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mode</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_hidden_states</span>
+
+<div class="viewcode-block" id="TSCAgentEnsemble.select_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.TSCAgentEnsemble.select_action">[docs]</a>    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">avail_actions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_selection_strategy</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_action</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">avail_actions</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_selection_strategy</span> <span class="o">==</span> <span class="s2">&quot;max_vote&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_vote_action</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">avail_actions</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown action selection&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;strategy: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_selection_strategy</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.RLController">[docs]</a><span class="k">class</span> <span class="nc">RLController</span><span class="p">:</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">n_actions</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">hidden_dim</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pytsc/controllers/agent.th&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsc_env</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span> <span class="o">=</span> <span class="n">tsc_env</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span> <span class="o">=</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">n_agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span> <span class="o">=</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span>
+        <span class="n">adjacency_matrix</span> <span class="o">=</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">adjacency_matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">TSCAgentEnsemble</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_n_lanes</span><span class="p">,</span>
+            <span class="n">n_models</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_paths</span><span class="p">),</span>
+            <span class="n">adjacency_matrix</span><span class="o">=</span><span class="n">adjacency_matrix</span><span class="p">,</span>
+            <span class="n">static_lane_feats</span><span class="o">=</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_per_agent_lane_features</span><span class="p">(),</span>
+            <span class="n">graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_models</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RLController.init_hidden"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.RLController.init_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">init_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">init_hidden</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_load_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_paths</span><span class="p">):</span>
+            <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="k">lambda</span> <span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="n">storage</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">model_state</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model state_dict:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">model_state</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">agent</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">)</span>
+            <span class="n">agent</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RLController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.RLController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_observations</span><span class="p">()</span>
+        <span class="n">avail_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_mask</span><span class="p">()</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">avail_actions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">avail_actions</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">action</span><span class="p">,</span> <span class="n">next_hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span>
+            <span class="n">obs</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">avail_actions</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_hidden_states</span></div></div>
+
+
+<div class="viewcode-block" id="SingleGeneralizedAgentRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.SingleGeneralizedAgentRLController">[docs]</a><span class="k">class</span> <span class="nc">SingleGeneralizedAgentRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pytsc/controllers/single_generalized_agent_1.th&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MultiGeneralizedAgentRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.MultiGeneralizedAgentRLController">[docs]</a><span class="k">class</span> <span class="nc">MultiGeneralizedAgentRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pytsc/controllers/multi_generalized_agent_1.th&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MultiGeneralizedGraphAgentRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController">[docs]</a><span class="k">class</span> <span class="nc">MultiGeneralizedGraphAgentRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pytsc/controllers/multi_generalized_graph_agent_1.th&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MultiGeneralizedVarRobustAgentRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustAgentRLController">[docs]</a><span class="k">class</span> <span class="nc">MultiGeneralizedVarRobustAgentRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pytsc/controllers/multi_generalized_var_robust_agent_1.th&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MultiGeneralizedVarRobustGraphAgentRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController">[docs]</a><span class="k">class</span> <span class="nc">MultiGeneralizedVarRobustGraphAgentRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pytsc/controllers/multi_generalized_var_robust_graph_agent_1.th&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SpecializedMARLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.SpecializedMARLController">[docs]</a><span class="k">class</span> <span class="nc">SpecializedMARLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pytsc/controllers/specialized_marl_agent_1.th&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MixedRLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.rl_controller.MixedRLController">[docs]</a><span class="k">class</span> <span class="nc">MixedRLController</span><span class="p">(</span><span class="n">RLController</span><span class="p">):</span>
+    <span class="n">model_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pytsc/controllers/single_generalized_agent_1.th&quot;</span>
+        <span class="s2">&quot;pytsc/controllers/multi_generalized_agent_1.th&quot;</span><span class="p">,</span>
+    <span class="p">]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

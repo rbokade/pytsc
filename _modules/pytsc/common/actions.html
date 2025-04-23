@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.common.actions &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.common.actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.common.actions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.common.utils</span> <span class="kn">import</span> <span class="n">pad_list</span>
+
+
+<div class="viewcode-block" id="BaseActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace">[docs]</a><span class="k">class</span> <span class="nc">BaseActionSpace</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span> <span class="o">=</span> <span class="n">traffic_signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_check_actions_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Actions must be list or numpy array.&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.apply">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_mask">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_size">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="BaseActionSpace.get_trad_controller_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_trad_controller_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_trad_controller_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">controller</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">n_phases</span><span class="p">),</span> <span class="n">weights</span><span class="o">=</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span>
+                    <span class="mi">0</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_controller_action</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">actions</span></div></div>
+
+
+<div class="viewcode-block" id="PhaseSelectionActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace">[docs]</a><span class="k">class</span> <span class="nc">PhaseSelectionActionSpace</span><span class="p">(</span><span class="n">BaseActionSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Actions are the phase index to switch to for each traffic signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PhaseSelectionActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhaseSelectionActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="c1"># self._check_actions_type(actions)</span>
+        <span class="k">for</span> <span class="n">ts_idx</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">action_to_phase</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="n">ts_idx</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="PhaseSelectionActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">n_phases</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="PhaseSelectionActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">())</span>
+            <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">masks</span></div></div>
+
+
+<div class="viewcode-block" id="PhaseSwitchActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace">[docs]</a><span class="k">class</span> <span class="nc">PhaseSwitchActionSpace</span><span class="p">(</span><span class="n">BaseActionSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In this child class, actions are binary:</span>
+<span class="sd">    0 for no switch (remain in the current phase)</span>
+<span class="sd">    1 for switch (move to the next phase in a round-robin manner).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PhaseSwitchActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PhaseSwitchActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_actions_type</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ts_idx</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">current_phase</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase_index</span>
+            <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="n">ts_idx</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">next_phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_phase</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">n_phases</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">action_to_phase</span><span class="p">(</span><span class="n">next_phase</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">action_to_phase</span><span class="p">(</span><span class="n">current_phase</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PhaseSwitchActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="PhaseSwitchActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">allowable_switches</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
+            <span class="n">n_phases</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">n_phases</span>
+            <span class="n">current_phase_index</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase_index</span>
+            <span class="n">next_phase_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_phase_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_phases</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">allowable_switches</span><span class="p">[</span><span class="n">current_phase_index</span><span class="p">]:</span>
+                <span class="n">mask</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">allowable_switches</span><span class="p">[</span><span class="n">next_phase_index</span><span class="p">]:</span>
+                <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">masks</span></div>
+
+<div class="viewcode-block" id="PhaseSwitchActionSpace.get_trad_controller_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_trad_controller_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_trad_controller_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">controller</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_controller_action</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="o">!=</span> <span class="n">action</span><span class="p">:</span>
+                <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">actions</span></div></div>
+
+
+<div class="viewcode-block" id="CentralizedActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace">[docs]</a><span class="k">class</span> <span class="nc">CentralizedActionSpace</span><span class="p">(</span><span class="n">BaseActionSpace</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual_action_space</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CentralizedActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">individual_action_space</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">individual_action_space</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span> <span class="o">=</span> <span class="n">individual_action_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CentralizedActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode_action</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CentralizedActionSpace.decode_action"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.decode_action">[docs]</a>    <span class="k">def</span> <span class="nf">decode_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_action</span> <span class="o">=</span> <span class="n">action</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">):</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_action</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">)</span>
+            <span class="n">current_action</span> <span class="o">//=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span>
+        <span class="k">return</span> <span class="n">actions</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CentralizedActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span></div>
+
+<div class="viewcode-block" id="CentralizedActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">individual_masks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
+        <span class="n">combinations</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">)</span>
+        <span class="n">joint_mask</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+            <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">individual_masks</span><span class="p">[</span><span class="n">agent_idx</span><span class="p">][</span><span class="n">action</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">agent_idx</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combination</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">joint_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_valid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">joint_mask</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.wrappers package &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="pytsc.tests package" href="pytsc.tests.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pytsc.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pytsc.wrappers package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.wrappers">pytsc.wrappers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">pytsc.wrappers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">pytsc.wrappers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">pytsc.wrappers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.wrappers.epymarl">pytsc.wrappers.epymarl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.wrappers.pymarl">pytsc.wrappers.pymarl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.wrappers.rllib">pytsc.wrappers.rllib module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-3">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pytsc</a></li>
+          <li class="breadcrumb-item"><a href="pytsc.html">pytsc package</a></li>
+      <li class="breadcrumb-item active">pytsc.wrappers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/generated/pytsc.wrappers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytsc-wrappers-package">
+<h1>pytsc.wrappers package<a class="headerlink" href="#pytsc-wrappers-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pytsc.wrappers">
+<span id="pytsc-wrappers-module"></span><h2>pytsc.wrappers module<a class="headerlink" href="#module-pytsc.wrappers" title="Permalink to this headline"></a></h2>
+</section>
+<section id="id1">
+<h2>pytsc.wrappers module<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-0"></span></section>
+<section id="id2">
+<h2>pytsc.wrappers module<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-1"></span></section>
+<section id="id3">
+<h2>pytsc.wrappers module<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-2"></span></section>
+<section id="module-pytsc.wrappers.epymarl">
+<span id="pytsc-wrappers-epymarl-module"></span><h2>pytsc.wrappers.epymarl module<a class="headerlink" href="#module-pytsc.wrappers.epymarl" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.wrappers.epymarl.</span></span><span class="sig-name descname"><span class="pre">DomainRandomizedEPyMARLTrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sumo'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">smac.env.multiagentenv.MultiAgentEnv</span></code></p>
+<p>A wrapper for the TrafficSignalNetwork environment that supports
+domain randomization. It randomly selects a map from a provided list at
+each reset, and pads outputs so that the observation and action interfaces
+remain fixed (with a maximum number of agents).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_names</strong> (<em>list</em>) – A list of map names to choose from.</p></li>
+<li><p><strong>max_n_agents</strong> (<em>int</em>) – The maximum number of agents.</p></li>
+<li><p><strong>simulator_backend</strong> (<em>str</em>) – The simulator backend to use (default “sumo”).</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments for TrafficSignalNetwork.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.apply_actions">
+<span class="sig-name descname"><span class="pre">apply_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.apply_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.apply_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Apply actions and remove padding if necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_avail_actions">
+<span class="sig-name descname"><span class="pre">get_avail_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_avail_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_avail_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Get available actions from the current environment and pad the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_env_info">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_env_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get environment info from the current environment and pad the
+adjacency matrix. Also, set n_agents to max_n_agents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_local_rewards">
+<span class="sig-name descname"><span class="pre">get_local_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_local_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_local_rewards" title="Permalink to this definition"></a></dt>
+<dd><p>Get local rewards from the current environment and pad the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs">
+<span class="sig-name descname"><span class="pre">get_obs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs" title="Permalink to this definition"></a></dt>
+<dd><p>Get observations from the current environment and pad the list of
+observations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs_size">
+<span class="sig-name descname"><span class="pre">get_obs_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get the state from the current environment. The state is padded
+to match the max_n_agents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state_size">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the global state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_total_actions">
+<span class="sig-name descname"><span class="pre">get_total_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.get_total_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_total_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the total number of actions an agent could ever take.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset the environment. Reinitialize the underlying TrafficSignalNetwork
+using a (potentially) different map to achieve domain randomization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#DomainRandomizedEPyMARLTrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.step" title="Permalink to this definition"></a></dt>
+<dd><p>Step through the environment using valid (unpadded) actions,
+then pad the observations before returning.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.step_stats">
+<span class="sig-name descname"><span class="pre">step_stats</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.step_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.wrappers.epymarl.</span></span><span class="sig-name descname"><span class="pre">EPyMARLTrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pasubio'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sumo'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">smac.env.multiagentenv.MultiAgentEnv</span></code></p>
+<p>A  wrapper for the TrafficSignalNetwork environment that allows for
+multi-agent reinforcement learning. This environment is designed to
+be used with the EPyMARL framework, which is a multi-agent reinforcement
+learning library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_name</strong> (<em>str</em>) – The name of the map to use (default “pasubio”).</p></li>
+<li><p><strong>simulator_backend</strong> (<em>str</em>) – The simulator backend to use (default “sumo”).</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments for TrafficSignalNetwork.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.apply_actions">
+<span class="sig-name descname"><span class="pre">apply_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.apply_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.apply_actions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_avail_actions">
+<span class="sig-name descname"><span class="pre">get_avail_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_avail_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_avail_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the available actions of all agents in a list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_domain_class">
+<span class="sig-name descname"><span class="pre">get_domain_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_domain_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_domain_class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_env_info">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_env_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_local_rewards">
+<span class="sig-name descname"><span class="pre">get_local_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_local_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_local_rewards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_network_flow">
+<span class="sig-name descname"><span class="pre">get_network_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_network_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_network_flow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs">
+<span class="sig-name descname"><span class="pre">get_obs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_obs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all agent observations in a list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs_size">
+<span class="sig-name descname"><span class="pre">get_obs_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_obs_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_pressures">
+<span class="sig-name descname"><span class="pre">get_pressures</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_pressures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_pressures" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the global state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state_size">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the global state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_total_actions">
+<span class="sig-name descname"><span class="pre">get_total_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.get_total_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_total_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the total number of actions an agent could ever take.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.is_terminated">
+<span class="sig-name descname"><span class="pre">is_terminated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.is_terminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.is_terminated" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Returns initial observations and states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.set_domain_class">
+<span class="sig-name descname"><span class="pre">set_domain_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.set_domain_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.set_domain_class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.sim_step">
+<span class="sig-name descname"><span class="pre">sim_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.sim_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.sim_step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/epymarl.html#EPyMARLTrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.step" title="Permalink to this definition"></a></dt>
+<dd><p>Returns reward, terminated, info.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.step_stats">
+<span class="sig-name descname"><span class="pre">step_stats</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.step_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.wrappers.pymarl">
+<span id="pytsc-wrappers-pymarl-module"></span><h2>pytsc.wrappers.pymarl module<a class="headerlink" href="#module-pytsc.wrappers.pymarl" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.wrappers.pymarl.</span></span><span class="sig-name descname"><span class="pre">PyMARLTrafficSignalNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'monaco'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sumo'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">smac.env.multiagentenv.MultiAgentEnv</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.apply_actions">
+<span class="sig-name descname"><span class="pre">apply_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.apply_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.apply_actions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_avail_actions">
+<span class="sig-name descname"><span class="pre">get_avail_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_avail_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_avail_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the available actions of all agents in a list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_domain_class">
+<span class="sig-name descname"><span class="pre">get_domain_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_domain_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_domain_class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_env_info">
+<span class="sig-name descname"><span class="pre">get_env_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_env_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_env_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_local_rewards">
+<span class="sig-name descname"><span class="pre">get_local_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_local_rewards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_local_rewards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_network_flow">
+<span class="sig-name descname"><span class="pre">get_network_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_network_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_network_flow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs">
+<span class="sig-name descname"><span class="pre">get_obs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_obs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all agent observations in a list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs_size">
+<span class="sig-name descname"><span class="pre">get_obs_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_obs_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the observation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_pressures">
+<span class="sig-name descname"><span class="pre">get_pressures</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_pressures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_pressures" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the global state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state_size">
+<span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the size of the global state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_total_actions">
+<span class="sig-name descname"><span class="pre">get_total_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.get_total_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_total_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the total number of actions an agent could ever take.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.is_terminated">
+<span class="sig-name descname"><span class="pre">is_terminated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.is_terminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.is_terminated" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Returns initial observations and states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.set_domain_class">
+<span class="sig-name descname"><span class="pre">set_domain_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.set_domain_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.set_domain_class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.sim_step">
+<span class="sig-name descname"><span class="pre">sim_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.sim_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.sim_step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/wrappers/pymarl.html#PyMARLTrafficSignalNetwork.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.step" title="Permalink to this definition"></a></dt>
+<dd><p>Returns reward, terminated, info.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.step_stats">
+<span class="sig-name descname"><span class="pre">step_stats</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.step_stats" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.wrappers.rllib">
+<span id="pytsc-wrappers-rllib-module"></span><h2>pytsc.wrappers.rllib module<a class="headerlink" href="#module-pytsc.wrappers.rllib" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-3">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-3" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pytsc.tests.html" class="btn btn-neutral float-left" title="pytsc.tests package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

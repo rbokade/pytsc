@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.wrappers.epymarl &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.wrappers.epymarl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.wrappers.epymarl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">smac.env</span> <span class="kn">import</span> <span class="n">MultiAgentEnv</span>
+
+<span class="kn">from</span> <span class="nn">pytsc</span> <span class="kn">import</span> <span class="n">TrafficSignalNetwork</span>
+
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork">[docs]</a><span class="k">class</span> <span class="nc">EPyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="n">MultiAgentEnv</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A  wrapper for the TrafficSignalNetwork environment that allows for</span>
+<span class="sd">    multi-agent reinforcement learning. This environment is designed to</span>
+<span class="sd">    be used with the EPyMARL framework, which is a multi-agent reinforcement</span>
+<span class="sd">    learning library.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        map_name (str): The name of the map to use (default &quot;pasubio&quot;).</span>
+<span class="sd">        simulator_backend (str): The simulator backend to use (default &quot;sumo&quot;).</span>
+<span class="sd">        **kwargs: Additional keyword arguments for TrafficSignalNetwork.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">step_stats</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_name</span><span class="o">=</span><span class="s2">&quot;pasubio&quot;</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span> <span class="o">=</span> <span class="n">TrafficSignalNetwork</span><span class="p">(</span>
+            <span class="n">map_name</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="n">simulator_backend</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common_reward</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;common_reward&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_scalarization</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reward_scalarization&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.apply_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.apply_actions">[docs]</a>    <span class="k">def</span> <span class="nf">apply_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.close"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_avail_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_avail_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_avail_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_mask</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_env_info"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_env_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;agents&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;episode_limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span><span class="p">,</span>
+            <span class="s2">&quot;n_actions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_actions</span><span class="p">(),</span>
+            <span class="s2">&quot;adjacency_matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">,</span>
+            <span class="s2">&quot;n_agents&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span>
+            <span class="s2">&quot;obs_shape&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs_size</span><span class="p">(),</span>
+            <span class="s2">&quot;obs_info&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_observation_info</span><span class="p">(),</span>
+            <span class="s2">&quot;state_shape&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">(),</span>
+            <span class="s2">&quot;lane_features&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_per_agent_lane_features</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">env_info</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_obs"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_observations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_obs_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_obs_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_observation_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_network_flow"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_network_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_network_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">network_flow</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_pressures"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_pressures">[docs]</a>    <span class="k">def</span> <span class="nf">get_pressures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pressures</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_state"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_local_rewards"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_local_rewards">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_rewards</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_state_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_stats"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_env_stats</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_total_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_total_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.get_domain_class"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.get_domain_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_domain_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">domain_class</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.set_domain_class"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.set_domain_class">[docs]</a>    <span class="k">def</span> <span class="nf">set_domain_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_class</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_domain_class</span><span class="p">(</span><span class="n">domain_class</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.is_terminated"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.is_terminated">[docs]</a>    <span class="k">def</span> <span class="nf">is_terminated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">is_terminated</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.sim_step"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.sim_step">[docs]</a>    <span class="k">def</span> <span class="nf">sim_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.reset"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">obs</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_over</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obs</span><span class="p">,</span> <span class="n">state</span></div>
+
+<div class="viewcode-block" id="EPyMARLTrafficSignalNetwork.step"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.EPyMARLTrafficSignalNetwork.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="n">reward</span><span class="p">,</span> <span class="n">episode_over</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_reward</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_scalarization</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                <span class="n">reward</span> <span class="o">=</span> <span class="n">reward</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">n_agents</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_rewards</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs</span><span class="p">(),</span> <span class="n">reward</span><span class="p">,</span> <span class="n">episode_over</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">env_info</span></div></div>
+
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork">[docs]</a><span class="k">class</span> <span class="nc">DomainRandomizedEPyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="n">MultiAgentEnv</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for the TrafficSignalNetwork environment that supports</span>
+<span class="sd">    domain randomization. It randomly selects a map from a provided list at</span>
+<span class="sd">    each reset, and pads outputs so that the observation and action interfaces</span>
+<span class="sd">    remain fixed (with a maximum number of agents).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        map_names (list): A list of map names to choose from.</span>
+<span class="sd">        max_n_agents (int): The maximum number of agents.</span>
+<span class="sd">        simulator_backend (str): The simulator backend to use (default &quot;sumo&quot;).</span>
+<span class="sd">        **kwargs: Additional keyword arguments for TrafficSignalNetwork.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">step_stats</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_names</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;map_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_names</span> <span class="o">=</span> <span class="n">map_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span> <span class="o">=</span> <span class="n">simulator_backend</span>
+        <span class="c1"># self.seed = kwargs.get(&quot;seed&quot;, 0)</span>
+        <span class="c1"># random.seed(self.seed)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_n_agents</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Initialize first environment instance.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_n_agents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_traffic_signal_network</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_max_n_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the maximum number of agents from the list of map names.</span>
+<span class="sd">        This assumes that all maps have the same number of agents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_n_agents</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">map_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_names</span><span class="p">:</span>
+            <span class="n">tsc_env</span> <span class="o">=</span> <span class="n">TrafficSignalNetwork</span><span class="p">(</span>
+                <span class="n">map_name</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sumo_config_files&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;sumo_config_files&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span><span class="p">[</span><span class="n">map_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span>
+                        <span class="s2">&quot;sumo_config_files&quot;</span>
+                    <span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span><span class="p">[</span><span class="n">map_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span><span class="p">[</span><span class="n">map_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">max_n_agents</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_n_agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">))</span>
+            <span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">close_simulator</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">tsc_env</span>
+        <span class="k">return</span> <span class="n">max_n_agents</span>
+
+    <span class="k">def</span> <span class="nf">_get_map_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_names</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_random_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span><span class="p">[</span><span class="n">map_name</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_reset_traffic_signal_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">close_simulator</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span>
+            <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">map_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_map_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg_files</span><span class="p">[</span><span class="n">map_name</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfg_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_random_config_file</span><span class="p">(</span><span class="n">map_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sumo&quot;</span><span class="p">][</span><span class="s2">&quot;sumo_config_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg_file</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Selected config: </span><span class="si">{</span><span class="n">cfg_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected map: </span><span class="si">{</span><span class="n">map_name</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span> <span class="o">=</span> <span class="n">EPyMARLTrafficSignalNetwork</span><span class="p">(</span>
+            <span class="n">map_name</span><span class="o">=</span><span class="n">map_name</span><span class="p">,</span>
+            <span class="n">simulator_backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_n_agents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">episode_limit</span>
+
+    <span class="k">def</span> <span class="nf">_pad_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">pad_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pad_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">padded_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+                <span class="n">adjacency_matrix</span><span class="p">,</span>
+                <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad_rows</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad_cols</span><span class="p">)),</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">padded_matrix</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">padded_matrix</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">adjacency_matrix</span><span class="p">:</span>
+                <span class="n">padded_row</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+                <span class="n">padded_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">padded_row</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">adjacency_matrix</span><span class="p">)):</span>
+                <span class="n">padded_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">padded_matrix</span>
+
+    <span class="k">def</span> <span class="nf">_pad_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pad a list to length max_n_agents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">lst</span> <span class="o">+</span> <span class="p">[</span><span class="n">pad_value</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.apply_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.apply_actions">[docs]</a>    <span class="k">def</span> <span class="nf">apply_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply actions and remove padding if necessary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">valid_actions</span> <span class="o">=</span> <span class="n">actions</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_n_agents</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">apply_actions</span><span class="p">(</span><span class="n">valid_actions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_avail_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_avail_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_avail_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get available actions from the current environment and pad the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_avail_actions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span><span class="p">:</span>
+            <span class="n">pad_action_mask</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_total_actions</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">action_mask</span><span class="p">))</span>
+            <span class="p">]</span>
+            <span class="n">action_mask</span> <span class="o">=</span> <span class="n">action_mask</span> <span class="o">+</span> <span class="n">pad_action_mask</span>
+        <span class="k">return</span> <span class="n">action_mask</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_env_info"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_env_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get environment info from the current environment and pad the</span>
+<span class="sd">        adjacency matrix. Also, set n_agents to max_n_agents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_env_info</span><span class="p">()</span>
+        <span class="n">env_info</span><span class="p">[</span><span class="s2">&quot;adjacency_matrix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pad_adjacency_matrix</span><span class="p">(</span>
+            <span class="n">env_info</span><span class="p">[</span><span class="s2">&quot;adjacency_matrix&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">env_info</span><span class="p">[</span><span class="s2">&quot;n_agents&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span>
+        <span class="k">return</span> <span class="n">env_info</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get observations from the current environment and pad the list of</span>
+<span class="sd">        observations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_obs</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span><span class="p">:</span>
+            <span class="n">pad_obs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_obs_size</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">obs</span><span class="p">))</span>
+            <span class="p">]</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">obs</span> <span class="o">+</span> <span class="n">pad_obs</span>
+        <span class="k">return</span> <span class="n">obs</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_obs_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_obs_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_state"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the state from the current environment. The state is padded</span>
+<span class="sd">        to match the max_n_agents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span><span class="p">:</span>
+            <span class="n">pad_state</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+            <span class="p">]</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">state</span> <span class="o">+</span> <span class="n">pad_state</span>
+        <span class="k">return</span> <span class="n">state</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_local_rewards"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_local_rewards">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get local rewards from the current environment and pad the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">local_rewards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_local_rewards</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_rewards</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span><span class="p">:</span>
+            <span class="n">pad_rewards</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_n_agents</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_rewards</span><span class="p">))</span>
+            <span class="n">local_rewards</span> <span class="o">=</span> <span class="n">local_rewards</span> <span class="o">+</span> <span class="n">pad_rewards</span>
+        <span class="k">return</span> <span class="n">local_rewards</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_state_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_total_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_total_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_total_actions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.get_stats"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.get_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.reset"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the environment. Reinitialize the underlying TrafficSignalNetwork</span>
+<span class="sd">        using a (potentially) different map to achieve domain randomization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">obs</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_over</span><span class="p">:</span>
+            <span class="n">is_terminated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">is_terminated</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_terminated</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reset_traffic_signal_network</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obs</span><span class="p">,</span> <span class="n">state</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.step"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Step through the environment using valid (unpadded) actions,</span>
+<span class="sd">        then pad the observations before returning.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">valid_actions</span> <span class="o">=</span> <span class="n">actions</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_n_agents</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">episode_over</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">valid_actions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">common_reward</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">reward_scalarization</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                <span class="n">reward</span> <span class="o">=</span> <span class="n">reward</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_env</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">n_agents</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_rewards</span><span class="p">()</span>
+        <span class="n">padded_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">padded_obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">episode_over</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">env_info</span></div>
+
+<div class="viewcode-block" id="DomainRandomizedEPyMARLTrafficSignalNetwork.close"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.epymarl.DomainRandomizedEPyMARLTrafficSignalNetwork.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

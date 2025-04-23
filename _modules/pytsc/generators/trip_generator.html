@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.generators.trip_generator &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.generators.trip_generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.generators.trip_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.backends.sumo.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">pytsc.backends.sumo.network_parser</span> <span class="kn">import</span> <span class="n">NetworkParser</span>
+
+<span class="n">CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+    <span class="s2">&quot;..&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scenarios&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="TripGenerator"><a class="viewcode-back" href="../../../api/generated/pytsc.generators.html#pytsc.generators.trip_generator.TripGenerator">[docs]</a><span class="k">class</span> <span class="nc">TripGenerator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">NetworkParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">netfile_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">.net.xml&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">routesfile_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">.rou.xml&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">odpairsfile_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">_odpairs.txt&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">begin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="mi">3600</span>
+
+<div class="viewcode-block" id="TripGenerator.find_fringe_edges"><a class="viewcode-back" href="../../../api/generated/pytsc.generators.html#pytsc.generators.trip_generator.TripGenerator.find_fringe_edges">[docs]</a>    <span class="k">def</span> <span class="nf">find_fringe_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">incoming_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">outgoing_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">is_fringe</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">getFromNode</span><span class="p">()</span><span class="o">.</span><span class="n">getFringe</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">outgoing_fringe_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">edge</span><span class="o">.</span><span class="n">getToNode</span><span class="p">()</span><span class="o">.</span><span class="n">getFringe</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">incoming_fringe_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">outgoing_fringe_edges</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_od_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">outgoing_fringe_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_fringe_edges</span><span class="p">()</span>
+        <span class="c1"># Calculate all combinations of incoming and outgoing edges</span>
+        <span class="n">od_pairs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">in_edge</span><span class="o">.</span><span class="n">getID</span><span class="p">(),</span> <span class="n">out_edge</span><span class="o">.</span><span class="n">getID</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">in_edge</span> <span class="ow">in</span> <span class="n">incoming_fringe_edges</span>
+            <span class="k">for</span> <span class="n">out_edge</span> <span class="ow">in</span> <span class="n">outgoing_fringe_edges</span>
+        <span class="p">]</span>
+        <span class="c1"># Write the origin-destination pairs to the file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">odpairsfile_dir</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">in_edge_id</span><span class="p">,</span> <span class="n">out_edge_id</span> <span class="ow">in</span> <span class="n">od_pairs</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">in_edge_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">out_edge_id</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TripGenerator.generate_flows"><a class="viewcode-back" href="../../../api/generated/pytsc.generators.html#pytsc.generators.trip_generator.TripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># self._create_od_pairs()</span>
+        <span class="c1"># # Use od2trips to generate the trips directly in the routes file</span>
+        <span class="c1"># cmd = &quot;od2trips&quot;</span>
+        <span class="c1"># cmd += f&quot; --net-file {self.netfile_dir}&quot;</span>
+        <span class="c1"># cmd += f&quot; --flow-output {self.routesfile_dir}&quot;</span>
+        <span class="c1"># cmd += f&quot; --begin {self.begin}&quot;</span>
+        <span class="c1"># cmd += f&quot; --end {self.end}&quot;</span>
+        <span class="c1"># cmd += f&quot; --od-matrix-files {self.odpairsfile_dir}&quot;</span>
+        <span class="c1"># cmd += &quot; --verbose&quot;</span>
+        <span class="c1"># os.system(cmd)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_flows</span><span class="p">()</span></div>
+
+    <span class="c1"># def generate_flows(self):</span>
+    <span class="c1">#     incoming_fringe_edges, outgoing_fringe_edges = self.find_fringe_edges()</span>
+    <span class="c1">#     root = ET.Element(&quot;routes&quot;)</span>
+    <span class="c1">#     for i in range(self.config.trip_generator_config[&quot;n_flows&quot;]):</span>
+    <span class="c1">#         flow = ET.SubElement(root, &quot;flow&quot;)</span>
+    <span class="c1">#         flow.set(&quot;id&quot;, f&quot;flow_{i}&quot;)</span>
+    <span class="c1">#         flow.set(&quot;from&quot;, random.choice(incoming_fringe_edges).getID())</span>
+    <span class="c1">#         flow.set(&quot;to&quot;, random.choice(outgoing_fringe_edges).getID())</span>
+    <span class="c1">#         flow.set(&quot;begin&quot;, str(self.begin))</span>
+    <span class="c1">#         flow.set(&quot;end&quot;, str(self.end))</span>
+    <span class="c1">#         flow.set(&quot;probability&quot;, str(random.uniform(0.1, 0.5)))</span>
+    <span class="c1">#         flow.set(&quot;departSpeed&quot;, &quot;max&quot;)</span>
+    <span class="c1">#         flow.set(&quot;departPos&quot;, &quot;base&quot;)</span>
+    <span class="c1">#         flow.set(&quot;departLane&quot;, &quot;best&quot;)</span>
+    <span class="c1">#     # Save the generated routes to the file</span>
+    <span class="c1">#     tree = ET.ElementTree(root)</span>
+    <span class="c1">#     tree.write(self.routesfile_dir, xml_declaration=True, encoding=&quot;utf-8&quot;)</span>
+    <span class="c1">#     # Print the generated XML content</span>
+    <span class="c1">#     ET.dump(tree)</span>
+    <span class="c1">#     self._validate_flows()</span>
+
+    <span class="k">def</span> <span class="nf">_validate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Run duarouter to validate and fix the routes in-place</span>
+        <span class="n">validate</span> <span class="o">=</span> <span class="s2">&quot;duarouter --repair &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;--net-file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">netfile_dir</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;--route-files </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">routesfile_dir</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;--output-file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">routesfile_dir</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;--begin </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">begin</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;--end </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="s2">&quot;--remove-loops &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="s2">&quot;--repair.from &quot;</span>
+        <span class="n">validate</span> <span class="o">+=</span> <span class="s2">&quot;--repair.to &quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">validate</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">validate</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;scenario name&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;4x4_regular_grid&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">trip_generator</span> <span class="o">=</span> <span class="n">TripGenerator</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+    <span class="n">trip_generator</span><span class="o">.</span><span class="n">generate_flows</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

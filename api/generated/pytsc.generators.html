@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.generators package &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pytsc.scenarios package" href="pytsc.scenarios.html" />
+    <link rel="prev" title="pytsc.controllers package" href="pytsc.controllers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pytsc.generators package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pytsc.generators package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">pytsc.generators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators.cityflow_arterial_network_generation">pytsc.generators.cityflow_arterial_network_generation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators.convert_sumo_trips_to_cityflow">pytsc.generators.convert_sumo_trips_to_cityflow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators.grid_generator">pytsc.generators.grid_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators.laneareadetector_generator">pytsc.generators.laneareadetector_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.generators.trip_generator">pytsc.generators.trip_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-5">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pytsc</a></li>
+          <li class="breadcrumb-item"><a href="pytsc.html">pytsc package</a></li>
+      <li class="breadcrumb-item active">pytsc.generators package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/generated/pytsc.generators.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytsc-generators-package">
+<h1>pytsc.generators package<a class="headerlink" href="#pytsc-generators-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pytsc.generators">
+<span id="pytsc-generators-module"></span><h2>pytsc.generators module<a class="headerlink" href="#module-pytsc.generators" title="Permalink to this headline"></a></h2>
+</section>
+<section id="id1">
+<h2>pytsc.generators module<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-0"></span></section>
+<section id="id2">
+<h2>pytsc.generators module<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-1"></span></section>
+<section id="id3">
+<h2>pytsc.generators module<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-2"></span></section>
+<section id="id4">
+<h2>pytsc.generators module<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-3"></span></section>
+<section id="id5">
+<h2>pytsc.generators module<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-4"></span></section>
+<section id="module-pytsc.generators.cityflow_arterial_network_generation">
+<span id="pytsc-generators-cityflow-arterial-network-generation-module"></span><h2>pytsc.generators.cityflow_arterial_network_generation module<a class="headerlink" href="#module-pytsc.generators.cityflow_arterial_network_generation" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.generators.cityflow_arterial_network_generation.</span></span><span class="sig-name descname"><span class="pre">ArterialNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_flow_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(500,</span> <span class="pre">600,</span> <span class="pre">700)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bursts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/cityflow_arterial_network_generation.html#ArterialNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.col_distance">
+<span class="sig-name descname"><span class="pre">col_distance</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.col_distance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.end_time">
+<span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.end_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.generate_roadnet_files">
+<span class="sig-name descname"><span class="pre">generate_roadnet_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update_side_street_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/cityflow_arterial_network_generation.html#ArterialNetwork.generate_roadnet_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.generate_roadnet_files" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.intersection_width">
+<span class="sig-name descname"><span class="pre">intersection_width</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.intersection_width" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.lane_max_speed">
+<span class="sig-name descname"><span class="pre">lane_max_speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.lane_max_speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_left_lanes">
+<span class="sig-name descname"><span class="pre">n_left_lanes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_left_lanes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_right_lanes">
+<span class="sig-name descname"><span class="pre">n_right_lanes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_right_lanes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_straight_lanes">
+<span class="sig-name descname"><span class="pre">n_straight_lanes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.n_straight_lanes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.nrows">
+<span class="sig-name descname"><span class="pre">nrows</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.nrows" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.row_distance">
+<span class="sig-name descname"><span class="pre">row_distance</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.row_distance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_headway_time">
+<span class="sig-name descname"><span class="pre">veh_headway_time</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_headway_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_max_speed">
+<span class="sig-name descname"><span class="pre">veh_max_speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_max_speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_min_gap">
+<span class="sig-name descname"><span class="pre">veh_min_gap</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.5</span></em><a class="headerlink" href="#pytsc.generators.cityflow_arterial_network_generation.ArterialNetwork.veh_min_gap" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.generators.convert_sumo_trips_to_cityflow">
+<span id="pytsc-generators-convert-sumo-trips-to-cityflow-module"></span><h2>pytsc.generators.convert_sumo_trips_to_cityflow module<a class="headerlink" href="#module-pytsc.generators.convert_sumo_trips_to_cityflow" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pytsc.generators.convert_sumo_trips_to_cityflow.convert_sumo_to_cityflow">
+<span class="sig-prename descclassname"><span class="pre">pytsc.generators.convert_sumo_trips_to_cityflow.</span></span><span class="sig-name descname"><span class="pre">convert_sumo_to_cityflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sumo_trip_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/convert_sumo_trips_to_cityflow.html#convert_sumo_to_cityflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.convert_sumo_trips_to_cityflow.convert_sumo_to_cityflow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pytsc.generators.grid_generator">
+<span id="pytsc-generators-grid-generator-module"></span><h2>pytsc.generators.grid_generator module<a class="headerlink" href="#module-pytsc.generators.grid_generator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.generators.grid_generator.SUMOGridGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.generators.grid_generator.</span></span><span class="sig-name descname"><span class="pre">SUMOGridGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/grid_generator.html#SUMOGridGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.grid_generator.SUMOGridGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Creates grid network using SUMO’s netgenerate tool</p>
+<p>First create a scenario folder in the scenarios directory and add the configs in the <cite>config.yaml</cite> file</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.generators.grid_generator.SUMOGridGenerator.generate_grid">
+<span class="sig-name descname"><span class="pre">generate_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/grid_generator.html#SUMOGridGenerator.generate_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.grid_generator.SUMOGridGenerator.generate_grid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.generators.laneareadetector_generator">
+<span id="pytsc-generators-laneareadetector-generator-module"></span><h2>pytsc.generators.laneareadetector_generator module<a class="headerlink" href="#module-pytsc.generators.laneareadetector_generator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.generators.laneareadetector_generator.LaneAreaDetectorGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.generators.laneareadetector_generator.</span></span><span class="sig-name descname"><span class="pre">LaneAreaDetectorGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/laneareadetector_generator.html#LaneAreaDetectorGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.laneareadetector_generator.LaneAreaDetectorGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.generators.laneareadetector_generator.LaneAreaDetectorGenerator.generate_lane_area_detectors">
+<span class="sig-name descname"><span class="pre">generate_lane_area_detectors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/laneareadetector_generator.html#LaneAreaDetectorGenerator.generate_lane_area_detectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.laneareadetector_generator.LaneAreaDetectorGenerator.generate_lane_area_detectors" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.generators.trip_generator">
+<span id="pytsc-generators-trip-generator-module"></span><h2>pytsc.generators.trip_generator module<a class="headerlink" href="#module-pytsc.generators.trip_generator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.generators.trip_generator.TripGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.generators.trip_generator.</span></span><span class="sig-name descname"><span class="pre">TripGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/trip_generator.html#TripGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.trip_generator.TripGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.generators.trip_generator.TripGenerator.find_fringe_edges">
+<span class="sig-name descname"><span class="pre">find_fringe_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/trip_generator.html#TripGenerator.find_fringe_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.trip_generator.TripGenerator.find_fringe_edges" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.generators.trip_generator.TripGenerator.generate_flows">
+<span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/generators/trip_generator.html#TripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.generators.trip_generator.TripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-5">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-5" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pytsc.controllers.html" class="btn btn-neutral float-left" title="pytsc.controllers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pytsc.scenarios.html" class="btn btn-neutral float-right" title="pytsc.scenarios package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

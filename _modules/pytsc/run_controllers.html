@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.run_controllers &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.run_controllers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.run_controllers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">cProfile</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pstats</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.controllers.evaluate</span> <span class="kn">import</span> <span class="n">Evaluate</span><span class="p">,</span> <span class="n">RLEvaluate</span>
+
+
+<div class="viewcode-block" id="run_evaluation"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.run_evaluation">[docs]</a><span class="k">def</span> <span class="nf">run_evaluation</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">,</span>
+    <span class="n">simulator_backend</span><span class="p">,</span>
+    <span class="n">controller</span><span class="p">,</span>
+    <span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">add_env_args</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">add_controller_args</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+
+    <span class="n">eval_class</span> <span class="o">=</span> <span class="n">Evaluate</span> <span class="k">if</span> <span class="n">controller</span> <span class="ow">in</span> <span class="n">non_rl_controllers</span> <span class="k">else</span> <span class="n">RLEvaluate</span>
+    <span class="n">evaluate</span> <span class="o">=</span> <span class="n">eval_class</span><span class="p">(</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">simulator_backend</span><span class="p">,</span>
+        <span class="n">controller</span><span class="p">,</span>
+        <span class="n">add_env_args</span><span class="p">,</span>
+        <span class="n">add_controller_args</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">profile</span><span class="p">:</span>
+        <span class="c1"># Initialize the profiler</span>
+        <span class="n">profiler</span> <span class="o">=</span> <span class="n">cProfile</span><span class="o">.</span><span class="n">Profile</span><span class="p">()</span>
+        <span class="n">profiler</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+
+    <span class="n">evaluate</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">save_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="n">output_folder</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">profile</span><span class="p">:</span>
+        <span class="n">profiler</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ps</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="n">profiler</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="n">pstats</span><span class="o">.</span><span class="n">SortKey</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">ps</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="n">profiler</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+        <span class="n">ps</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;profile_</span><span class="si">{</span><span class="n">controller</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Profiling results saved for </span><span class="si">{</span><span class="n">controller</span><span class="si">}</span><span class="s2"> to profile_</span><span class="si">{</span><span class="n">controller</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">)</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">evaluate</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+    <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;controller&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">controller</span>
+    <span class="k">return</span> <span class="n">stats</span></div>
+
+
+<div class="viewcode-block" id="save_stats_to_file"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.save_stats_to_file">[docs]</a><span class="k">def</span> <span class="nf">save_stats_to_file</span><span class="p">(</span><span class="n">all_stats</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">):</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s2">&quot;stats.csv&quot;</span><span class="p">)</span>
+    <span class="n">all_stats</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_stats"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.plot_stats">[docs]</a><span class="k">def</span> <span class="nf">plot_stats</span><span class="p">(</span><span class="n">all_stats</span><span class="p">,</span> <span class="n">controllers</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">):</span>
+    <span class="n">stat_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">stat</span> <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">all_stats</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="s2">&quot;controller&quot;</span><span class="p">]</span>
+    <span class="n">num_stats</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stat_names</span><span class="p">)</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nrows</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_stats</span> <span class="o">+</span> <span class="n">ncols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">ncols</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">nrows</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="n">ncols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nrows</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">stat_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stat_names</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">idx</span> <span class="o">//</span> <span class="n">ncols</span><span class="p">][</span><span class="n">idx</span> <span class="o">%</span> <span class="n">ncols</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">controller</span> <span class="ow">in</span> <span class="n">controllers</span><span class="p">:</span>
+            <span class="n">controller_stats</span> <span class="o">=</span> <span class="n">all_stats</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">all_stats</span><span class="o">.</span><span class="n">controller</span> <span class="o">==</span> <span class="n">controller</span><span class="p">,</span> <span class="n">stat_name</span>
+            <span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">5</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controller_stats</span><span class="p">))]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">controller_stats</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">stat_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_stats</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span> <span class="o">//</span> <span class="n">ncols</span><span class="p">][</span><span class="n">idx</span> <span class="o">%</span> <span class="n">ncols</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scenario</span><span class="si">}</span><span class="s2">_stats.png&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.tight_layout()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="evaluate_controllers"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.evaluate_controllers">[docs]</a><span class="k">def</span> <span class="nf">evaluate_controllers</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">,</span>
+    <span class="n">simulator_backend</span><span class="p">,</span>
+    <span class="n">controllers</span><span class="p">,</span>
+    <span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">add_env_args</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">add_controller_args</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">output_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_folder</span> <span class="o">=</span> <span class="s2">&quot;pytsc/results&quot;</span>
+    <span class="n">output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="s2">&quot;pytsc&quot;</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_folder</span>
+    <span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">all_stats</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">controller</span> <span class="ow">in</span> <span class="n">controllers</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">run_evaluation</span><span class="p">(</span>
+            <span class="n">scenario</span><span class="p">,</span>
+            <span class="n">simulator_backend</span><span class="p">,</span>
+            <span class="n">controller</span><span class="p">,</span>
+            <span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">,</span>
+            <span class="n">add_env_args</span><span class="o">=</span><span class="n">add_env_args</span><span class="p">,</span>
+            <span class="n">add_controller_args</span><span class="o">=</span><span class="n">add_controller_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">controller</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+            <span class="n">output_folder</span><span class="o">=</span><span class="n">output_folder</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">all_stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+    <span class="n">all_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">save_stats_to_file</span><span class="p">(</span><span class="n">all_stats</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+        <span class="n">plot_stats</span><span class="p">(</span><span class="n">all_stats</span><span class="p">,</span> <span class="n">controllers</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="process_flow_files"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.process_flow_files">[docs]</a><span class="k">def</span> <span class="nf">process_flow_files</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">,</span>
+    <span class="n">simulator_backend</span><span class="p">,</span>
+    <span class="n">controllers</span><span class="p">,</span>
+    <span class="n">add_env_args</span><span class="p">,</span>
+    <span class="n">add_controller_args</span><span class="p">,</span>
+    <span class="n">hours</span><span class="p">,</span>
+    <span class="n">profile</span><span class="p">,</span>
+    <span class="n">flow_type</span><span class="p">,</span>
+    <span class="n">disruption_ratio</span><span class="p">,</span>
+    <span class="n">idx</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">evaluate_controllers</span><span class="p">(</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">simulator_backend</span><span class="p">,</span>
+        <span class="n">controllers</span><span class="p">,</span>
+        <span class="n">output_folder</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">flow_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">disruption_ratio</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">,</span>
+        <span class="n">add_env_args</span><span class="o">=</span><span class="n">add_env_args</span><span class="p">,</span>
+        <span class="n">add_controller_args</span><span class="o">=</span><span class="n">add_controller_args</span><span class="p">,</span>
+        <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="evaluate_demand_increase_and_dropout"><a class="viewcode-back" href="../../api/generated/pytsc.html#pytsc.run_controllers.evaluate_demand_increase_and_dropout">[docs]</a><span class="k">def</span> <span class="nf">evaluate_demand_increase_and_dropout</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">,</span>
+    <span class="n">simulator_backend</span><span class="p">,</span>
+    <span class="n">controllers</span><span class="p">,</span>
+    <span class="n">add_env_args</span><span class="p">,</span>
+    <span class="n">add_controller_args</span><span class="p">,</span>
+    <span class="n">hours</span><span class="p">,</span>
+    <span class="n">sumo_config</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">,</span>
+    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">add_env_args_local</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">add_env_args</span><span class="p">)</span>
+    <span class="n">demand_increase</span> <span class="o">=</span> <span class="n">sumo_config</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">add_env_args_local</span><span class="p">[</span><span class="s2">&quot;sumo&quot;</span><span class="p">][</span><span class="s2">&quot;sumo_config_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumo_config</span>
+    <span class="n">add_env_args_local</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;obs_dropout_prob&quot;</span><span class="p">:</span> <span class="n">dropout</span><span class="p">}</span>
+    <span class="n">evaluate_controllers</span><span class="p">(</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">simulator_backend</span><span class="p">,</span>
+        <span class="n">controllers</span><span class="p">,</span>
+        <span class="n">output_folder</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;demand_increase_</span><span class="si">{</span><span class="n">demand_increase</span><span class="si">}</span><span class="s2">_obs_dropout_</span><span class="si">{</span><span class="n">dropout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">,</span>
+        <span class="n">add_env_args</span><span class="o">=</span><span class="n">add_env_args_local</span><span class="p">,</span>
+        <span class="n">add_controller_args</span><span class="o">=</span><span class="n">add_controller_args</span><span class="p">,</span>
+        <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of the scenario&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--simulator-backend&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;simulator_backend&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;`cityflow` or `sumo`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--controllers&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;`fixed_time`, `sotl`, `max_pressure`, `greedy`, `all`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--profile&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable profiling of Evaluate class methods&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">controllers</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">controllers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># &quot;mixed_rl&quot;,</span>
+            <span class="s2">&quot;specialized_marl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi_generalized_agent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi_generalized_graph_agent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;single_generalized_agent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi_generalized_var_robust_agent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi_generalized_var_robust_graph_agent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sotl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fixed_time&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;max_pressure&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">controllers</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">controllers</span><span class="p">]</span>
+
+    <span class="n">rl_controllers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;specialized_marl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;multi_generalized_agent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;multi_generalized_graph_agent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;multi_generalized_var_robust_agent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;multi_generalized_var_robust_graph_agent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;single_generalized_agent&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">non_rl_controllers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;sotl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;greedy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fixed_time&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;max_pressure&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">hours</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">add_controller_args</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;fixed_time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;green_time&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+        <span class="s2">&quot;sotl&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;phi_min&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">add_env_args</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># &quot;disrupted&quot;: False,</span>
+        <span class="s2">&quot;misc&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;return_agent_stats&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;return_lane_stats&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="c1"># &quot;cityflow&quot;: {</span>
+        <span class="c1">#     &quot;save_replay&quot;: True,</span>
+        <span class="c1">#     &quot;flow_rate_type&quot;: &quot;constant&quot;,</span>
+        <span class="c1">#         &quot;flow_file&quot;: f&quot;train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+        <span class="c1"># },</span>
+        <span class="c1"># &quot;mode&quot;: &quot;test&quot;,</span>
+        <span class="c1"># &quot;domain&quot;: &quot;flow_disrupted&quot;,</span>
+        <span class="s2">&quot;sumo&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;render&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="c1"># &quot;sumo_config_file&quot;: &quot;random_grid_increased_demand.sumocfg&quot;,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Baseline</span>
+    <span class="c1"># evaluate_controllers(</span>
+    <span class="c1">#     args.scenario,</span>
+    <span class="c1">#     args.simulator_backend,</span>
+    <span class="c1">#     controllers,</span>
+    <span class="c1">#     output_folder=&quot;baseline&quot;,</span>
+    <span class="c1">#     hours=hours,</span>
+    <span class="c1">#     add_env_args=add_env_args,</span>
+    <span class="c1">#     add_controller_args=add_controller_args,</span>
+    <span class="c1">#     profile=args.profile,</span>
+    <span class="c1"># )</span>
+
+    <span class="c1"># # Demand Increase</span>
+    <span class="c1"># sumo_configs = [</span>
+    <span class="c1">#     &quot;random_grid_0.1_increased_demand.sumocfg&quot;,</span>
+    <span class="c1">#     &quot;random_grid_0.2_increased_demand.sumocfg&quot;,</span>
+    <span class="c1">#     &quot;random_grid_0.3_increased_demand.sumocfg&quot;,</span>
+    <span class="c1">#     &quot;random_grid_0.4_increased_demand.sumocfg&quot;,</span>
+    <span class="c1">#     &quot;random_grid_0.5_increased_demand.sumocfg&quot;,</span>
+    <span class="c1"># ]</span>
+    <span class="c1"># for sumo_config in sumo_configs:</span>
+    <span class="c1">#     demand_increase = sumo_config.split(&quot;_&quot;)[2]</span>
+    <span class="c1">#     add_env_args[&quot;sumo&quot;][&quot;sumo_config_file&quot;] = sumo_config</span>
+    <span class="c1">#     evaluate_controllers(</span>
+    <span class="c1">#         args.scenario,</span>
+    <span class="c1">#         args.simulator_backend,</span>
+    <span class="c1">#         controllers,</span>
+    <span class="c1">#         output_folder=f&quot;demand_increase_{demand_increase}&quot;,</span>
+    <span class="c1">#         hours=hours,</span>
+    <span class="c1">#         add_env_args=add_env_args,</span>
+    <span class="c1">#         add_controller_args=add_controller_args,</span>
+    <span class="c1">#         profile=args.profile,</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># Observation dropout</span>
+    <span class="n">noise_stds</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">noise_std</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">noise_stds</span><span class="p">):</span>
+        <span class="n">add_env_args</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;obs_noise_std&quot;</span><span class="p">:</span> <span class="n">noise_std</span><span class="p">}</span>
+        <span class="n">evaluate_controllers</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">,</span>
+            <span class="n">controllers</span><span class="p">,</span>
+            <span class="n">output_folder</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;obs_noise_std_</span><span class="si">{</span><span class="n">noise_std</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">,</span>
+            <span class="n">add_env_args</span><span class="o">=</span><span class="n">add_env_args</span><span class="p">,</span>
+            <span class="n">add_controller_args</span><span class="o">=</span><span class="n">add_controller_args</span><span class="p">,</span>
+            <span class="n">profile</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">profile</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># n_processes = min(len(sumo_configs) * len(dropouts), multiprocessing.cpu_count())</span>
+    <span class="c1"># pool = multiprocessing.Pool(n_processes)</span>
+    <span class="c1"># tasks = [</span>
+    <span class="c1">#     (</span>
+    <span class="c1">#         args.scenario,</span>
+    <span class="c1">#         args.simulator_backend,</span>
+    <span class="c1">#         controllers,</span>
+    <span class="c1">#         add_env_args,</span>
+    <span class="c1">#         add_controller_args,</span>
+    <span class="c1">#         hours,</span>
+    <span class="c1">#         sumo_config,</span>
+    <span class="c1">#         dropout,</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     for sumo_config in sumo_configs</span>
+    <span class="c1">#     for dropout in dropouts</span>
+    <span class="c1"># ]</span>
+    <span class="c1"># pool.starmap(evaluate_demand_increase_and_dropout, tasks)</span>
+    <span class="c1"># pool.close()</span>
+    <span class="c1"># pool.join()</span>
+
+    <span class="c1"># for i in range(1, 6):</span>
+    <span class="c1">#     add_env_args[&quot;sumo&quot;][&quot;random_game&quot;] = False</span>
+    <span class="c1">#     add_env_args[&quot;sumo&quot;][&quot;sumo_config_file&quot;] = f&quot;random_subnetwork_{i}_medium.sumocfg&quot;</span>
+    <span class="c1">#     add_env_args[&quot;sumo&quot;][&quot;sumo_net_file&quot;] = f&quot;random_subnetwork_{i}.net.xml&quot;</span>
+    <span class="c1">#     evaluate_controllers(</span>
+    <span class="c1">#         args.scenario,</span>
+    <span class="c1">#         args.simulator_backend,</span>
+    <span class="c1">#         controllers,</span>
+    <span class="c1">#         output_folder=f&quot;subnetwork_{i}&quot;,</span>
+    <span class="c1">#         hours=hours,</span>
+    <span class="c1">#         add_env_args=add_env_args,</span>
+    <span class="c1">#         add_controller_args=add_controller_args,</span>
+    <span class="c1">#         profile=args.profile,</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># flow_files_batch = {</span>
+    <span class="c1">#     &quot;flow_disrupted&quot;: {</span>
+    <span class="c1">#         0.1: [</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/0__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/1__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/2__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/3__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/4__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/5__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/6__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/7__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/8__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_1/9__{args.scenario}__fd_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.2: [</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/0__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/1__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/2__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/3__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/4__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/5__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/6__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/7__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/8__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_2/9__{args.scenario}__fd_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.3: [</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/0__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/1__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/2__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/3__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/4__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/5__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/6__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/7__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/8__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_3/9__{args.scenario}__fd_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.4: [</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/0__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/1__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/2__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/3__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/4__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/5__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/6__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/7__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/8__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_4/9__{args.scenario}__fd_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.5: [</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/0__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/1__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/2__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/3__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/4__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/5__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/6__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/7__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/8__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_5/9__{args.scenario}__fd_0.5__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.6: [</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/0__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/1__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/2__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/3__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/4__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/5__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/6__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/7__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/8__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/0_6/9__{args.scenario}__fd_0.6__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.7: [</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/0__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/1__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/2__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/3__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/4__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/5__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/6__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/7__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/8__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_7/9__{args.scenario}__fd_0.7__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.8: [</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/0__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/1__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/2__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/3__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/4__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/5__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/6__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/7__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/8__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/flow_disrupted/0_8/9__{args.scenario}__fd_0.8__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#     },</span>
+    <span class="c1">#     &quot;link_disrupted&quot;: {</span>
+    <span class="c1">#         0.1: [</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/0__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/1__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/2__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/3__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/4__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/5__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/6__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/7__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/8__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_1/9__{args.scenario}__dr_0.1__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.2: [</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/0__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/1__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/2__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/3__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/4__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/5__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/6__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/7__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/8__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_2/9__{args.scenario}__dr_0.2__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.3: [</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/0__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/1__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/2__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/3__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/4__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/5__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/6__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/7__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/8__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/link_disrupted/0_3/9__{args.scenario}__dr_0.3__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#         0.4: [</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/0__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/1__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/2__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/3__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/4__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/5__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/6__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/7__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/8__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;test/link_disrupted/0_4/9__{args.scenario}__dr_0.4__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#     },</span>
+    <span class="c1">#     &quot;baseline&quot;: {</span>
+    <span class="c1">#         0: [</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/0__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/1__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/2__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/3__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/4__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/5__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/6__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/7__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/8__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#             f&quot;train/flow_disrupted/700/9__{args.scenario}__gaussian_700_flows.json&quot;,</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#     },</span>
+    <span class="c1"># }</span>
+
+    <span class="c1"># for flow_type, flow_files in flow_files_batch.items():</span>
+    <span class="c1">#     for disruption_ratio, flow_files_ in flow_files.items():</span>
+    <span class="c1">#         add_env_args_list = [</span>
+    <span class="c1">#             deepcopy(add_env_args) for _ in range(len(flow_files_))</span>
+    <span class="c1">#         ]</span>
+    <span class="c1">#         for i, flow_file in enumerate(flow_files_):</span>
+    <span class="c1">#             add_env_args_list[i][&quot;cityflow&quot;] = {</span>
+    <span class="c1">#                 &quot;flow_rate_type&quot;: &quot;constant&quot;,</span>
+    <span class="c1">#                 &quot;flow_file&quot;: flow_file,</span>
+    <span class="c1">#             }</span>
+
+    <span class="c1">#         num_processes = min(len(flow_files_), multiprocessing.cpu_count())</span>
+    <span class="c1">#         with multiprocessing.Pool(processes=num_processes) as pool:</span>
+    <span class="c1">#             pool.starmap(</span>
+    <span class="c1">#                 process_flow_files,</span>
+    <span class="c1">#                 [</span>
+    <span class="c1">#                     (</span>
+    <span class="c1">#                         args.scenario,</span>
+    <span class="c1">#                         args.simulator_backend,</span>
+    <span class="c1">#                         controllers,</span>
+    <span class="c1">#                         add_env_args_,</span>
+    <span class="c1">#                         add_controller_args,</span>
+    <span class="c1">#                         hours,</span>
+    <span class="c1">#                         args.profile,</span>
+    <span class="c1">#                         flow_type,</span>
+    <span class="c1">#                         disruption_ratio,</span>
+    <span class="c1">#                         idx,</span>
+    <span class="c1">#                     )</span>
+    <span class="c1">#                     for idx, add_env_args_ in enumerate(add_env_args_list)</span>
+    <span class="c1">#                 ],</span>
+    <span class="c1">#             )</span>
+
+    <span class="c1"># add_env_args_list = [deepcopy(add_env_args) for _ in range(len(flow_files_batch))]</span>
+    <span class="c1"># for idx, add_env_args_ in enumerate(add_env_args_list):</span>
+    <span class="c1">#     add_env_args_[&quot;cityflow&quot;] = {</span>
+    <span class="c1">#         &quot;flow_rate_type&quot;: &quot;sequential&quot;,</span>
+    <span class="c1">#         &quot;flow_files&quot;: flow_files_batch[idx],</span>
+    <span class="c1">#     }</span>
+
+    <span class="c1"># num_processes = min(len(flow_files_batch), multiprocessing.cpu_count())</span>
+    <span class="c1"># with multiprocessing.Pool(processes=num_processes) as pool:</span>
+    <span class="c1">#     pool.starmap(</span>
+    <span class="c1">#         process_flow_files,</span>
+    <span class="c1">#         [</span>
+    <span class="c1">#             (</span>
+    <span class="c1">#                 args.scenario,</span>
+    <span class="c1">#                 args.simulator_backend,</span>
+    <span class="c1">#                 controllers,</span>
+    <span class="c1">#                 add_env_args_,</span>
+    <span class="c1">#                 add_controller_args,</span>
+    <span class="c1">#                 hours,</span>
+    <span class="c1">#                 args.profile,</span>
+    <span class="c1">#                 idx,</span>
+    <span class="c1">#             )</span>
+    <span class="c1">#             for idx, add_env_args_ in enumerate(add_env_args_list)</span>
+    <span class="c1">#         ],</span>
+    <span class="c1">#     )</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

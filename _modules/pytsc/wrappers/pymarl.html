@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.wrappers.pymarl &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.wrappers.pymarl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.wrappers.pymarl</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pytsc</span> <span class="kn">import</span> <span class="n">TrafficSignalNetwork</span>
+<span class="kn">from</span> <span class="nn">smac.env</span> <span class="kn">import</span> <span class="n">MultiAgentEnv</span>
+
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork">[docs]</a><span class="k">class</span> <span class="nc">PyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="n">MultiAgentEnv</span><span class="p">):</span>
+    <span class="n">step_stats</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_name</span><span class="o">=</span><span class="s2">&quot;monaco&quot;</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span> <span class="o">=</span> <span class="n">TrafficSignalNetwork</span><span class="p">(</span>
+            <span class="n">map_name</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="o">=</span><span class="n">simulator_backend</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_limit</span>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.apply_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.apply_actions">[docs]</a>    <span class="k">def</span> <span class="nf">apply_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.close"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_avail_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_avail_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_avail_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_mask</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_env_info"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_env_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">domain_classes</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;domain_classes&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;baseline&quot;</span><span class="p">])</span>
+        <span class="n">n_domains</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">domain_classes</span><span class="p">)</span> <span class="k">if</span> <span class="n">domain_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;agents&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;episode_limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span><span class="p">,</span>
+            <span class="s2">&quot;n_actions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_actions</span><span class="p">(),</span>
+            <span class="s2">&quot;adjacency_matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">,</span>
+            <span class="s2">&quot;n_agents&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">n_agents</span><span class="p">,</span>
+            <span class="s2">&quot;obs_shape&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs_size</span><span class="p">(),</span>
+            <span class="s2">&quot;state_shape&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">(),</span>
+            <span class="s2">&quot;n_domains&quot;</span><span class="p">:</span> <span class="n">n_domains</span><span class="p">,</span>
+            <span class="s2">&quot;domain_classes&quot;</span><span class="p">:</span> <span class="n">domain_classes</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">env_info</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_obs"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_observations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_obs_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_obs_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_obs_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_observation_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_network_flow"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_network_flow">[docs]</a>    <span class="k">def</span> <span class="nf">get_network_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">network_flow</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_pressures"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_pressures">[docs]</a>    <span class="k">def</span> <span class="nf">get_pressures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pressures</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_state"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_local_rewards"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_local_rewards">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_rewards</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_state_size"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_stats"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_env_stats</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_total_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_total_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">get_action_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.get_domain_class"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.get_domain_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_domain_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">domain_class</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.set_domain_class"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.set_domain_class">[docs]</a>    <span class="k">def</span> <span class="nf">set_domain_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_class</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_domain_class</span><span class="p">(</span><span class="n">domain_class</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.is_terminated"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.is_terminated">[docs]</a>    <span class="k">def</span> <span class="nf">is_terminated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">is_terminated</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.sim_step"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.sim_step">[docs]</a>    <span class="k">def</span> <span class="nf">sim_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.reset"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">episode_over</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_obs</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PyMARLTrafficSignalNetwork.step"><a class="viewcode-back" href="../../../api/generated/pytsc.wrappers.html#pytsc.wrappers.pymarl.PyMARLTrafficSignalNetwork.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsc_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

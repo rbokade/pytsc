@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.backends.cityflow.trip_generator &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.backends.cityflow.trip_generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.backends.cityflow.trip_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.backends.cityflow.config</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">DisruptedConfig</span>
+<span class="kn">from</span> <span class="nn">pytsc.backends.cityflow.network_parser</span> <span class="kn">import</span> <span class="n">NetworkParser</span>
+<span class="kn">from</span> <span class="nn">pytsc.common.trip_generator</span> <span class="kn">import</span> <span class="n">TripGenerator</span>
+<span class="kn">from</span> <span class="nn">pytsc.common.utils</span> <span class="kn">import</span> <span class="n">EnvLogger</span><span class="p">,</span> <span class="n">generate_weibull_flow_rates</span>
+
+<span class="n">CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+    <span class="s2">&quot;../..&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scenarios&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cityflow&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># EnvLogger.set_log_level(logging.WARNING)</span>
+
+
+<div class="viewcode-block" id="detect_turn_direction"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.detect_turn_direction">[docs]</a><span class="k">def</span> <span class="nf">detect_turn_direction</span><span class="p">(</span><span class="n">prev_road</span><span class="p">,</span> <span class="n">curr_road</span><span class="p">):</span>
+    <span class="n">prev_split</span> <span class="o">=</span> <span class="n">prev_road</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">curr_split</span> <span class="o">=</span> <span class="n">curr_road</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prev_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">curr_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;go_straight&quot;</span>
+    <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">curr_split</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">prev_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="s2">&quot;turn_right&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;turn_left&quot;</span></div>
+
+
+<div class="viewcode-block" id="CityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowTripGenerator</span><span class="p">(</span><span class="n">TripGenerator</span><span class="p">):</span>
+    <span class="n">turns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;turn_left&quot;</span><span class="p">,</span> <span class="s2">&quot;turn_right&quot;</span><span class="p">,</span> <span class="s2">&quot;go_straight&quot;</span><span class="p">]</span>
+    <span class="n">vehicle_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;maxPosAcc&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;maxNegAcc&quot;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+        <span class="s2">&quot;usualPosAcc&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;usualNegAcc&quot;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+        <span class="s2">&quot;minGap&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+        <span class="s2">&quot;maxSpeed&quot;</span><span class="p">:</span> <span class="mf">11.11</span><span class="p">,</span>
+        <span class="s2">&quot;headwayTime&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NOTE: Traffic signal network is assumed to be a grid network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mu</span><span class="p">,</span>
+        <span class="n">inter_sigma</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">edge_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">turn_probs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">NetworkParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span> <span class="o">=</span> <span class="n">inter_mu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span> <span class="o">=</span> <span class="n">inter_sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_probabilities</span> <span class="o">=</span> <span class="n">turn_probs</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_trip_length</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lane_connectivity_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_weights</span><span class="p">(</span><span class="n">edge_weights</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_max_trip_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Max trip length is assumed to be the length traveled by a vehicle</span>
+<span class="sd">        that goes from one corner of the grid to the opposite corner.</span>
+<span class="sd">        (n - 1) + (m - 1) + 2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">_get_networkx_representation</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_set_edge_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_edge_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the edge weights for route calculation. If edge weights are not</span>
+<span class="sd">        provided, edge weights are calculated according to the maximum allowed</span>
+<span class="sd">        speed for each lane, such that higher the (norm) max speed of a lane</span>
+<span class="sd">        higher the probability of the vehicle turning into that lane.</span>
+<span class="sd">        NOTE: Edge implies a link between intersection i and j, such that it</span>
+<span class="sd">        includes both lanes_ij and lanes_ji</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">input_edge_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span><span class="p">:</span>
+                <span class="n">road_id</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">road_id</span> <span class="ow">in</span> <span class="n">input_edge_weights</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">road_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_edge_weights</span><span class="p">[</span><span class="n">road_id</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">road_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">return</span>
+        <span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
+        <span class="n">global_max_speed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lane_max_speeds</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span><span class="p">:</span>
+            <span class="n">lane_speeds</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">lane_max_speeds</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">road</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;lanes&quot;</span><span class="p">]))</span>
+            <span class="p">]</span>
+            <span class="n">avg_max_speed</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">lane_speeds</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lane_speeds</span><span class="p">)</span>
+            <span class="n">normalized_weight</span> <span class="o">=</span> <span class="n">avg_max_speed</span> <span class="o">/</span> <span class="n">global_max_speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="p">[</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">normalized_weight</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_fringe_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: Fringe edges are based on the assumption that only one</span>
+<span class="sd">        incoming lane (from the boundary) is connected to the intersection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">incoming_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">outgoing_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">virtual_intersections</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">intersection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">intersections</span>
+                <span class="k">if</span> <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;virtual&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span><span class="p">:</span>
+            <span class="n">start_virtual</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;startIntersection&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">virtual_intersections</span>
+            <span class="n">end_virtual</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;endIntersection&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">virtual_intersections</span>
+            <span class="c1"># If the road starts from a virtual intersection and ends at</span>
+            <span class="c1"># a non-virtual, it&#39;s incoming</span>
+            <span class="k">if</span> <span class="n">start_virtual</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">end_virtual</span><span class="p">:</span>
+                <span class="n">incoming_fringe_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+            <span class="c1"># If the road starts from a non-virtual intersection and ends at</span>
+            <span class="c1"># a virtual, it&#39;s outgoing</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">start_virtual</span> <span class="ow">and</span> <span class="n">end_virtual</span><span class="p">:</span>
+                <span class="n">outgoing_fringe_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">outgoing_fringe_edges</span>
+
+    <span class="k">def</span> <span class="nf">_get_lane_connectivity_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">lane_connectivity_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Logic to build the lane_connectivity_map from the road network data</span>
+        <span class="k">for</span> <span class="n">intersection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">intersections</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">road_link</span> <span class="ow">in</span> <span class="n">intersection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;roadLinks&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="n">start_road</span> <span class="o">=</span> <span class="n">road_link</span><span class="p">[</span><span class="s2">&quot;startRoad&quot;</span><span class="p">]</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">road_link</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+                <span class="n">end_road</span> <span class="o">=</span> <span class="n">road_link</span><span class="p">[</span><span class="s2">&quot;endRoad&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">start_road</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lane_connectivity_map</span><span class="p">:</span>
+                    <span class="n">lane_connectivity_map</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">lane_connectivity_map</span><span class="p">[</span><span class="n">start_road</span><span class="p">][</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_road</span>
+        <span class="k">return</span> <span class="n">lane_connectivity_map</span>
+
+    <span class="k">def</span> <span class="nf">_choose_next_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_edge</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">current_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">next_edge_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">combined_weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">direction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turns</span><span class="p">):</span>
+            <span class="n">next_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span><span class="p">[</span><span class="n">current_edge</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">next_edge</span><span class="p">:</span>
+                <span class="n">next_edge_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_edge</span><span class="p">)</span>
+                <span class="n">combined_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">turn_probabilities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">next_edge</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">next_edge_candidates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Normalize combined weights</span>
+        <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">combined_weights</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">total_weight</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">normalized_weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="o">/</span> <span class="n">total_weight</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">combined_weights</span><span class="p">]</span>
+        <span class="n">next_edge</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span>
+            <span class="n">next_edge_candidates</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">normalized_weights</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">next_edge</span>
+
+    <span class="k">def</span> <span class="nf">_generate_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">outgoing_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+        <span class="n">current_edge</span> <span class="o">=</span> <span class="n">start_edge</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">next_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_next_edge</span><span class="p">(</span><span class="n">current_edge</span><span class="p">)</span>
+            <span class="n">loop_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">next_edge</span> <span class="ow">in</span> <span class="n">route</span><span class="p">:</span>
+                <span class="n">next_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_next_edge</span><span class="p">(</span><span class="n">current_edge</span><span class="p">)</span>
+                <span class="n">loop_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">loop_attempts</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turns</span><span class="p">):</span>
+                    <span class="n">next_edge</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">next_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">route</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_edge</span><span class="p">)</span>
+            <span class="n">current_edge</span> <span class="o">=</span> <span class="n">next_edge</span>
+            <span class="k">if</span> <span class="n">next_edge</span> <span class="ow">in</span> <span class="n">outgoing_edges</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">route</span>
+
+<div class="viewcode-block" id="CityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span><span class="p">)</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                    <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                    <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__gaussian_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LinkDisruptedCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">LinkDisruptedCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mu</span><span class="p">,</span>
+        <span class="n">inter_sigma</span><span class="p">,</span>
+        <span class="n">disruption_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">scenario</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">inter_mu</span><span class="p">,</span> <span class="n">inter_sigma</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span> <span class="o">=</span> <span class="n">disruption_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_disrupted_links</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_generate_disrupted_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a list of disrupted links while ensuring network connectivity.</span>
+<span class="sd">        Disrupted links cannot be fringe edges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_intersections</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">)</span>
+        <span class="n">n_links_to_disrupt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span> <span class="o">*</span> <span class="n">n_intersections</span><span class="p">)</span>
+        <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">outgoing_fringe_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">fringe_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">incoming_fringe_edges</span> <span class="o">+</span> <span class="n">outgoing_fringe_edges</span><span class="p">)</span>
+        <span class="n">non_fringe_roads</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span>
+            <span class="k">if</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fringe_edges</span>
+        <span class="p">]</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">non_fringe_roads</span><span class="p">)</span>
+        <span class="n">disrupted_links</span> <span class="o">=</span> <span class="n">non_fringe_roads</span><span class="p">[:</span><span class="n">n_links_to_disrupt</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">disrupted_links</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">disrupted_links</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_choose_next_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_edge</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override the method to avoid choosing disrupted links during</span>
+<span class="sd">        route generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">current_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">next_edge_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">combined_weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">direction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turns</span><span class="p">):</span>
+            <span class="n">next_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span><span class="p">[</span><span class="n">current_edge</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">next_edge</span> <span class="ow">and</span> <span class="n">next_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_links</span><span class="p">:</span>
+                <span class="n">turn_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn_probabilities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">edge_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">next_edge</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">next_edge_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_edge</span><span class="p">)</span>
+                <span class="n">combined_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">turn_prob</span> <span class="o">*</span> <span class="n">edge_weight</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">next_edge_candidates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">combined_weights</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">total_weight</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">norm_weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="o">/</span> <span class="n">total_weight</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">combined_weights</span><span class="p">]</span>
+        <span class="n">next_edge</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">next_edge_candidates</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">norm_weights</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">next_edge</span>
+
+<div class="viewcode-block" id="LinkDisruptedCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span><span class="p">)</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                    <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                    <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__dr_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span><span class="si">}</span><span class="s2">__gaussian_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FlowDisruptedCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">FlowDisruptedCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mu</span><span class="p">,</span>
+        <span class="n">inter_sigma</span><span class="p">,</span>
+        <span class="n">disruption_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">scenario</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">inter_mu</span><span class="p">,</span> <span class="n">inter_sigma</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span> <span class="o">=</span> <span class="n">disruption_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_start_min</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Burst start time in minutes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_start_max</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Burst end time in minutes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_duration</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Burst duration in minutes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_multiplier</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Flow rate multiplier during burst</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_disrupted_links</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_timings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_burst_timings</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_select_disrupted_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects a subset of incoming fringe links to experience</span>
+<span class="sd">        flow disruption.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">n_to_disrupt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">incoming_fringe_edges</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span><span class="p">)</span>
+        <span class="n">disrupted_links</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">n_to_disrupt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">disrupted_links</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_burst_timings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates random start times for the traffic bursts for each</span>
+<span class="sd">        disrupted link.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">burst_timings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_links</span><span class="p">:</span>
+            <span class="n">burst_start_time</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">burst_start_min</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">burst_start_max</span> <span class="o">*</span> <span class="mi">60</span>
+            <span class="p">)</span>
+            <span class="n">burst_end_time</span> <span class="o">=</span> <span class="n">burst_start_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">burst_duration</span> <span class="o">*</span> <span class="mi">60</span>
+            <span class="n">burst_timings</span><span class="p">[</span><span class="n">link</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">burst_start_time</span><span class="p">,</span> <span class="n">burst_end_time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">burst_timings</span>
+
+<div class="viewcode-block" id="FlowDisruptedCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="n">burst_start</span><span class="p">,</span> <span class="n">burst_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">burst_timings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">start_edge</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">start_edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_links</span>
+                    <span class="ow">and</span> <span class="n">burst_start</span> <span class="o">&lt;=</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="n">burst_end</span>
+                <span class="p">):</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">burst_multiplier</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">burst_multiplier</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span>
+                    <span class="p">)</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                    <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                    <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__fd_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span><span class="si">}</span><span class="s2">__gaussian_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="IntervalCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.IntervalCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">IntervalCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<div class="viewcode-block" id="IntervalCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.IntervalCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">,</span>
+        <span class="n">replicate_no</span><span class="p">,</span>
+        <span class="n">interval_duration</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate flows with the mean flow rate specified for every</span>
+<span class="sd">        interval_duration seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_segments</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3600</span> <span class="o">/</span> <span class="n">interval_duration</span><span class="p">)</span>
+        <span class="n">flow_rate_segment</span> <span class="o">=</span> <span class="n">generate_weibull_flow_rates</span><span class="p">(</span>
+            <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span><span class="p">,</span> <span class="n">n_segments</span>
+        <span class="p">)</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">n_intervals</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">//</span> <span class="n">interval_duration</span>
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_intervals</span><span class="p">)):</span>
+                <span class="n">interval_mean</span> <span class="o">=</span> <span class="n">flow_rate_segment</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">interval_duration</span>
+                <span class="p">):</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                        <span class="n">interval_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma</span>
+                    <span class="p">)</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                    <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">interval_duration</span>
+                    <span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                        <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                    <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                        <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                        <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                    <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__interval_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="VariableDemandTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">VariableDemandTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mus</span><span class="p">,</span>
+        <span class="n">inter_sigmas</span><span class="p">,</span>
+        <span class="n">edge_weights</span><span class="p">,</span>
+        <span class="n">disrupted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">turn_probs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="k">if</span> <span class="n">disrupted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">DisruptedConfig</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">NetworkParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mus</span> <span class="o">=</span> <span class="n">inter_mus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigmas</span> <span class="o">=</span> <span class="n">inter_sigmas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_probabilities</span> <span class="o">=</span> <span class="n">turn_probs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_trip_length</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lane_connectivity_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_weights</span><span class="p">(</span><span class="n">edge_weights</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demand_profile</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="mf">0.6</span><span class="p">,</span>
+            <span class="mf">0.75</span><span class="p">,</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="mf">0.3</span><span class="p">,</span>
+            <span class="mf">0.3</span><span class="p">,</span>
+            <span class="mf">1e-6</span><span class="p">,</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_interarrival_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">current_time</span><span class="p">):</span>
+        <span class="n">time_slot</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">%</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">//</span> <span class="mi">600</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mus</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">demand_profile</span><span class="p">[</span><span class="n">time_slot</span><span class="p">]</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigmas</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">demand_profile</span><span class="p">[</span><span class="n">time_slot</span><span class="p">]</span>
+        <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariableDemandTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mus</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+                <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interarrival_time</span><span class="p">(</span>
+                        <span class="n">start_edge</span><span class="p">,</span> <span class="n">current_time</span>
+                    <span class="p">)</span>
+                    <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                        <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                    <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                        <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                        <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                    <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inter_mus</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__gaussian_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CityFlowOneWayTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowOneWayTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mu_ns</span><span class="p">,</span>
+        <span class="n">inter_sigma_ns</span><span class="p">,</span>
+        <span class="n">inter_mu_ew</span><span class="p">,</span>
+        <span class="n">inter_sigma_ew</span><span class="p">,</span>
+        <span class="n">disrupted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">edge_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ns</span> <span class="o">=</span> <span class="n">inter_mu_ns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma_ns</span> <span class="o">=</span> <span class="n">inter_sigma_ns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ew</span> <span class="o">=</span> <span class="n">inter_mu_ew</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma_ew</span> <span class="o">=</span> <span class="n">inter_sigma_ew</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CityFlowOneWayTripGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">scenario</span><span class="p">,</span>
+            <span class="n">start_time</span><span class="p">,</span>
+            <span class="n">end_time</span><span class="p">,</span>
+            <span class="n">inter_mu_ns</span><span class="p">,</span>  <span class="c1"># Default values for the parent&#39;s constructor</span>
+            <span class="n">inter_sigma_ns</span><span class="p">,</span>  <span class="c1"># Default values for the parent&#39;s constructor</span>
+            <span class="n">disrupted</span><span class="o">=</span><span class="n">disrupted</span><span class="p">,</span>
+            <span class="n">edge_weights</span><span class="o">=</span><span class="n">edge_weights</span><span class="p">,</span>
+            <span class="n">turn_probs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_ns_road</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">road</span><span class="p">):</span>
+        <span class="n">start_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">end_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_is_ew_road</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">road</span><span class="p">):</span>
+        <span class="n">start_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">end_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CityFlowOneWayTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">ns_edges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ns_road</span><span class="p">(</span><span class="n">road</span><span class="p">)</span> <span class="ow">and</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">incoming_edges</span>
+        <span class="p">]</span>
+        <span class="n">ew_edges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">roads</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ew_road</span><span class="p">(</span><span class="n">road</span><span class="p">)</span> <span class="ow">and</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">incoming_edges</span>
+        <span class="p">]</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">generate_flow_for_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">inter_mu</span><span class="p">,</span> <span class="n">inter_sigma</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+                <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">inter_mu</span><span class="p">,</span> <span class="n">inter_sigma</span><span class="p">)</span>
+                    <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                    <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span><span class="p">:</span>
+                        <span class="n">route</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_route</span><span class="p">(</span><span class="n">start_edge</span><span class="p">)</span>
+                    <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                        <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                        <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                    <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+
+        <span class="n">generate_flow_for_edges</span><span class="p">(</span><span class="n">ns_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma_ns</span><span class="p">)</span>
+        <span class="n">generate_flow_for_edges</span><span class="p">(</span><span class="n">ew_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ew</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigma_ew</span><span class="p">)</span>
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="n">flow_rate_ns</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ns</span>
+        <span class="n">flow_rate_ew</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mu_ew</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__oneway_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate_ns</span><span class="p">)</span><span class="si">}</span><span class="s2">_NS_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">flow_rate_ew</span><span class="p">)</span><span class="si">}</span><span class="s2">_EW_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CityFlowRandomizedTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowRandomizedTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+    <span class="n">turns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;turn_left&quot;</span><span class="p">,</span> <span class="s2">&quot;turn_right&quot;</span><span class="p">,</span> <span class="s2">&quot;go_straight&quot;</span><span class="p">]</span>
+    <span class="n">vehicle_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;maxPosAcc&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;maxNegAcc&quot;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+        <span class="s2">&quot;usualPosAcc&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s2">&quot;usualNegAcc&quot;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+        <span class="s2">&quot;minGap&quot;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+        <span class="s2">&quot;maxSpeed&quot;</span><span class="p">:</span> <span class="mf">11.11</span><span class="p">,</span>
+        <span class="s2">&quot;headwayTime&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">NetworkParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lane_connectivity_map</span><span class="p">()</span>
+        <span class="n">turn_ratios</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_routes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_proportions</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_flow_rates</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_probabilities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">turn_ratios</span><span class="p">[</span><span class="s2">&quot;turn_left&quot;</span><span class="p">],</span>
+            <span class="n">turn_ratios</span><span class="p">[</span><span class="s2">&quot;turn_right&quot;</span><span class="p">],</span>
+            <span class="n">turn_ratios</span><span class="p">[</span><span class="s2">&quot;go_straight&quot;</span><span class="p">],</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_trip_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_trip_length</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_weights</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_max_trip_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;max_route_length&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+<div class="viewcode-block" id="CityFlowRandomizedTripGenerator.get_flow_rates"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.get_flow_rates">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">flow_file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;flow_file&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">flow_file_dir</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">flow_file</span><span class="p">:</span>
+            <span class="n">flow_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">flow_file</span><span class="p">)</span>
+
+        <span class="n">road_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">start_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">road_start_times</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">route_lengths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">stored_routes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">total_routes_per_start</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{}</span>
+        <span class="p">)</span>  <span class="c1"># New dictionary to store total routes per start road</span>
+        <span class="n">turning_ratios</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;go_straight&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;turn_right&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;turn_left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="n">flow_data</span><span class="p">:</span>
+            <span class="n">route</span> <span class="o">=</span> <span class="n">vehicle</span><span class="p">[</span><span class="s2">&quot;route&quot;</span><span class="p">]</span>
+            <span class="n">start_road</span> <span class="o">=</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Initialize stored_routes and total_routes_per_start</span>
+            <span class="k">if</span> <span class="n">start_road</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stored_routes</span><span class="p">:</span>
+                <span class="n">stored_routes</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">start_road</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">total_routes_per_start</span><span class="p">:</span>
+                <span class="n">total_routes_per_start</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># Count the route occurrences for each start_road</span>
+            <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">total_routes_per_start</span><span class="p">[</span><span class="n">start_road</span><span class="p">]:</span>
+                <span class="n">total_routes_per_start</span><span class="p">[</span><span class="n">start_road</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">route</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total_routes_per_start</span><span class="p">[</span><span class="n">start_road</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">route</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">route</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stored_routes</span><span class="p">[</span><span class="n">start_road</span><span class="p">]:</span>
+                <span class="n">stored_routes</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">vehicle</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">]</span>
+            <span class="n">road_counts</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="n">road_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">start_road</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">start_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">start_road</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">road_start_times</span><span class="p">:</span>
+                <span class="n">road_start_times</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">start_road</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">route_lengths</span><span class="p">:</span>
+                <span class="n">route_lengths</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">road_start_times</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+            <span class="n">route_lengths</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">))</span>
+
+            <span class="c1"># Update turning ratios</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)):</span>
+                <span class="n">turn_direction</span> <span class="o">=</span> <span class="n">detect_turn_direction</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">turning_ratios</span><span class="p">[</span><span class="n">turn_direction</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Normalize the route proportions for each start road</span>
+        <span class="n">route_proportions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">start_road</span><span class="p">,</span> <span class="n">route_count</span> <span class="ow">in</span> <span class="n">total_routes_per_start</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">road_total_routes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">route_count</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">route_proportions</span><span class="p">[</span><span class="n">start_road</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">route</span><span class="p">:</span> <span class="n">count</span> <span class="o">/</span> <span class="n">road_total_routes</span> <span class="k">for</span> <span class="n">route</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">route_count</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+
+        <span class="n">turning_ratios</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">turning_ratios</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">turning_ratios</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">total_time_hours</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">start_times</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_times</span><span class="p">))</span> <span class="o">/</span> <span class="mi">3600</span>
+        <span class="n">flow_rates</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">road</span><span class="p">:</span> <span class="n">count</span> <span class="o">/</span> <span class="n">total_time_hours</span> <span class="k">for</span> <span class="n">road</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">road_counts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">road_arrival_diff_stats</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">road</span><span class="p">,</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">road_start_times</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
+            <span class="n">road_arrival_diff_stats</span><span class="p">[</span><span class="n">road</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">diffs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">diffs</span><span class="p">))</span>
+
+        <span class="n">combined_results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="n">road_counts</span><span class="p">:</span>
+            <span class="n">combined_results</span><span class="p">[</span><span class="n">road</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;flow_rate&quot;</span><span class="p">:</span> <span class="n">flow_rates</span><span class="p">[</span><span class="n">road</span><span class="p">],</span>
+                <span class="s2">&quot;arrival_diff_mean&quot;</span><span class="p">:</span> <span class="n">road_arrival_diff_stats</span><span class="p">[</span><span class="n">road</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;arrival_diff_std&quot;</span><span class="p">:</span> <span class="n">road_arrival_diff_stats</span><span class="p">[</span><span class="n">road</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">&quot;mean_route_length&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">route_lengths</span><span class="p">[</span><span class="n">road</span><span class="p">]),</span>
+                <span class="s2">&quot;min_route_length&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">route_lengths</span><span class="p">[</span><span class="n">road</span><span class="p">]),</span>
+                <span class="s2">&quot;max_route_length&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">route_lengths</span><span class="p">[</span><span class="n">road</span><span class="p">]),</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">turning_ratios</span><span class="p">,</span> <span class="n">combined_results</span><span class="p">,</span> <span class="n">stored_routes</span><span class="p">,</span> <span class="n">route_proportions</span></div>
+
+<div class="viewcode-block" id="CityFlowRandomizedTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">flow_type</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
+        <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_route_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_routes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">target_mean_route_length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="n">v</span><span class="p">[</span><span class="s2">&quot;mean_route_length&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">flow_type</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+                    <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">[</span><span class="n">start_edge</span><span class="p">][</span>
+                        <span class="s2">&quot;arrival_diff_mean&quot;</span>
+                    <span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">flow_type</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+                    <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">[</span><span class="n">start_edge</span><span class="p">][</span><span class="s2">&quot;arrival_diff_mean&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.75</span>
+                <span class="k">elif</span> <span class="n">flow_type</span> <span class="o">==</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span>
+                    <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">[</span><span class="n">start_edge</span><span class="p">][</span><span class="s2">&quot;arrival_diff_mean&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid flow type&quot;</span><span class="p">)</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                    <span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="p">[</span><span class="n">start_edge</span><span class="p">][</span><span class="s2">&quot;arrival_diff_std&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">interarrival_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="n">vehicle_start_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_time</span> <span class="o">+</span> <span class="n">interarrival_time</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vehicle_start_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_routes</span><span class="p">:</span>
+                    <span class="n">routes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_routes</span><span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
+
+                    <span class="c1"># Extract weights from route_proportions</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">route_proportions</span><span class="p">[</span><span class="n">start_edge</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">route</span><span class="p">)]</span>
+                        <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span>
+                    <span class="p">]</span>
+
+                    <span class="c1"># Use weights to select a route</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="n">flow_entry</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;vehicle&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_data</span><span class="p">,</span>
+                        <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">route</span><span class="p">,</span>
+                        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                        <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="n">vehicle_start_time</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="n">flows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flow_entry</span><span class="p">)</span>
+                    <span class="n">total_route_length</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+                    <span class="n">n_routes</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">current_time</span> <span class="o">=</span> <span class="n">vehicle_start_time</span>
+
+        <span class="n">sorted_flows</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">flows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;startTime&quot;</span><span class="p">])</span>
+        <span class="c1"># Generate the filename with replicate number if provided</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">__gaussian_flows.json&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;replicate_no&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_additional_config</span><span class="p">[</span><span class="s1">&#39;replicate_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">replicate_no</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># Create the directory if it doesn&#39;t exist</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">flow_type</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sorted_flows</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">final_mean_route_length</span> <span class="o">=</span> <span class="n">total_route_length</span> <span class="o">/</span> <span class="n">n_routes</span> <span class="k">if</span> <span class="n">n_routes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">EnvLogger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Final mean route length: </span><span class="si">{</span><span class="n">final_mean_route_length</span><span class="si">}</span><span class="s2">, Target: </span><span class="si">{</span><span class="n">target_mean_route_length</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1x1_cityflow_grid&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of the scenario&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--flow-rate-mean&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;flow_rate_mean&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mean flow rate per incoming lane&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--flow-rate-sigma&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;flow_rate_sigma&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Std of the flow rate&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="mi">3600</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">/</span> <span class="n">args</span><span class="o">.</span><span class="n">flow_rate_mean</span>
+    <span class="n">turn_probs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+
+    <span class="n">flow_generator</span> <span class="o">=</span> <span class="n">CityFlowTripGenerator</span><span class="p">(</span>
+        <span class="n">scenario</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="o">=</span><span class="n">end_time</span><span class="p">,</span>
+        <span class="n">inter_mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span>
+        <span class="n">inter_sigma</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">flow_rate_sigma</span><span class="p">,</span>
+        <span class="n">turn_probs</span><span class="o">=</span><span class="n">turn_probs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">flow_generator</span><span class="o">.</span><span class="n">generate_flows</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;/Users/rohitbokade/repos/pytsc/pytsc/tests&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

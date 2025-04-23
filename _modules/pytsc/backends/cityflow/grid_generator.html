@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.backends.cityflow.grid_generator &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.backends.cityflow.grid_generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.backends.cityflow.grid_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+    <span class="s2">&quot;../..&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scenarios&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cityflow&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="CityFlowGridNetworkGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_generator.CityFlowGridNetworkGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowGridNetworkGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a grid network for CityFlow simulation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cityflow_dir (str): Path to the CityFlow installation directory.</span>
+<span class="sd">        nrows (int): Number of rows in the grid.</span>
+<span class="sd">        ncols (int): Number of columns in the grid.</span>
+<span class="sd">        mean_flow_rates (list): List of mean flow rates for the arterial and side streets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">col_distance</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">row_distance</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">intersection_width</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">n_left_lanes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_right_lanes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_straight_lanes</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="mf">11.11</span>  <span class="c1"># m/s</span>
+    <span class="n">veh_max_speed</span> <span class="o">=</span> <span class="mf">11.11</span>  <span class="c1"># m/s</span>
+    <span class="n">veh_min_gap</span> <span class="o">=</span> <span class="mf">2.5</span>  <span class="c1"># meters</span>
+    <span class="n">veh_headway_time</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># meters</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cityflow_dir</span><span class="p">,</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">mean_flow_rates</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_flow_rates</span> <span class="o">=</span> <span class="n">mean_flow_rates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cityflow_gridgen_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">cityflow_dir</span><span class="p">,</span>
+            <span class="s2">&quot;tools/generator/generate_one_way_grid_scenario.py&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_scenario_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;syn_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_roadnet_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean_flow_rate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_scenario_folder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;syn_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">_roadnet.json&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">_roadnet_</span><span class="si">{</span><span class="n">mean_flow_rate</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gridgen</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;python </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cityflow_gridgen_script</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --rowDistance=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">row_distance</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --columnDistance=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">col_distance</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --intersectionWidth=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">intersection_width</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numLeftLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_left_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numRightLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_right_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numStraightLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_straight_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --laneMaxSpeed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehMinGap=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_min_gap</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehMaxSpeed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_max_speed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehHeadwayTime=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_headway_time</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --roadnetFile </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tlPlan&quot;</span>
+        <span class="c1"># gridgen += &quot; --turn&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CityFlowGridNetworkGenerator.generate_roadnet_files"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_generator.CityFlowGridNetworkGenerator.generate_roadnet_files">[docs]</a>    <span class="k">def</span> <span class="nf">generate_roadnet_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mean_flow_rate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_flow_rates</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_roadnet_file</span><span class="p">(</span><span class="n">mean_flow_rate</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CityFlowOneWayGridNetworkGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_generator.CityFlowOneWayGridNetworkGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowOneWayGridNetworkGenerator</span><span class="p">(</span><span class="n">CityFlowGridNetworkGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a one-way grid network for CityFlow simulation.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        cityflow_dir (str): Path to the CityFlow installation directory.</span>
+<span class="sd">        nrows (int): Number of rows in the grid.</span>
+<span class="sd">        ncols (int): Number of columns in the grid.</span>
+<span class="sd">        mean_flow_rates (list): List of mean flow rates for the arterial and side streets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">col_distance</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">row_distance</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">intersection_width</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">n_left_lanes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_right_lanes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_straight_lanes</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="mf">11.11</span>  <span class="c1"># m/s</span>
+    <span class="n">veh_max_speed</span> <span class="o">=</span> <span class="mf">11.11</span>  <span class="c1"># m/s</span>
+    <span class="n">veh_min_gap</span> <span class="o">=</span> <span class="mf">2.5</span>  <span class="c1"># meters</span>
+    <span class="n">veh_headway_time</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># meters</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cityflow_dir</span><span class="p">,</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">mean_flow_rates</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">]):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CityFlowOneWayGridNetworkGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">cityflow_dir</span><span class="p">,</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">mean_flow_rates</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_scenario_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;syn_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">_oneway&quot;</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_roadnet_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean_flow_rate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_scenario_folder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">_roadnet.json&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_dir</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">_roadnet_</span><span class="si">{</span><span class="n">mean_flow_rate</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gridgen</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;python </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cityflow_gridgen_script</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --rowDistance=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">row_distance</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --columnDistance=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">col_distance</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --intersectionWidth=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">intersection_width</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numLeftLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_left_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numRightLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_right_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --numStraightLanes=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_straight_lanes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --laneMaxSpeed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehMinGap=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_min_gap</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehMaxSpeed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_max_speed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --vehHeadwayTime=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">veh_headway_time</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --roadnetFile </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tlPlan&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+        <span class="c1"># self._make_grid_one_way()</span>
+
+    <span class="k">def</span> <span class="nf">_make_grid_one_way</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">roadnet</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">intersection</span> <span class="ow">in</span> <span class="n">roadnet</span><span class="p">[</span><span class="s2">&quot;intersections&quot;</span><span class="p">]:</span>
+            <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;roads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_roads</span><span class="p">(</span><span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;roads&quot;</span><span class="p">])</span>
+            <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;roadLinks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_road_links</span><span class="p">(</span>
+                <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;roadLinks&quot;</span><span class="p">],</span> <span class="n">intersection</span><span class="p">[</span><span class="s2">&quot;roads&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roadnet_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">roadnet</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filter_roads"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_generator.filter_roads">[docs]</a><span class="k">def</span> <span class="nf">filter_roads</span><span class="p">(</span><span class="n">roads</span><span class="p">):</span>
+    <span class="n">filtered_roads</span> <span class="o">=</span> <span class="p">[</span><span class="n">road</span> <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="n">roads</span> <span class="k">if</span> <span class="s2">&quot;NS&quot;</span> <span class="ow">in</span> <span class="n">road</span> <span class="ow">or</span> <span class="s2">&quot;EW&quot;</span> <span class="ow">in</span> <span class="n">road</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">filtered_roads</span></div>
+
+
+<div class="viewcode-block" id="filter_road_links"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_generator.filter_road_links">[docs]</a><span class="k">def</span> <span class="nf">filter_road_links</span><span class="p">(</span><span class="n">road_links</span><span class="p">,</span> <span class="n">filtered_roads</span><span class="p">):</span>
+    <span class="n">filtered_road_links</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">link</span>
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">road_links</span>
+        <span class="k">if</span> <span class="n">link</span><span class="p">[</span><span class="s2">&quot;startRoad&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">filtered_roads</span> <span class="ow">and</span> <span class="n">link</span><span class="p">[</span><span class="s2">&quot;endRoad&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">filtered_roads</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">filtered_road_links</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--path-to-cityflow&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;cityflow_dir&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/home/rohitbokade/CityFlow/&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to CityFlow installation&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--nrows&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of rows in the arterial network&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ncols&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of columns in the arterial network&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mean_flow_rates&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mean flow rates for the arterial and side streets&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">network_generator</span> <span class="o">=</span> <span class="n">CityFlowGridNetworkGenerator</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">cityflow_dir</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ncols</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">mean_flow_rates</span>
+    <span class="p">)</span>
+    <span class="n">network_generator</span><span class="o">.</span><span class="n">generate_roadnet_files</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

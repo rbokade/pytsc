@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.common.utils &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.common.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.common.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">minimum_spanning_tree</span>
+
+
+<div class="viewcode-block" id="EnvLogger"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger">[docs]</a><span class="k">class</span> <span class="nc">EnvLogger</span><span class="p">:</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_ensure_handler</span><span class="p">(</span><span class="n">logger</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnvLogger.get_logger"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger.get_logger">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">EnvLogger</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">EnvLogger</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">EnvLogger</span><span class="o">.</span><span class="n">_ensure_handler</span><span class="p">(</span><span class="n">EnvLogger</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+            <span class="n">EnvLogger</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>  <span class="c1"># Set the logger level dynamically</span>
+        <span class="k">return</span> <span class="n">EnvLogger</span><span class="o">.</span><span class="n">logger</span></div>
+
+<div class="viewcode-block" id="EnvLogger.log"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger.log">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">EnvLogger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnvLogger.log_info"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger.log_info">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+        <span class="n">EnvLogger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnvLogger.log_warning"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger.log_warning">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+        <span class="n">EnvLogger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnvLogger.set_log_level"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger.set_log_level">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">set_log_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">EnvLogger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="validate_input_against_allowed"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.validate_input_against_allowed">[docs]</a><span class="k">def</span> <span class="nf">validate_input_against_allowed</span><span class="p">(</span><span class="n">inp_cfg_str</span><span class="p">,</span> <span class="n">allowed_cfg_strs</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">inp_cfg_str</span> <span class="ow">in</span> <span class="n">allowed_cfg_strs</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Invalid action space `</span><span class="si">{</span><span class="n">inp_cfg_str</span><span class="si">}</span><span class="s2">`. Allowed values are </span><span class="si">{</span><span class="n">allowed_cfg_strs</span><span class="si">}</span><span class="s2">.&quot;</span></div>
+
+
+<div class="viewcode-block" id="sort_alphanumeric_ids"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.sort_alphanumeric_ids">[docs]</a><span class="k">def</span> <span class="nf">sort_alphanumeric_ids</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+    <span class="n">convert</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">text</span>
+    <span class="n">alphanum_key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="p">[</span><span class="n">convert</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;([0-9]+)&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">alphanum_key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="recursively_update_dict"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.recursively_update_dict">[docs]</a><span class="k">def</span> <span class="nf">recursively_update_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursively_update_dict</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">):</span>
+    <span class="n">flat_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Iterate through the outer list</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">list_of_lists</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">element</span><span class="p">:</span>
+                <span class="n">flat_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flat_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flat_list</span></div>
+
+
+<div class="viewcode-block" id="pad_array"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.pad_array">[docs]</a><span class="k">def</span> <span class="nf">pad_array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pads the given array with the specified padding value so that it has</span>
+<span class="sd">    the specified size. If the array is already larger than the specified size,</span>
+<span class="sd">    it is returned unmodified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">array</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">padded_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="p">)</span>
+        <span class="n">padded_arr</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)]</span> <span class="o">=</span> <span class="n">array</span>
+        <span class="k">return</span> <span class="n">padded_arr</span></div>
+
+
+<div class="viewcode-block" id="pad_list"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.pad_list">[docs]</a><span class="k">def</span> <span class="nf">pad_list</span><span class="p">(</span><span class="n">inp_list</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inp_list</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="calculate_vehicle_bin_index"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.calculate_vehicle_bin_index">[docs]</a><span class="k">def</span> <span class="nf">calculate_vehicle_bin_index</span><span class="p">(</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">lane_length</span><span class="p">,</span> <span class="n">vehicle_position</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">vehicle_position</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vehicle_position</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">vehicle_position</span> <span class="o">&gt;</span> <span class="n">lane_length</span><span class="p">:</span>
+        <span class="n">vehicle_position</span> <span class="o">=</span> <span class="n">lane_length</span>
+    <span class="n">bin_size</span> <span class="o">=</span> <span class="n">lane_length</span> <span class="o">/</span> <span class="n">n_bins</span>
+    <span class="n">bin_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vehicle_position</span> <span class="o">//</span> <span class="n">bin_size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bin_index</span> <span class="o">&gt;=</span> <span class="n">n_bins</span><span class="p">:</span>
+        <span class="n">bin_index</span> <span class="o">=</span> <span class="n">n_bins</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">bin_index</span></div>
+
+
+<div class="viewcode-block" id="generate_weibull_flow_rates"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.generate_weibull_flow_rates">[docs]</a><span class="k">def</span> <span class="nf">generate_weibull_flow_rates</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">max_rate</span><span class="p">,</span> <span class="n">num_segments</span><span class="p">):</span>
+    <span class="n">inter_arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+    <span class="n">cumulative_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">inter_arrival_times</span><span class="p">)</span>
+    <span class="n">cumulative_times</span> <span class="o">=</span> <span class="n">cumulative_times</span><span class="p">[</span><span class="n">cumulative_times</span> <span class="o">&lt;=</span> <span class="mi">3600</span><span class="p">]</span>
+    <span class="n">random_peak_segment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_segments</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">num_segments</span><span class="p">)</span>
+    <span class="n">flow_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>  <span class="c1"># Gaussian-like curve</span>
+    <span class="n">flow_rates</span> <span class="o">=</span> <span class="n">flow_rates</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">flow_rates</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_rate</span>
+    <span class="n">flow_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">flow_rates</span><span class="p">,</span> <span class="n">random_peak_segment</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flow_rates</span></div>
+
+
+<div class="viewcode-block" id="compute_max_spanning_tree"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.compute_max_spanning_tree">[docs]</a><span class="k">def</span> <span class="nf">compute_max_spanning_tree</span><span class="p">(</span><span class="n">density_map</span><span class="p">):</span>
+    <span class="n">density_map_neg</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">density_map</span>
+    <span class="n">mst</span> <span class="o">=</span> <span class="n">minimum_spanning_tree</span><span class="p">(</span><span class="n">density_map_neg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mst</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

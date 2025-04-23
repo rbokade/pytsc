@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pytsc package" href="pytsc.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="._pytsc.wrappers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pytsc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html">pytsc package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html">pytsc package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">pytsc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/generated/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytsc">
+<h1>pytsc<a class="headerlink" href="#pytsc" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pytsc.html">pytsc package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html#module-pytsc.backends">pytsc.backends module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html#module-0">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id1">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id2">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id3">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id4">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id5">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id6">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id7">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id8">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id9">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id10">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#id11">pytsc.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.actions">pytsc.common.actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.config">pytsc.common.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.metrics">pytsc.common.metrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.network_parser">pytsc.common.network_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.observations">pytsc.common.observations module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.retriever">pytsc.common.retriever module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.reward">pytsc.common.reward module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.simulator">pytsc.common.simulator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.traffic_signal">pytsc.common.traffic_signal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.trip_generator">pytsc.common.trip_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-pytsc.common.utils">pytsc.common.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html#module-11">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.controllers.html">pytsc.controllers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers">pytsc.controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#id1">pytsc.controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#id2">pytsc.controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#id3">pytsc.controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.controllers">pytsc.controllers.controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.evaluate">pytsc.controllers.evaluate module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#module-pytsc.controllers.rl_controller">pytsc.controllers.rl_controller module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.controllers.html#module-3">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#id1">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#id2">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#id3">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#id4">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#id5">pytsc.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.cityflow_arterial_network_generation">pytsc.generators.cityflow_arterial_network_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.convert_sumo_trips_to_cityflow">pytsc.generators.convert_sumo_trips_to_cityflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.grid_generator">pytsc.generators.grid_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.laneareadetector_generator">pytsc.generators.laneareadetector_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-pytsc.generators.trip_generator">pytsc.generators.trip_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html#module-5">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html#module-pytsc.scenarios">pytsc.scenarios module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html#module-0">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id1">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id2">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id3">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id4">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id5">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id6">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#id7">pytsc.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_flow_generation">pytsc.tests.test_cityflow_flow_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_grid_disruptor">pytsc.tests.test_cityflow_grid_disruptor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_grid_generation">pytsc.tests.test_cityflow_grid_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_multi_flow_generation">pytsc.tests.test_cityflow_multi_flow_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_oneway_flow_generation">pytsc.tests.test_cityflow_oneway_flow_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_cityflow_weibull_flow_generation">pytsc.tests.test_cityflow_weibull_flow_generation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-pytsc.tests.test_observations">pytsc.tests.test_observations module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html#module-7">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers">pytsc.wrappers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#id1">pytsc.wrappers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#id2">pytsc.wrappers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#id3">pytsc.wrappers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.epymarl">pytsc.wrappers.epymarl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.pymarl">pytsc.wrappers.pymarl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#module-pytsc.wrappers.rllib">pytsc.wrappers.rllib module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html#module-3">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="._pytsc.wrappers.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pytsc.html" class="btn btn-neutral float-right" title="pytsc package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

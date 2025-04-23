@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.generators.grid_generator &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.generators.grid_generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.generators.grid_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="k">if</span> <span class="s2">&quot;SUMO_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SUMO_HOME&quot;</span><span class="p">],</span> <span class="s2">&quot;tools&quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tools</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">sumolib.net</span> <span class="kn">import</span> <span class="n">readNet</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Please declare the environment variable &#39;SUMO_HOME&#39;&quot;</span><span class="p">)</span>
+
+<span class="n">CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+    <span class="s2">&quot;..&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scenarios&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="SUMOGridGenerator"><a class="viewcode-back" href="../../../api/generated/pytsc.generators.html#pytsc.generators.grid_generator.SUMOGridGenerator">[docs]</a><span class="k">class</span> <span class="nc">SUMOGridGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates grid network using SUMO&#39;s netgenerate tool</span>
+
+<span class="sd">    First create a scenario folder in the scenarios directory and add the configs in the `config.yaml` file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_detector_distance_to_tls</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="c1"># self.config = Config(scenario, additional_config={})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">netfile_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">.net.xml&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg_file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">.sumocfg&quot;</span>
+        <span class="p">)</span>
+        <span class="n">grid_generator_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grid_generator&quot;</span><span class="p">]</span>
+        <span class="n">signal_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_length</span> <span class="o">=</span> <span class="n">grid_generator_config</span><span class="p">[</span><span class="s2">&quot;grid_length&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_x_number</span> <span class="o">=</span> <span class="n">grid_generator_config</span><span class="p">[</span><span class="s2">&quot;grid_x_number&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_y_number</span> <span class="o">=</span> <span class="n">grid_generator_config</span><span class="p">[</span><span class="s2">&quot;grid_y_number&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_attach_length</span> <span class="o">=</span> <span class="n">grid_generator_config</span><span class="p">[</span><span class="s2">&quot;grid_attach_length&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_turn_lane</span> <span class="o">=</span> <span class="n">grid_generator_config</span><span class="p">[</span><span class="s2">&quot;add_turn_lane&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_green_time</span> <span class="o">=</span> <span class="n">signal_config</span><span class="p">[</span><span class="s2">&quot;max_green_time&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yellow_time</span> <span class="o">=</span> <span class="n">signal_config</span><span class="p">[</span><span class="s2">&quot;yellow_time&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_lane_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_attach_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">=</span> <span class="n">signal_config</span><span class="p">[</span><span class="s2">&quot;visibility&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">scenario_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">scenario_file_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scenario_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">scenario_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scenario_config</span>
+
+<div class="viewcode-block" id="SUMOGridGenerator.generate_grid"><a class="viewcode-back" href="../../../api/generated/pytsc.generators.html#pytsc.generators.grid_generator.SUMOGridGenerator.generate_grid">[docs]</a>    <span class="k">def</span> <span class="nf">generate_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regular</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">gridgen</span> <span class="o">=</span> <span class="s2">&quot;netgenerate --grid&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --grid.x-number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_x_number</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --grid.y-number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_y_number</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --grid.length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_length</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --grid.attach-length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_attach_length</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --output-file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">netfile_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># gridgen += f&quot; --save-configuration {self.cfg_file_dir}&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --default.lanenumber 2&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --no-turnarounds&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tls.guess&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tls.guess.threshold 50&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tls.group-signals True&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --tls.default-type delay_based&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --tls.green.time </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_green_time</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --tls.yellow.time </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">yellow_time</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_turn_lane</span><span class="p">:</span>
+            <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --turn-lanes.length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">turn_lane_length</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">gridgen</span> <span class="o">+=</span> <span class="s2">&quot; --turn-lanes 1&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">regular</span><span class="p">:</span>
+            <span class="n">edges_to_be_removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edges_to_be_removed</span><span class="p">()</span>
+            <span class="n">gridgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --remove </span><span class="si">{</span><span class="n">edges_to_be_removed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">gridgen</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lane_area_detectors</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_generate_lane_area_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="n">tools</span> <span class="o">+</span> <span class="s2">&quot;/output/generateTLSE2Detectors.py&quot;</span>
+        <span class="n">additional_files_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="si">}</span><span class="s2">.add.xml&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ladgen</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;python </span><span class="si">{</span><span class="n">script</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ladgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --net-file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">netfile_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ladgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --output </span><span class="si">{</span><span class="n">additional_files_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ladgen</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --detector-length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">visibility</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ladgen</span> <span class="o">+=</span> <span class="s2">&quot; --frequency 1&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ladgen</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">ladgen</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_edges_to_be_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">readNet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net_file</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">()</span>
+        <span class="n">edge_pairs_without_fringes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_out_fringes</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">edges_to_be_removed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">edge_pairs_without_fringes</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">edges_to_be_removed_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_edge_list_to_str</span><span class="p">(</span>
+            <span class="n">edges_to_be_removed</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">edges_to_be_removed_str</span>
+
+    <span class="k">def</span> <span class="nf">_convert_edge_list_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_pairs_list</span><span class="p">):</span>
+        <span class="n">edges_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">edge_pair</span> <span class="ow">in</span> <span class="n">edge_pairs_list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pair</span><span class="p">:</span>
+                <span class="n">edges_str</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">edge</span>
+        <span class="k">return</span> <span class="n">edges_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+
+    <span class="k">def</span> <span class="nf">_filter_out_fringes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+        <span class="n">filtered_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">child</span><span class="o">.</span><span class="n">is_fringe</span><span class="p">()</span> <span class="ow">and</span> <span class="n">child</span><span class="o">.</span><span class="n">_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+                <span class="n">_to</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_to</span><span class="o">.</span><span class="n">_id</span>
+                <span class="n">_from</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_from</span><span class="o">.</span><span class="n">_id</span>
+                <span class="n">filtered_edges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_to</span> <span class="o">+</span> <span class="n">_from</span><span class="p">,</span> <span class="n">_from</span> <span class="o">+</span> <span class="n">_to</span><span class="p">])</span>
+                <span class="n">children</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">_to</span> <span class="o">+</span> <span class="n">_from</span><span class="p">,</span> <span class="n">_from</span> <span class="o">+</span> <span class="n">_to</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">filtered_edges</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;scenario name&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;2x1_regular_grid&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">SUMOGridGenerator</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">generate_grid</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pytsc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.backends.cityflow</span> <span class="kn">import</span> <span class="n">CITYFLOW_MODULES</span>
+<span class="kn">from</span> <span class="nn">pytsc.backends.sumo</span> <span class="kn">import</span> <span class="n">SUMO_MODULES</span>
+<span class="kn">from</span> <span class="nn">pytsc.common</span> <span class="kn">import</span> <span class="n">ACTION_SPACES</span><span class="p">,</span> <span class="n">OBSERVATION_SPACES</span><span class="p">,</span> <span class="n">REWARD_FUNCTIONS</span>
+<span class="kn">from</span> <span class="nn">pytsc.common.actions</span> <span class="kn">import</span> <span class="n">CentralizedActionSpace</span>
+<span class="kn">from</span> <span class="nn">pytsc.common.utils</span> <span class="kn">import</span> <span class="n">validate_input_against_allowed</span>
+
+<span class="n">SUPPORTED_SIMULATOR_BACKENDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sumo&quot;</span><span class="p">,</span> <span class="s2">&quot;cityflow&quot;</span><span class="p">)</span>
+<span class="n">REWARD_METRICS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">)</span>  <span class="c1"># TODO: Implement `pressure`</span>
+<span class="n">SIMULATOR_MODULES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cityflow&quot;</span><span class="p">:</span> <span class="n">CITYFLOW_MODULES</span><span class="p">,</span>
+    <span class="s2">&quot;sumo&quot;</span><span class="p">:</span> <span class="n">SUMO_MODULES</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="TrafficSignalNetwork"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork">[docs]</a><span class="k">class</span> <span class="nc">TrafficSignalNetwork</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span> <span class="o">=</span> <span class="n">simulator_backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disrupted</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;disrupted&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_class</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span> <span class="ow">in</span> <span class="n">SUPPORTED_SIMULATOR_BACKENDS</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Simulator backend </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disrupted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="n">simulator_backend</span><span class="p">][</span><span class="s2">&quot;disrupted_config&quot;</span><span class="p">](</span>
+                <span class="n">scenario</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="n">simulator_backend</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">](</span>
+                <span class="n">scenario</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="n">simulator_backend</span><span class="p">][</span><span class="s2">&quot;network_parser&quot;</span><span class="p">](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="n">simulator_backend</span><span class="p">][</span><span class="s2">&quot;simulator&quot;</span><span class="p">](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">start_simulator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_traffic_signals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_parsers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_n_agents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_counters</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_counters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hour_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">episode_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">episode_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;episode_limit&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;delta_time&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">episode_over</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;episode_limit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_validate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">validate_input_against_allowed</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;action_space&quot;</span><span class="p">],</span> <span class="n">ACTION_SPACES</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">validate_input_against_allowed</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;observation_space&quot;</span><span class="p">],</span> <span class="n">OBSERVATION_SPACES</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_parsers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">ACTION_SPACES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;action_space&quot;</span><span class="p">]](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;control_scheme&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;centralized&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">CentralizedActionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span> <span class="o">=</span> <span class="n">OBSERVATION_SPACES</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;observation_space&quot;</span><span class="p">]</span>
+        <span class="p">](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">][</span><span class="s2">&quot;metrics_parser&quot;</span><span class="p">](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_function</span> <span class="o">=</span> <span class="n">REWARD_FUNCTIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;reward_function&quot;</span><span class="p">]](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_traffic_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parsed_traffic_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ts_id</span><span class="p">,</span> <span class="n">signal_config</span> <span class="ow">in</span> <span class="n">parsed_traffic_signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">[</span><span class="n">ts_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">SIMULATOR_MODULES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">][</span>
+                <span class="s2">&quot;traffic_signal&quot;</span>
+            <span class="p">](</span><span class="n">ts_id</span><span class="p">,</span> <span class="n">signal_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">[</span><span class="n">ts_id</span><span class="p">]</span><span class="o">.</span><span class="n">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_n_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;control_scheme&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;decentralized&quot;</span>
+            <span class="k">else</span> <span class="mi">1</span>  <span class="c1"># centralized</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_ts_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ts_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="p">[</span><span class="n">ts_id</span><span class="p">]</span><span class="o">.</span><span class="n">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_action_mask"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_action_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_action_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_action_size"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_action_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_action_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_observations"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_observations">[docs]</a>    <span class="k">def</span> <span class="nf">get_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;control_scheme&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;decentralized&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_observations</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_observations</span><span class="p">())</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_observation_size"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_observation_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_observation_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;control_scheme&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;decentralized&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">*</span> <span class="n">n_a</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_state"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_state_size"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_reward"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_reward">[docs]</a>    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_function</span><span class="o">.</span><span class="n">get_global_reward</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_rewards"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_rewards">[docs]</a>    <span class="k">def</span> <span class="nf">get_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;control_scheme&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;decentralized&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_function</span><span class="o">.</span><span class="n">get_local_reward</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reward_function</span><span class="o">.</span><span class="n">get_global_reward</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_env_info"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_env_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">get_step_stats</span><span class="p">()</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;episode_count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_count</span><span class="p">})</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;episode_limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_limit</span><span class="p">})</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disrupted</span><span class="p">:</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;n_domains&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">domain_classes</span><span class="p">)})</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;domain_class&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">current_domain_class</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">stats</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.get_env_stats"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.get_env_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_env_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env_info</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stats</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.restart"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_over</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">episode_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># self.observation_space.reset_dropped_lanes()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hour_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">close_simulator</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">start_simulator</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_domain_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_class</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_traffic_signals</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_parsers</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TrafficSignalNetwork.step"><a class="viewcode-back" href="../api/generated/pytsc.html#pytsc.TrafficSignalNetwork.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">simulator_step</span><span class="p">(</span><span class="n">n_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;delta_time&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_ts_stats</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_over</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env_info</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

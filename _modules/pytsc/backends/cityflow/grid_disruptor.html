@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.backends.cityflow.grid_disruptor &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.backends.cityflow.grid_disruptor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.backends.cityflow.grid_disruptor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.backends.cityflow.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">pytsc.backends.cityflow.network_parser</span> <span class="kn">import</span> <span class="n">NetworkParser</span>
+
+<span class="n">CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+    <span class="s2">&quot;../..&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scenarios&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cityflow&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="CityFlowGridDisruptor"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor">[docs]</a><span class="k">class</span> <span class="nc">CityFlowGridDisruptor</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">disruption_ratio</span><span class="p">,</span> <span class="n">speed_reduction_factor</span><span class="p">,</span> <span class="n">replicate_no</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span> <span class="o">=</span> <span class="n">disruption_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed_reduction_factor</span> <span class="o">=</span> <span class="n">speed_reduction_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replicate_no</span> <span class="o">=</span> <span class="n">replicate_no</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">NetworkParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roadnet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_roadnet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_disrupted_scenario_folder</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_roadnet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">roadnet_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;roadnet_file&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">roadnet_dir</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_disrupted_scenario_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">scenario_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;r_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">settings</span> <span class="o">+=</span> <span class="s2">&quot;__&quot;</span>
+        <span class="n">settings</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;p_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">speed_reduction_factor</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disrupted_scenario_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="s2">&quot;disrupted&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disrupted_scenario_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_select_edges_to_disrupt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">n_traffic_signals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">)</span>
+        <span class="n">n_edges_to_disrupt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_traffic_signals</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">disruption_ratio</span><span class="p">)</span>
+        <span class="c1"># Ensure all traffic signals have at least one disrupted link</span>
+        <span class="n">disruptable_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">used_intersections</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roadnet</span><span class="p">[</span><span class="s2">&quot;roads&quot;</span><span class="p">]:</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;startIntersection&quot;</span><span class="p">],</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;endIntersection&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">start</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span>
+                <span class="ow">and</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span>
+            <span class="p">):</span>  <span class="c1"># ensure it is not a fringe edge</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">used_intersections</span><span class="p">:</span>
+                    <span class="n">disruptable_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+                    <span class="n">used_intersections</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">end</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">used_intersections</span><span class="p">:</span>
+                    <span class="n">disruptable_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+                    <span class="n">used_intersections</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">disrupted_edges</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">disruptable_edges</span><span class="p">,</span> <span class="n">n_edges_to_disrupt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disrupted_edges</span>
+
+    <span class="k">def</span> <span class="nf">_lower_the_speed_of_disrupted_lanes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_to_disrupt</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">road</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roadnet</span><span class="p">[</span><span class="s2">&quot;roads&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_to_disrupt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;lanes&quot;</span><span class="p">]:</span>
+                        <span class="n">max_speed</span> <span class="o">=</span> <span class="n">lane</span><span class="p">[</span><span class="s2">&quot;maxSpeed&quot;</span><span class="p">]</span>
+                        <span class="n">lane</span><span class="p">[</span><span class="s2">&quot;maxSpeed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_reduction_factor</span>
+
+    <span class="k">def</span> <span class="nf">_save_disrupted_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">replicate_no</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s1">&#39;roadnet_file&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disrupted_scenario_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roadnet</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CityFlowGridDisruptor.generate_disrupted_network"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor.generate_disrupted_network">[docs]</a>    <span class="k">def</span> <span class="nf">generate_disrupted_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">edges_to_disrupt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_edges_to_disrupt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lower_the_speed_of_disrupted_lanes</span><span class="p">(</span><span class="n">edges_to_disrupt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_disrupted_network</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

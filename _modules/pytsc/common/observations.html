@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.common.observations &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../pytsc.html">pytsc</a></li>
+      <li class="breadcrumb-item active">pytsc.common.observations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytsc.common.observations</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pytsc.common.utils</span> <span class="kn">import</span> <span class="n">pad_list</span>
+
+
+<div class="viewcode-block" id="BaseObservationSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.BaseObservationSpace">[docs]</a><span class="k">class</span> <span class="nc">BaseObservationSpace</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standard observation space for traffic signal control.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">parsed_network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">traffic_signals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span> <span class="o">=</span> <span class="n">traffic_signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span> <span class="o">=</span> <span class="n">simulator_backend</span>
+        <span class="c1"># Needed to get observation size and padding</span>
+        <span class="c1"># self.max_n_controlled_lanes = np.max(</span>
+        <span class="c1">#     [len(ts.incoming_lanes) for ts in traffic_signals.values()]</span>
+        <span class="c1"># ).item()</span>
+        <span class="c1"># self.max_n_controlled_phases = np.max(</span>
+        <span class="c1">#     [ts.n_phases for ts in traffic_signals.values()]</span>
+        <span class="c1"># ).item()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_value</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;pad_value&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BaseObservationSpace.high"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.BaseObservationSpace.high">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">high</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="BaseObservationSpace.low"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.BaseObservationSpace.low">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">low</span><span class="p">():</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="PositionMatrix"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix">[docs]</a><span class="k">class</span> <span class="nc">PositionMatrix</span><span class="p">(</span><span class="n">BaseObservationSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each incoming lane is divided into bins of v_size + min_gap (7.5) meters.</span>
+<span class="sd">    Visibility of each traffic signal is in terms of # of bins, not meters.</span>
+<span class="sd">    -1: no vehicle in bin</span>
+<span class="sd">    0: vehicle in bin, not moving</span>
+<span class="sd">    &gt;0: vehicle in bin, moving</span>
+<span class="sd">    Observation:</span>
+<span class="sd">        - position matrix of each incoming lane</span>
+<span class="sd">        - one hot encoding of current phase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_lanes_per_direction</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">max_lane_speed</span> <span class="o">=</span> <span class="mf">15.0</span>  <span class="c1"># m/s</span>
+    <span class="n">max_lane_length</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># m</span>
+    <span class="n">max_phases</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">max_n_controlled_lanes</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositionMatrix</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">,</span> <span class="n">simulator_backend</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;visibility&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lane_features</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obs_noise_std</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obs_noise_std&quot;</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_mat</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="n">noisy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">pos_mat</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+                <span class="n">noisy_val</span> <span class="o">=</span> <span class="n">val</span> <span class="o">+</span> <span class="n">noise</span>
+                <span class="n">noisy_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">noisy_val</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">noisy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">noisy_val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">noisy</span>
+
+    <span class="k">def</span> <span class="nf">_get_lane_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_angles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
+        <span class="n">lane_features</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span><span class="p">:</span>
+            <span class="n">one_hot_idx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lanes_per_direction</span><span class="p">)]</span>
+            <span class="n">one_hot_idx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_indices</span><span class="p">[</span><span class="n">lane</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">lane_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lane_length</span>
+            <span class="n">lane_angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_angles</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lane_speed</span>
+            <span class="n">lane_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_length</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_angle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_max_speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lane_length</span><span class="p">,</span> <span class="n">lane_angle</span><span class="p">,</span> <span class="n">lane_max_speed</span><span class="p">]</span>
+            <span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">one_hot_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lane_features</span>
+
+<div class="viewcode-block" id="PositionMatrix.get_per_agent_lane_features"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_per_agent_lane_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_per_agent_lane_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">per_agent_lane_features</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">lane_features</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">:</span>
+                <span class="n">lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span><span class="p">:</span>
+                <span class="n">n_pad_lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_pad_lanes</span><span class="p">):</span>
+                    <span class="n">lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_value</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lanes_per_direction</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="n">per_agent_lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lane_features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">per_agent_lane_features</span></div>
+
+<div class="viewcode-block" id="PositionMatrix.get_observations"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_observations">[docs]</a>    <span class="k">def</span> <span class="nf">get_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">pos_mats</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">inc_position_matrices</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">lane</span><span class="p">,</span> <span class="n">pos_mat</span> <span class="ow">in</span> <span class="n">pos_mats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">obs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+                <span class="n">pos_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_gaussian_noise</span><span class="p">(</span><span class="n">pos_mat</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obs_noise_std</span><span class="p">)</span>
+                <span class="n">obs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pos_mat</span><span class="p">)</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">phase_id</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">phase_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">obs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">phase_id</span><span class="p">)</span>
+            <span class="n">observations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">observations</span></div>
+
+<div class="viewcode-block" id="PositionMatrix.get_observation_info"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_observation_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_observation_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;lane_obs_dim&quot;</span><span class="p">:</span> <span class="mi">9</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span><span class="p">,</span>
+            <span class="s2">&quot;max_n_controlled_lanes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span><span class="p">,</span>
+            <span class="s2">&quot;max_phases&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">info</span></div>
+
+<div class="viewcode-block" id="PositionMatrix.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span></div>
+
+<div class="viewcode-block" id="PositionMatrix.get_state"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+                <span class="n">lane_results</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">sub_results</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">][</span><span class="n">lane</span><span class="p">]</span>
+                <span class="n">n_queued</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;n_queued&quot;</span><span class="p">]</span>
+                <span class="n">occupancy</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span>
+                <span class="n">mean_speed</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;mean_speed&quot;</span><span class="p">]</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">n_queued</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">,</span> <span class="n">mean_speed</span><span class="p">])</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">phase_id</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">phase_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">)</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">phase_id</span><span class="p">)</span>
+            <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">states</span></div>
+
+<div class="viewcode-block" id="PositionMatrix.get_state_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.PositionMatrix.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span></div></div>
+
+
+<div class="viewcode-block" id="LaneFeatures"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures">[docs]</a><span class="k">class</span> <span class="nc">LaneFeatures</span><span class="p">(</span><span class="n">BaseObservationSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each incoming lane is divided into bins of v_size + min_gap (7.5) meters.</span>
+<span class="sd">    Visibility of each traffic signal is in terms of # of bins, not meters.</span>
+<span class="sd">    -1: no vehicle in bin</span>
+<span class="sd">    0: vehicle in bin, not moving</span>
+<span class="sd">    &gt;0: vehicle in bin, moving</span>
+<span class="sd">    Observation:</span>
+<span class="sd">        - position matrix of each incoming lane</span>
+<span class="sd">        - one hot encoding of current phase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_lanes_per_direction</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">max_lane_speed</span> <span class="o">=</span> <span class="mf">15.0</span>  <span class="c1"># m/s</span>
+    <span class="n">max_lane_length</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># m</span>
+    <span class="n">max_phases</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">max_n_controlled_lanes</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LaneFeatures</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">,</span> <span class="n">simulator_backend</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;visibility&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_prob</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obs_dropout_prob&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="c1"># self.max_mats_size = self.visibility * self.max_n_controlled_lanes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lane_features</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_dropped_lanes</span><span class="p">()</span>
+        <span class="c1"># self.dropout_prob lanes are dropped</span>
+
+<div class="viewcode-block" id="LaneFeatures.reset_dropped_lanes"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.reset_dropped_lanes">[docs]</a>    <span class="k">def</span> <span class="nf">reset_dropped_lanes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropped_lanes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+            <span class="n">lanes</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout_prob</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lanes</span><span class="p">)),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_lane_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_angles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
+        <span class="n">lane_features</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span><span class="p">:</span>
+            <span class="n">one_hot_idx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lanes_per_direction</span><span class="p">)]</span>
+            <span class="n">one_hot_idx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_indices</span><span class="p">[</span><span class="n">lane</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">lane_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lane_length</span>
+            <span class="n">lane_angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_angles</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lane_speed</span>
+            <span class="n">lane_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_length</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_angle</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_max_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lane_max_speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lane_length</span><span class="p">,</span> <span class="n">lane_angle</span><span class="p">,</span> <span class="n">lane_max_speed</span><span class="p">]</span>
+            <span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">one_hot_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lane_features</span>
+
+<div class="viewcode-block" id="LaneFeatures.get_per_agent_lane_features"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_per_agent_lane_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_per_agent_lane_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">per_agent_lane_features</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">lane_features</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">:</span>
+                <span class="n">lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span><span class="p">:</span>
+                <span class="n">n_pad_lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_pad_lanes</span><span class="p">):</span>
+                    <span class="n">lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_value</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lanes_per_direction</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="n">per_agent_lane_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lane_features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">per_agent_lane_features</span></div>
+
+<div class="viewcode-block" id="LaneFeatures.get_observations"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_observations">[docs]</a>    <span class="k">def</span> <span class="nf">get_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">:</span>
+                <span class="n">observation</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+                <span class="n">lane_results</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">sub_results</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">][</span><span class="n">lane</span><span class="p">]</span>
+                <span class="n">n_queued</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;n_queued&quot;</span><span class="p">]</span>
+                <span class="n">occupancy</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span>
+                <span class="n">mean_speed</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;mean_speed&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropped_lanes</span><span class="p">:</span>
+                    <span class="n">observation</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">observation</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">n_queued</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">,</span> <span class="n">mean_speed</span><span class="p">])</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">phase_id</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">phase_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">)</span>
+            <span class="n">observation</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">phase_id</span><span class="p">)</span>
+            <span class="n">observations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">observations</span></div>
+
+<div class="viewcode-block" id="LaneFeatures.get_observation_info"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_observation_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_observation_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;lane_obs_dim&quot;</span><span class="p">:</span> <span class="mi">9</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;max_n_controlled_lanes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span><span class="p">,</span>
+            <span class="s2">&quot;max_phases&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">info</span></div>
+
+<div class="viewcode-block" id="LaneFeatures.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span></div>
+
+<div class="viewcode-block" id="LaneFeatures.get_state"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">incoming_lanes</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_features</span><span class="p">[</span><span class="n">lane</span><span class="p">])</span>
+                <span class="n">lane_results</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">sub_results</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">][</span><span class="n">lane</span><span class="p">]</span>
+                <span class="n">n_queued</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;n_queued&quot;</span><span class="p">]</span>
+                <span class="n">occupancy</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span>
+                <span class="n">mean_speed</span> <span class="o">=</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;mean_speed&quot;</span><span class="p">]</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">n_queued</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">,</span> <span class="n">mean_speed</span><span class="p">])</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_size</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">phase_id</span> <span class="o">=</span> <span class="n">pad_list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">phase_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span><span class="p">)</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">phase_id</span><span class="p">)</span>
+            <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">states</span></div>
+
+<div class="viewcode-block" id="LaneFeatures.get_state_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.observations.LaneFeatures.get_state_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_n_controlled_lanes</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

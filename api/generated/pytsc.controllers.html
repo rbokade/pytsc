@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytsc.controllers package &mdash; PyTSC 2025 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pytsc.generators package" href="pytsc.generators.html" />
+    <link rel="prev" title="pytsc.common package" href="pytsc.common.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pytsc_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pytsc.controllers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.cityflow.html">pytsc.backends.cityflow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.backends.sumo.html">pytsc.backends.sumo package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.common.html">pytsc.common package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pytsc.controllers package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.controllers">pytsc.controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">pytsc.controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">pytsc.controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">pytsc.controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.controllers.controllers">pytsc.controllers.controllers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.controllers.evaluate">pytsc.controllers.evaluate module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pytsc.controllers.rl_controller">pytsc.controllers.rl_controller module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-3">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.generators.html">pytsc.generators package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.scenarios.html">pytsc.scenarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.tests.html">pytsc.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytsc.wrappers.html">pytsc.wrappers package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyTSC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pytsc</a></li>
+          <li class="breadcrumb-item"><a href="pytsc.html">pytsc package</a></li>
+      <li class="breadcrumb-item active">pytsc.controllers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/generated/pytsc.controllers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytsc-controllers-package">
+<h1>pytsc.controllers package<a class="headerlink" href="#pytsc-controllers-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-pytsc.controllers">
+<span id="pytsc-controllers-module"></span><h2>pytsc.controllers module<a class="headerlink" href="#module-pytsc.controllers" title="Permalink to this headline"></a></h2>
+</section>
+<section id="id1">
+<h2>pytsc.controllers module<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-0"></span></section>
+<section id="id2">
+<h2>pytsc.controllers module<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-1"></span></section>
+<section id="id3">
+<h2>pytsc.controllers module<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-2"></span></section>
+<section id="module-pytsc.controllers.controllers">
+<span id="pytsc-controllers-controllers-module"></span><h2>pytsc.controllers.controllers module<a class="headerlink" href="#module-pytsc.controllers.controllers" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.AnalyticPlusController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">AnalyticPlusController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#AnalyticPlusController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.AnalyticPlusController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.AnalyticPlusController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#AnalyticPlusController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.AnalyticPlusController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.BaseController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">BaseController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_robin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#BaseController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.BaseController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.FixedTimeController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">FixedTimeController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#FixedTimeController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.FixedTimeController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.FixedTimeController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#FixedTimeController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.FixedTimeController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.GreedyController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">GreedyController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#GreedyController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.GreedyController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.GreedyController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#GreedyController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.GreedyController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.MaxPressureController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">MaxPressureController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#MaxPressureController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.MaxPressureController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.MaxPressureController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#MaxPressureController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.MaxPressureController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">RandomController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.SOTLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">SOTLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#SOTLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.SOTLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<p>mu: threshold for vehicles on green phase lanes
+theta: threshold for vehicles on red phase lanes
+phi_min: minimum green time</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.controllers.SOTLController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#SOTLController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.SOTLController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.controllers.evaluate">
+<span id="pytsc-controllers-evaluate-module"></span><h2>pytsc.controllers.evaluate module<a class="headerlink" href="#module-pytsc.controllers.evaluate" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.evaluate.</span></span><span class="sig-name descname"><span class="pre">Evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#Evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'phase_selection'</span></em><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate.action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#Evaluate.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.evaluate.</span></span><span class="sig-name descname"><span class="pre">RLEvaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#RLEvaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.evaluate.Evaluate" title="pytsc.controllers.evaluate.Evaluate"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.evaluate.Evaluate</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'phase_switch'</span></em><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate.action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#RLEvaluate.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pytsc.controllers.rl_controller">
+<span id="pytsc-controllers-rl-controller-module"></span><h2>pytsc.controllers.rl_controller module<a class="headerlink" href="#module-pytsc.controllers.rl_controller" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.GraphAttentionComm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">GraphAttentionComm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacency_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#GraphAttentionComm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.GraphAttentionComm" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.GraphAttentionComm.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#GraphAttentionComm.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.GraphAttentionComm.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.GraphAttentionComm.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.GraphAttentionComm.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">LaneAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_feat_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_feat_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_id_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#LaneAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAggregator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAggregator.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#LaneAggregator.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAggregator.forward" title="Permalink to this definition"></a></dt>
+<dd><p>static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)
+dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)
+phase_ids: (bs * n_agents, 1, phase_id_dim)
+# hidden_state: (bs * n_agents, hidden_dim)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAggregator.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAggregator.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAttentionAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">LaneAttentionAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_feat_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_feat_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_id_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#LaneAttentionAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAttentionAggregator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAttentionAggregator.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#LaneAttentionAggregator.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAttentionAggregator.forward" title="Permalink to this definition"></a></dt>
+<dd><p>static_feats: (bs * n_agents, max_n_lanes, lane_feature_dim)
+dynamic_feats: (bs * n_agents, max_n_lanes, pos_mat_dim)
+phase_ids: (bs * n_agents, 1, phase_id_dim)
+# hidden_state: (bs * n_agents, hidden_dim)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.LaneAttentionAggregator.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.LaneAttentionAggregator.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MixedRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">MixedRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#MixedRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.MixedRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MixedRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/single_generalized_agent_1.thpytsc/controllers/multi_generalized_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MixedRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedAgentRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">MultiGeneralizedAgentRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#MultiGeneralizedAgentRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedAgentRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedAgentRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/multi_generalized_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedAgentRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">MultiGeneralizedGraphAgentRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#MultiGeneralizedGraphAgentRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/multi_generalized_graph_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedGraphAgentRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedVarRobustAgentRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">MultiGeneralizedVarRobustAgentRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#MultiGeneralizedVarRobustAgentRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustAgentRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedVarRobustAgentRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/multi_generalized_var_robust_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustAgentRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">MultiGeneralizedVarRobustGraphAgentRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#MultiGeneralizedVarRobustGraphAgentRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/multi_generalized_var_robust_graph_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.MultiGeneralizedVarRobustGraphAgentRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">RLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#RLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.get_action">
+<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hidden_states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#RLController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.get_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.hidden_dim">
+<span class="sig-name descname"><span class="pre">hidden_dim</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.hidden_dim" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.init_hidden">
+<span class="sig-name descname"><span class="pre">init_hidden</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#RLController.init_hidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.init_hidden" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/agent.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.RLController.n_actions">
+<span class="sig-name descname"><span class="pre">n_actions</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.RLController.n_actions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.SingleGeneralizedAgentRLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">SingleGeneralizedAgentRLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#SingleGeneralizedAgentRLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.SingleGeneralizedAgentRLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.SingleGeneralizedAgentRLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/single_generalized_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.SingleGeneralizedAgentRLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.SpecializedMARLController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">SpecializedMARLController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsc_env</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#SpecializedMARLController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.SpecializedMARLController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.rl_controller.RLController" title="pytsc.controllers.rl_controller.RLController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.rl_controller.RLController</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.SpecializedMARLController.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.SpecializedMARLController.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.SpecializedMARLController.model_paths">
+<span class="sig-name descname"><span class="pre">model_paths</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['pytsc/controllers/specialized_marl_agent_1.th']</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.SpecializedMARLController.model_paths" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">TSCAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lanes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgent.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_lane_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_mats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_state</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgent.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgent.init_hidden">
+<span class="sig-name descname"><span class="pre">init_hidden</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgent.init_hidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgent.init_hidden" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgent.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgent.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">TSCAgentEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lanes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_lane_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_selection_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgentEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble.init_hidden">
+<span class="sig-name descname"><span class="pre">init_hidden</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgentEnsemble.init_hidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble.init_hidden" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble.max_n_controlled_lanes">
+<span class="sig-name descname"><span class="pre">max_n_controlled_lanes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble.max_n_controlled_lanes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble.max_phases">
+<span class="sig-name descname"><span class="pre">max_phases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble.max_phases" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble.select_action">
+<span class="sig-name descname"><span class="pre">select_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avail_actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCAgentEnsemble.select_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble.select_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCAgentEnsemble.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCAgentEnsemble.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCGraphAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.rl_controller.</span></span><span class="sig-name descname"><span class="pre">TSCGraphAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lanes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCGraphAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCGraphAgent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCGraphAgent.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">static_lane_feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_mats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCGraphAgent.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCGraphAgent.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCGraphAgent.init_hidden">
+<span class="sig-name descname"><span class="pre">init_hidden</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/rl_controller.html#TSCGraphAgent.init_hidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCGraphAgent.init_hidden" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pytsc.controllers.rl_controller.TSCGraphAgent.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pytsc.controllers.rl_controller.TSCGraphAgent.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-3">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-3" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pytsc.common.html" class="btn btn-neutral float-left" title="pytsc.common package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pytsc.generators.html" class="btn btn-neutral float-right" title="pytsc.generators package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Rohit Bokade, Xiaoning Jin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
