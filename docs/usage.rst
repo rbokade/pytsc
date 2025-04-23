@@ -53,25 +53,22 @@ Using PyTSC with PyMARL/EPyMARL
 
 To use PyTSC with PyMARL or EPyMARL, you can use the `pymarl` or `epymarl` wrappers. Here's an example of how to use PyTSC with PyMARL:
 
-.. .. code-block:: python
 
-..     from pytsc import TrafficSignalNetwork
-..     from pymarl import Env
+In `src/envs/__init__.py`, you can register the PyTSC environment with EPyMARL: 
+.. code-block:: python
 
-..     class PyTSCEnv(Env):
-..         def __init__(self, scenario='pasubio', simulator='sumo'):
-..             self.env = TrafficSignalNetwork(scenario=scenario, simulator=simulator)
+    def register_pytsc():
+    from pytsc.wrappers.epymarl import (
+        DomainRandomizedEPyMARLTrafficSignalNetwork,
+        EPyMARLTrafficSignalNetwork,
+    )
 
-..         def reset(self):
-..             return self.env.reset()
+    def pytsc_fn(**kwargs) -> MultiAgentEnv:
+        kwargs = __check_and_prepare_pytsc_kwargs(**kwargs)
+        if kwargs.get("domain_randomization", False):
+            return DomainRandomizedEPyMARLTrafficSignalNetwork(**kwargs)
+        else:
+            return EPyMARLTrafficSignalNetwork(**kwargs)
 
-..         def step(self, action):
-..             return self.env.step(action)
+    REGISTRY["pytsc"] = pytsc_fn
 
-..     env = PyTSCEnv()
-..     obs = env.reset()
-..     done = False
-
-..     while not done:
-..         action = {id: env.action_space.sample() for id in env.agent_ids}
-..         obs, reward, done, info = env.step(action)
