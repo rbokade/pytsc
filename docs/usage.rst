@@ -1,6 +1,7 @@
 Usage
 =====
 
+
 Add scenario files
 -------------------
 
@@ -51,24 +52,18 @@ Here’s a simple example of using PyTSC with a SUMO grid network:
 Using PyTSC with PyMARL/EPyMARL
 -------------------------------
 
-To use PyTSC with PyMARL or EPyMARL, you can use the `pymarl` or `epymarl` wrappers. Here's an example of how to use PyTSC with PyMARL:
+To use PyTSC with PyMARL or EPyMARL, you can use the `pymarl` or `epymarl` wrappers. 
 
+Here's an example of how to use PyTSC with EPyMARL. In `src/envs/__init__.py`, you can register the PyTSC environment as such:
 
-In `src/envs/__init__.py`, you can register the PyTSC environment with EPyMARL: 
 .. code-block:: python
 
     def register_pytsc():
-    from pytsc.wrappers.epymarl import (
-        DomainRandomizedEPyMARLTrafficSignalNetwork,
-        EPyMARLTrafficSignalNetwork,
-    )
+        from pytsc.wrappers.epymarl import EPyMARLTrafficSignalNetwork
 
-    def pytsc_fn(**kwargs) -> MultiAgentEnv:
-        kwargs = __check_and_prepare_pytsc_kwargs(**kwargs)
-        if kwargs.get("domain_randomization", False):
-            return DomainRandomizedEPyMARLTrafficSignalNetwork(**kwargs)
-        else:
+        def pytsc_fn(**kwargs) -> MultiAgentEnv:
+            kwargs = __check_and_prepare_pytsc_kwargs(**kwargs)
             return EPyMARLTrafficSignalNetwork(**kwargs)
 
-    REGISTRY["pytsc"] = pytsc_fn
+        REGISTRY["pytsc"] = pytsc_fn
 
