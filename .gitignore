@@ -149,4 +149,5 @@ pytsc/results/
 randomized/
 train/
 test/
-*.th
+*.th._*
+.DS_Store

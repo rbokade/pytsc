@@ -41,6 +41,7 @@ def convert_sumo_to_cityflow(sumo_trip_file_path, output_file_path):
 
 
 if __name__ == "__main__":
+    
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--sumo_routes_file",
@@ -54,4 +55,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-convert_sumo_to_cityflow(args.sumo_routes_file, args.cityflow_routes_file)
+    convert_sumo_to_cityflow(args.sumo_routes_file, args.cityflow_routes_file)

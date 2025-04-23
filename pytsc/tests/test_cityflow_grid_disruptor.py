@@ -1,6 +1,6 @@
-from pytsc.backends.cityflow.grid_disruptor import CityFlowGridDisruptor
+# from pytsc.backends.cityflow.grid_disruptor import CityFlowGridDisruptor
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # for scenario in [2, 3, 4, 5]:
     #     for disruption_ratio in [0.25, 0.5, 0.75, 1.0]:
