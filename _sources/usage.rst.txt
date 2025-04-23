@@ -59,17 +59,11 @@ In `src/envs/__init__.py`, you can register the PyTSC environment with EPyMARL:
 .. code-block:: python
 
     def register_pytsc():
-    from pytsc.wrappers.epymarl import (
-        DomainRandomizedEPyMARLTrafficSignalNetwork,
-        EPyMARLTrafficSignalNetwork,
-    )
+        from pytsc.wrappers.epymarl import EPyMARLTrafficSignalNetwork
 
-    def pytsc_fn(**kwargs) -> MultiAgentEnv:
-        kwargs = __check_and_prepare_pytsc_kwargs(**kwargs)
-        if kwargs.get("domain_randomization", False):
-            return DomainRandomizedEPyMARLTrafficSignalNetwork(**kwargs)
-        else:
+        def pytsc_fn(**kwargs) -> MultiAgentEnv:
+            kwargs = __check_and_prepare_pytsc_kwargs(**kwargs)
             return EPyMARLTrafficSignalNetwork(**kwargs)
 
-    REGISTRY["pytsc"] = pytsc_fn
+        REGISTRY["pytsc"] = pytsc_fn
 

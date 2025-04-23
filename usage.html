@@ -126,19 +126,13 @@
 <p>To use PyTSC with PyMARL or EPyMARL, you can use the <cite>pymarl</cite> or <cite>epymarl</cite> wrappers. Here’s an example of how to use PyTSC with PyMARL:</p>
 <p>In <cite>src/envs/__init__.py</cite>, you can register the PyTSC environment with EPyMARL:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">register_pytsc</span><span class="p">():</span>
-<span class="kn">from</span> <span class="nn">pytsc.wrappers.epymarl</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DomainRandomizedEPyMARLTrafficSignalNetwork</span><span class="p">,</span>
-    <span class="n">EPyMARLTrafficSignalNetwork</span><span class="p">,</span>
-<span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">pytsc.wrappers.epymarl</span> <span class="kn">import</span> <span class="n">EPyMARLTrafficSignalNetwork</span>
 
-<span class="k">def</span> <span class="nf">pytsc_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiAgentEnv</span><span class="p">:</span>
-    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">__check_and_prepare_pytsc_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain_randomization&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">DomainRandomizedEPyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">pytsc_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiAgentEnv</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">__check_and_prepare_pytsc_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">EPyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="n">REGISTRY</span><span class="p">[</span><span class="s2">&quot;pytsc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pytsc_fn</span>
+    <span class="n">REGISTRY</span><span class="p">[</span><span class="s2">&quot;pytsc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pytsc_fn</span>
 </pre></div>
 </div>
 </section>
