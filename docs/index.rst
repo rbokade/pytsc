@@ -1,12 +1,20 @@
-Installation
-============
+.. PyTSC documentation master file, created by
+   sphinx-quickstart on Wed Apr 23 11:28:52 2025.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-To install PyTSC, clone the repo and install dependencies:
+Welcome to PyTSC's documentation!
+=================================
 
-.. code-block:: bash
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-    git clone https://github.com/rbokade/pytsc
-    cd pytsc
-    pip install -e .
 
-PyTSC requires SUMO or CityFlow for simulation.
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
