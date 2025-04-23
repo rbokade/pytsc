@@ -10,9 +10,6 @@
 
 PyTSC is a Python library for training reinforcement learning (RL) models for traffic signal control (TSC). It lets you simulate traffic scenarios and train agents using different RL/MARL algorithms. You can either **SUMO or CityFlow** simulator. The library is **modular** so *you can modify MDP formulations as per as your need.* PyTSC is **open-source**. You can find it on `GitHub <https://github.com/rbokade/pytsc>`__. Contributions from the community are welcome and appreciated!
 
-Welcome to PyTSC's documentation page!
-=================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
