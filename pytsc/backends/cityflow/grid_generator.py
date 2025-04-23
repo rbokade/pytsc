@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 
-
 CONFIG_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "../..",
@@ -12,6 +11,16 @@ CONFIG_DIR = os.path.join(
 
 
 class CityFlowGridNetworkGenerator:
+    """
+    Generates a grid network for CityFlow simulation.
+
+    Args:
+        cityflow_dir (str): Path to the CityFlow installation directory.
+        nrows (int): Number of rows in the grid.
+        ncols (int): Number of columns in the grid.
+        mean_flow_rates (list): List of mean flow rates for the arterial and side streets.
+    """
+
     col_distance = 200
     row_distance = 200
     intersection_width = 20
@@ -69,6 +78,15 @@ class CityFlowGridNetworkGenerator:
 
 
 class CityFlowOneWayGridNetworkGenerator(CityFlowGridNetworkGenerator):
+    """
+    Generates a one-way grid network for CityFlow simulation.
+    Args:
+        cityflow_dir (str): Path to the CityFlow installation directory.
+        nrows (int): Number of rows in the grid.
+        ncols (int): Number of columns in the grid.
+        mean_flow_rates (list): List of mean flow rates for the arterial and side streets.
+    """
+
     col_distance = 200
     row_distance = 200
     intersection_width = 20

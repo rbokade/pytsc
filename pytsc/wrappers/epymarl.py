@@ -14,6 +14,11 @@ class EPyMARLTrafficSignalNetwork(MultiAgentEnv):
     multi-agent reinforcement learning. This environment is designed to
     be used with the EPyMARL framework, which is a multi-agent reinforcement
     learning library.
+
+    Args:
+        map_name (str): The name of the map to use (default "pasubio").
+        simulator_backend (str): The simulator backend to use (default "sumo").
+        **kwargs: Additional keyword arguments for TrafficSignalNetwork.
     """
 
     step_stats = None
@@ -112,6 +117,7 @@ class DomainRandomizedEPyMARLTrafficSignalNetwork(MultiAgentEnv):
     domain randomization. It randomly selects a map from a provided list at
     each reset, and pads outputs so that the observation and action interfaces
     remain fixed (with a maximum number of agents).
+
     Args:
         map_names (list): A list of map names to choose from.
         max_n_agents (int): The maximum number of agents.

@@ -1,5 +1,5 @@
-import os
 import json
+import os
 import random
 
 scenario_path = "/Users/rohitbokade/repos/pytsc/pytsc/scenarios/cityflow/hangzhou_4_4"

@@ -1,6 +1,5 @@
 import json
 import math
-
 from functools import lru_cache
 
 import networkx as nx
@@ -12,7 +11,10 @@ from pytsc.common.network_parser import BaseNetworkParser
 class NetworkParser(BaseNetworkParser):
     """
     Parses the network file and extracts essential information
-    and stores it in the config
+    and stores it in the config.
+
+    Args:
+        config (Config): Configuration object containing the network file path.
     """
 
     def __init__(self, config):

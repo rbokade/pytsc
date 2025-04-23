@@ -7,6 +7,11 @@ from pytsc.common.utils import compute_max_spanning_tree
 class MetricsParser(BaseMetricsParser):
     """
     Network wide metrics
+
+    Args:
+        parsed_network (ParsedNetwork): Parsed network object.
+        simulator (CityFlowSimulator): CityFlow simulator object.
+        traffic_signals (dict): Dictionary of traffic signals.
     """
 
     def __init__(self, parsed_network, simulator, traffic_signals):

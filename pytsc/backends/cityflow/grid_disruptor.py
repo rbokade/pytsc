@@ -39,9 +39,7 @@ class CityFlowGridDisruptor:
         settings = f"r_{self.disruption_ratio}"
         settings += "__"
         settings += f"p_{self.speed_reduction_factor}"
-        self.disrupted_scenario_dir = os.path.join(
-            scenario_dir, "disrupted", settings
-        )
+        self.disrupted_scenario_dir = os.path.join(scenario_dir, "disrupted", settings)
         os.makedirs(self.disrupted_scenario_dir, exist_ok=True)
 
     def _select_edges_to_disrupt(self):
@@ -71,14 +69,10 @@ class CityFlowGridDisruptor:
                 if edge == road["id"]:
                     for lane in road["lanes"]:
                         max_speed = lane["maxSpeed"]
-                        lane["maxSpeed"] = (
-                            max_speed * self.speed_reduction_factor
-                        )
+                        lane["maxSpeed"] = max_speed * self.speed_reduction_factor
 
     def _save_disrupted_network(self):
-        filename = (
-            f"{self.replicate_no}__{self.config.simulator['roadnet_file']}"
-        )
+        filename = f"{self.replicate_no}__{self.config.simulator['roadnet_file']}"
         output_file = os.path.join(self.disrupted_scenario_dir, filename)
         with open(output_file, "w") as f:
             json.dump(self.roadnet, f, indent=4)

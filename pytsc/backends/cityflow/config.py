@@ -3,7 +3,6 @@ import os
 import random
 import tempfile
 import time
-
 from itertools import cycle
 
 from pytsc.common.config import BaseConfig
@@ -21,6 +20,10 @@ CONFIG_DIR = os.path.join(
 class Config(BaseConfig):
     """
     Configuration class for the CityFlow simulator.
+
+    Args:
+        scenario (str): The name of the scenario.
+        **kwargs: Additional keyword arguments.
     """
 
     def __init__(self, scenario, **kwargs):
@@ -40,6 +43,10 @@ class Config(BaseConfig):
     def _set_roadnet_file(self, scenario_path, **kwargs):
         """
         Set the roadnet file path.
+
+        Args:
+            scenario_path (str): The path to the scenario directory.
+            **kwargs: Additional keyword arguments.
         """
         self.cityflow_roadnet_file = os.path.abspath(
             os.path.join(
@@ -97,6 +104,15 @@ class Config(BaseConfig):
 
 
 class DisruptedConfig(Config):
+    """
+    Configuration class for the CityFlow simulator with disruptions.
+
+    Args:
+        scenario (str): The name of the scenario.
+        mode (str): The mode of the simulator (train, test, etc.).
+        **kwargs: Additional keyword arguments.
+    """
+
     def __init__(self, scenario, mode="train", **kwargs):
         self.scenario = scenario
         self.mode = mode
