@@ -123,8 +123,8 @@
 </section>
 <section id="using-pytsc-with-pymarl-epymarl">
 <h2>Using PyTSC with PyMARL/EPyMARL<a class="headerlink" href="#using-pytsc-with-pymarl-epymarl" title="Permalink to this headline"></a></h2>
-<p>To use PyTSC with PyMARL or EPyMARL, you can use the <cite>pymarl</cite> or <cite>epymarl</cite> wrappers. Here’s an example of how to use PyTSC with PyMARL:</p>
-<p>In <cite>src/envs/__init__.py</cite>, you can register the PyTSC environment with EPyMARL:</p>
+<p>To use PyTSC with PyMARL or EPyMARL, you can use the <cite>pymarl</cite> or <cite>epymarl</cite> wrappers.</p>
+<p>Here’s an example of how to use PyTSC with EPyMARL. In <cite>src/envs/__init__.py</cite>, you can register the PyTSC environment as such:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">register_pytsc</span><span class="p">():</span>
     <span class="kn">from</span> <span class="nn">pytsc.wrappers.epymarl</span> <span class="kn">import</span> <span class="n">EPyMARLTrafficSignalNetwork</span>
 
