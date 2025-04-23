@@ -4,6 +4,14 @@ import numpy as np
 
 
 class BaseRewardFunction(ABC):
+    """
+    Base class for reward functions in traffic signal control.
+    This class defines the interface for different reward functions
+    and provides common functionality for reward management.
+    Args:
+        metrics (Metrics): Metrics object containing simulation parameters.
+        traffic_signals (dict): Dictionary of traffic signals in the network.
+    """
     def __init__(self, metrics, traffic_signals):
         self.metrics = metrics
         self.traffic_signals = traffic_signals
@@ -12,18 +20,39 @@ class BaseRewardFunction(ABC):
 
     @abstractmethod
     def get_global_reward(self):
+        """
+        Calculate the global reward based on pressure and flickering.
+        Returns:
+            float: Global reward for the network.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_local_reward(self):
+        """
+        Get the local reward for each traffic signal.
+        Returns:
+            list: List of local rewards for each traffic signal.
+        """
         raise NotImplementedError
 
 
 class QueueLength(BaseRewardFunction):
+    """
+    Queue Length reward function.
+    Args:
+        metrics (Metrics): Metrics object containing simulation parameters.
+        traffic_signals (dict): Dictionary of traffic signals in the network.
+    """
     def __init__(self, metrics, traffic_signals):
         super(QueueLength, self).__init__(metrics, traffic_signals)
 
     def get_global_reward(self):
+        """
+        Calculate the global reward based on pressure and flickering.
+        Returns:
+            float: Global reward for the network.
+        """
         fc = self.config.misc["flickering_coef"]
         reward = 1e-6
         reward += fc * self.metrics.flickering_signal
@@ -31,6 +60,11 @@ class QueueLength(BaseRewardFunction):
         return -1 * reward
 
     def get_local_reward(self):
+        """
+        Calculate the local reward for each traffic signal based on queue length and flickering.
+        Returns:
+            list: List of local rewards for each traffic signal.
+        """
         fc = self.config.misc["flickering_coef"]
         gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors
@@ -49,10 +83,21 @@ class QueueLength(BaseRewardFunction):
 
 
 class MaxPressure(BaseRewardFunction):
+    """
+    Max Pressure reward function.
+    Args:
+        metrics (Metrics): Metrics object containing simulation parameters.
+        traffic_signals (dict): Dictionary of traffic signals in the network.    
+    """
     def __init__(self, metrics, traffic_signals):
         super(MaxPressure, self).__init__(metrics, traffic_signals)
 
     def get_global_reward(self):
+        """
+        Calculate the global reward based on pressure and flickering.
+        Returns:
+            float: Global reward for the network.
+        """
         fc = self.config.misc["flickering_coef"]
         reward = 1e-6
         reward -= fc * self.metrics.flickering_signal
@@ -60,6 +105,11 @@ class MaxPressure(BaseRewardFunction):
         return reward
 
     def get_local_reward(self):
+        """
+        Calculate the local reward for each traffic signal based on pressure and flickering.
+        Returns:
+            list: List of local rewards for each traffic signal.
+        """
         fc = self.config.misc["flickering_coef"]
         gamma = self.config.misc["reward_gamma"]
         k_hop_neighbors = self.parsed_network.k_hop_neighbors

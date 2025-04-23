@@ -11,6 +11,13 @@ from pytsc.controllers import (
 
 
 class BaseTrafficSignal(ABC):
+    """
+    Base class for traffic signals in the network.
+    Args:
+        id (str): Unique identifier for the traffic signal.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """
     def __init__(self, id, config, simulator):
         self.id = id
         self.config = config
@@ -22,13 +29,24 @@ class BaseTrafficSignal(ABC):
 
     @abstractmethod
     def update_stats(self):
+        """
+        Update the statistics of the traffic signal.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def action_to_phase(self, action):
+        """
+        Convert action to phase index.
+        Args:
+            action (int): Action index.
+        """
         raise NotImplementedError
 
     def init_rule_based_controllers(self):
+        """
+        Initialize rule-based controllers for the traffic signal.
+        """
         self.controllers = {
             "fixed_time": FixedTimeController(self),
             "greedy": GreedyController(self),
@@ -41,6 +59,13 @@ class BaseTrafficSignal(ABC):
 
 
 class BaseTSProgram(ABC):
+    """
+    Base class for traffic signal programs.
+    Args:
+        id (str): Unique identifier for the traffic signal program.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """
     def __init__(self, id, config, simulator):
         self.id = id
         self.phases = config["phases"]
@@ -50,15 +75,28 @@ class BaseTSProgram(ABC):
 
     @abstractmethod
     def _initialize_traffic_light_program(self):
+        """
+        Initialize the traffic light program.
+        """
         raise NotImplementedError
 
     def set_initial_phase(self, phase_index):
+        """
+        Set the initial phase of the traffic signal program.
+        Args:
+            phase_index (int): Index of the initial phase.
+        """        
         self.current_phase_index = phase_index
         self.current_phase = self.phases[phase_index]
         self.time_on_phase = 0
         self.norm_time_on_phase = 0
 
     def update_current_phase(self, phase_index):
+        """
+        Update the current phase of the traffic signal program.
+        Args:
+            phase_index (int): Index of the new phase.
+        """        
         if phase_index == self.current_phase_index:
             self.phase_changed = False
             self.time_on_phase += self.yellow_time
@@ -75,6 +113,13 @@ class BaseTSProgram(ABC):
 
 
 class BaseTSController(ABC):
+    """
+    Base class for traffic signal controllers.
+    Args:
+        id (str): Unique identifier for the traffic signal controller.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """    
     def __init__(self, id, config, simulator):
         self.id = id
         self.config = config
@@ -83,30 +128,65 @@ class BaseTSController(ABC):
 
     @property
     def n_phases(self):
+        """
+        Get the number of phases in the traffic signal controller.
+        Returns:
+            int: Number of phases in the traffic signal controller.
+        """        
         return self.config["n_phases"]
 
     @property
     def phase_indices(self):
+        """
+        Get the phase indices of the traffic signal controller.
+        Returns:
+            list: List of phase indices in the traffic signal controller.
+        """        
         return self.config["phase_indices"]
 
     @property
     def green_phase_indices(self):
+        """
+        Get the green phase indices of the traffic signal controller.
+        Returns:
+            list: List of green phase indices in the traffic signal controller.
+        """        
         return self.config["green_phase_indices"]
 
     @property
     def yellow_time(self):
+        """
+        Get the yellow time of the traffic signal controller.
+        Returns:
+            int: Yellow time of the traffic signal controller.
+        """        
         return self.config["yellow_time"]
 
     @property
     def yellow_phase_indices(self):
+        """
+        Get the yellow phase indices of the traffic signal controller.
+        Returns:
+            list: List of yellow phase indices in the traffic signal controller.
+        """        
         return self.config["yellow_phase_indices"]
 
     @property
     def phases_min_max_times(self):
+        """
+        Get the minimum and maximum times for each phase in the traffic signal controller.
+        Returns:
+            dict: Dictionary containing minimum and maximum times for each phase.
+        """        
         return self.config["phases_min_max_times"]
 
     @property
     def current_phase(self):
+        """
+        Get the current phase of the traffic signal controller.
+        Returns:
+            str: Current phase of the traffic signal controller.
+        """        
         if self.program is not None:
             return self.program.current_phase
         else:
@@ -114,6 +194,11 @@ class BaseTSController(ABC):
 
     @property
     def current_phase_index(self):
+        """
+        Get the index of the current phase in the traffic signal controller.
+        Returns:
+            int: Index of the current phase in the traffic signal controller.
+        """        
         if self.program is not None:
             return self.program.current_phase_index
         else:
@@ -121,6 +206,11 @@ class BaseTSController(ABC):
 
     @property
     def next_phase_index(self):
+        """
+        Get the index of the next phase in the traffic signal controller.
+        Returns:
+            int: Index of the next phase in the traffic signal controller.
+        """        
         if self.current_phase_index is not None:
             return (self.current_phase_index + 1) % self.n_phases
         else:
@@ -128,6 +218,11 @@ class BaseTSController(ABC):
 
     @property
     def next_green_phase_index(self):
+        """
+        Get the index of the next green phase in the traffic signal controller.
+        Returns:
+            int: Index of the next green phase in the traffic signal controller.
+        """        
         if self.current_phase_index is not None:
             return (self.current_phase_index + 2) % self.n_phases
         else:
@@ -135,6 +230,11 @@ class BaseTSController(ABC):
 
     @property
     def time_on_phase(self):
+        """
+        Get the time spent on the current phase of the traffic signal controller.
+        Returns:
+            int: Time spent on the current phase of the traffic signal controller.
+        """        
         if self.program is not None:
             return self.program.time_on_phase
         else:
@@ -142,6 +242,11 @@ class BaseTSController(ABC):
 
     @property
     def norm_time_on_phase(self):
+        """
+        Get the normalized time spent on the current phase of the traffic signal controller.
+        Returns:
+            float: Normalized time spent on the current phase of the traffic signal controller.
+        """        
         if self.program is not None:
             return self.program.norm_time_on_phase
         else:
@@ -149,22 +254,38 @@ class BaseTSController(ABC):
 
     @property
     def phase_one_hot(self):
+        """
+        Get the one-hot encoding of the current phase of the traffic signal controller.
+        Returns:
+            list: One-hot encoding of the current phase of the traffic signal controller.
+        """        
         phase_one_hot = [0 for _ in range(self.n_phases)]
         if self.current_phase_index is not None:
             phase_one_hot[self.current_phase_index] = 1
         return phase_one_hot
 
     def _instantiate_traffic_light_logic(self):
+        """
+        Initialize the traffic light logic based on the configuration.
+        """        
         if self.config["round_robin"]:
             self.logic = TLSRoundRobinPhaseSelectLogic(self)
         else:
             self.logic = TLSFreePhaseSelectLogic(self)
 
     def get_allowable_phase_switches(self):
+        """
+        Get the allowable phase switches based on the current phase and time spent on it.
+        Returns:
+            list: List of allowable phase switches for the traffic signal controller.
+        """        
         return self.logic.get_allowable_phase_switches(self.time_on_phase)
 
     @abstractmethod
     def switch_phase(self):
+        """
+        Switch the phase of the traffic signal controller.
+        """        
         raise NotImplementedError
 
     def __repr__(self):
@@ -192,6 +313,13 @@ class TLSFreePhaseSelectLogic:
         self.phases_min_max_times = controller.phases_min_max_times
 
     def get_allowable_phase_switches(self, time_on_phase):
+        """
+        Get the allowable phase switches based on the current phase and time spent on it.
+        Args:
+            time_on_phase (int): Time spent on the current phase.
+        Returns:
+            list: List of allowable phase switches for the traffic signal controller.
+        """        
         mask = [0 for _ in range(self.n_phases)]
         if self.controller.current_phase_index in self.controller.green_phase_indices:
             min_max_times = self.phases_min_max_times[self.controller.current_phase]
@@ -218,11 +346,23 @@ class TLSFreePhaseSelectLogic:
 
 
 class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
+    """
+    Round robin phase selection logic for traffic signal controllers.
+    Args:
+        controller (BaseTSController): Traffic signal controller object.        
+    """    
     def __init__(self, controller):
         super(TLSRoundRobinPhaseSelectLogic, self).__init__(controller)
         self.yellow_time = controller.yellow_time
 
     def get_allowable_phase_switches(self, time_on_phase):
+        """
+        Get the allowable phase switches based on the current phase and time spent on it.
+        Args:
+            time_on_phase (int): Time spent on the current phase.
+        Returns:
+            list: List of allowable phase switches for the traffic signal controller.
+        """        
         mask = [0 for _ in range(self.n_phases)]
         if self.controller.current_phase_index in self.green_phase_indices:
             min_max_times = self.phases_min_max_times[self.controller.current_phase]

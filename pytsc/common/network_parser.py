@@ -4,12 +4,23 @@ import numpy as np
 
 
 class BaseNetworkParser(ABC):
+    """
+    Base class for network parsers in traffic signal control.
+    This class defines the interface for different network parsers
+    and provides common functionality for network management.
+    Args:
+        config (Config): Configuration object containing simulation parameters.
+        traffic_signal_ids (list): List of traffic signal IDs in the network.
+    """
     def __init__(self, config):
         self.config = config
 
-    def _get_adjacency_matrix(self):
+    def _get_adjacency_matrix(self):        
         """
-        Returns adjacency matrix based on input neighbors
+        The adjacency matrix is a square matrix used to represent a finite graph.
+        The elements of the matrix indicate whether pairs of vertices are adjacent or not in the graph.
+        In the context of traffic signal control, the adjacency matrix can be used to represent the connections
+        between different traffic signals in the network.
         """
         if "neighbors" in self.config.network.keys():
             n_traffic_signals = len(self.traffic_signal_ids)

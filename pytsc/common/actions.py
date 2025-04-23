@@ -6,12 +6,25 @@ from pytsc.common.utils import pad_list
 
 
 class BaseActionSpace(ABC):
+    """
+    Base class for action spaces in traffic signal control.
+    This class defines the interface for different action spaces
+    and provides common functionality for action space management.
+    
+    Args:
+        config (Config): Configuration object containing simulation parameters.
+        traffic_signals (dict): Dictionary of traffic signals in the network.
+    """
     def __init__(self, config, traffic_signals):
         self.config = config
         self.traffic_signals = traffic_signals
         self.ts_ids = list(traffic_signals.keys())
 
     def _check_actions_type(self, actions):
+        """
+        Check if actions are in the correct format (list or numpy array).
+        If not, try to convert them to a list.
+        """
         if not isinstance(actions, list):
             try:
                 actions = actions.tolist()
@@ -20,17 +33,39 @@ class BaseActionSpace(ABC):
 
     @abstractmethod
     def apply(self, actions):
+        """
+        Apply the given actions to the traffic signals.
+        Args:
+            actions (list): List of actions to be applied to the traffic signals.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_mask(self):
+        """
+        Get the action mask for each traffic signal.
+        Returns:
+            list: List of action masks for each traffic signal.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_size(self):
+        """
+        Get the size of the action space.
+        Returns:
+            int: Size of the action space.
+        """
         raise NotImplementedError
 
     def get_trad_controller_actions(self, controller):
+        """
+        Get the actions for traditional controllers.
+        Args:
+            controller (str): The type of controller to get actions for.
+        Returns:
+            list: List of actions for each traffic signal.
+        """
         actions = []
         mask = self.get_mask()
         for i, ts in enumerate(self.traffic_signals.values()):
@@ -46,21 +81,39 @@ class BaseActionSpace(ABC):
 
 class PhaseSelectionActionSpace(BaseActionSpace):
     """
-    Actions are the phase index to switch to for each traffic signal.
+    In this child class, actions are the phase index to switch to for each traffic signal.
+    Args:
+        config (Config): Configuration object containing simulation parameters.
+        traffic_signals (dict): Dictionary of traffic signals in the network.        
     """
 
     def __init__(self, config, traffic_signals):
         super(PhaseSelectionActionSpace, self).__init__(config, traffic_signals)
 
     def apply(self, actions):
+        """
+        Apply the given actions to the traffic signals.
+        Args:
+            actions (list): List of actions to be applied to the traffic signals.
+        """
         # self._check_actions_type(actions)
         for ts_idx, ts in enumerate(self.traffic_signals.values()):
             ts.action_to_phase(actions[ts_idx])
 
     def get_size(self):
+        """
+        Get the size of the action space.
+        Returns:
+            int: Size of the action space.
+        """
         return max([ts.controller.n_phases for ts in self.traffic_signals.values()])
 
     def get_mask(self):
+        """
+        Get the action mask for each traffic signal.
+        Returns:
+            list: List of action masks for each traffic signal.
+        """
         masks = []
         for ts in self.traffic_signals.values():
             mask = ts.controller.get_allowable_phase_switches()
@@ -80,6 +133,11 @@ class PhaseSwitchActionSpace(BaseActionSpace):
         super(PhaseSwitchActionSpace, self).__init__(config, traffic_signals)
 
     def apply(self, actions):
+        """
+        Apply the given actions to the traffic signals.
+        Args:
+            actions (list): List of actions to be applied to the traffic signals.
+        """
         self._check_actions_type(actions)
         for ts_idx, ts in enumerate(self.traffic_signals.values()):
             current_phase = ts.controller.program.current_phase_index
@@ -90,9 +148,19 @@ class PhaseSwitchActionSpace(BaseActionSpace):
                 ts.action_to_phase(current_phase)
 
     def get_size(self):
+        """
+        Get the size of the action space.
+        Returns:
+            int: Size of the action space.
+        """
         return 2
 
     def get_mask(self):
+        """
+        Get the action mask for each traffic signal.
+        Returns:
+            list: List of action masks for each traffic signal.
+        """
         masks = []
         for ts in self.traffic_signals.values():
             allowable_switches = ts.controller.get_allowable_phase_switches()
@@ -108,6 +176,13 @@ class PhaseSwitchActionSpace(BaseActionSpace):
         return masks
 
     def get_trad_controller_actions(self, controller):
+        """
+        Get the actions for traditional controllers.
+        Args:
+            controller (str): The type of controller to get actions for.
+        Returns:
+            list: List of actions for each traffic signal.
+        """
         actions = []
         mask = self.get_mask()
         for i, ts in enumerate(self.traffic_signals.values()):
@@ -123,6 +198,11 @@ class PhaseSwitchActionSpace(BaseActionSpace):
 
 
 class CentralizedActionSpace(BaseActionSpace):
+    """
+    In this child class, actions are the phase index to switch to for each traffic signal.
+    Args:
+        individual_action_space (BaseActionSpace): The action space for each traffic signal.
+    """
     def __init__(self, individual_action_space):
         super(CentralizedActionSpace, self).__init__(
             individual_action_space.config,
@@ -133,10 +213,22 @@ class CentralizedActionSpace(BaseActionSpace):
         self.n_actions = self.individual_action_space.get_size()
 
     def apply(self, action):
+        """
+        Apply the given action to the traffic signals.
+        Args:
+            action (int): The action to be applied to the traffic signals.
+        """
         actions = self.decode_action(action.item())
         self.individual_action_space.apply(actions)
 
     def decode_action(self, action):
+        """
+        Decode the action into individual actions for each traffic signal.
+        Args:
+            action (int): The action to be decoded.
+        Returns:
+            list: List of individual actions for each traffic signal.
+        """
         actions = []
         current_action = action
         for _ in range(self.n_agents):
@@ -145,9 +237,19 @@ class CentralizedActionSpace(BaseActionSpace):
         return actions[::-1]
 
     def get_size(self):
+        """
+        Get the size of the action space.
+        Returns:
+            int: Size of the action space.
+        """
         return self.individual_action_space.get_size() ** self.n_agents
 
     def get_mask(self):
+        """
+        Get the action mask for each traffic signal.
+        Returns:
+            list: List of action masks for each traffic signal.
+        """
         individual_masks = self.individual_action_space.get_mask()
         combinations = product(range(self.n_actions), repeat=self.n_agents)
         joint_mask = []

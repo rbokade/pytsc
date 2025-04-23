@@ -13,6 +13,16 @@ from pytsc.controllers import CONTROLLERS
 
 
 class Evaluate:
+    """
+    Base class for evaluating traffic signal controllers.
+    Args:
+        scenario (str): Name of the scenario to evaluate.
+        simulator_backend (str): Simulator backend to use (e.g., "cityflow", "sumo").
+        controller_name (str): Name of the controller to evaluate.
+        add_env_args (dict): Additional arguments for the environment.
+        add_controller_args (dict): Additional arguments for the controller.
+        **kwargs: Additional keyword arguments.
+    """
     action_space = "phase_selection"
 
     def __init__(
@@ -49,6 +59,9 @@ class Evaluate:
         self.config = self.network.config
 
     def _init_controllers(self):
+        """
+        Initialize controllers for each traffic signal in the network.
+        """
         self.controllers = {}
         for ts_id, ts in self.network.traffic_signals.items():
             self.controllers[ts_id] = CONTROLLERS[self.controller_name](
@@ -56,6 +69,14 @@ class Evaluate:
             )
 
     def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
+        """
+        Run the evaluation for a specified number of hours.
+        Args:
+            hours (int): Number of hours to evaluate.
+            save_stats (bool): Flag to save statistics.
+            plot_stats (bool): Flag to plot statistics.
+            output_folder (str): Folder to save output files.
+        """
         EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
         output_folder = self._create_output_folder(output_folder)
         steps = int(hours * 3600 / self.delta_time)
@@ -74,6 +95,13 @@ class Evaluate:
             self._plot_stats(output_folder=output_folder)
 
     def _create_output_folder(self, output_folder):
+        """
+        Create the output folder for saving results.
+        Args:
+            output_folder (str): Folder to save output files.
+        Returns:    
+            str: Path to the output folder.
+        """
         if output_folder is None:
             output_folder = os.path.join(
                 "pytsc", "results", self.simulator_backend, self.scenario
@@ -82,6 +110,11 @@ class Evaluate:
         return output_folder
 
     def _get_actions(self):
+        """
+        Get actions for each traffic signal in the network.
+        Returns:
+            list: List of actions for each traffic signal.
+        """
         actions = []
         for idx, (ts_id, ts) in enumerate(self.network.traffic_signals.items()):
             obs = self.network.get_observations()
@@ -91,6 +124,12 @@ class Evaluate:
         return actions
 
     def _get_controller_input(self, obs, ts):
+        """
+        Get the input for the controller.
+        Args:
+            obs (list): Observation for the traffic signal.
+            ts (TrafficSignal): Traffic signal object.
+        """
         inp = self.network.simulator.step_measurements
         inp.update(
             {
@@ -103,17 +142,33 @@ class Evaluate:
         return inp
 
     def _log_stats(self, t, stats):
+        """
+        Log statistics for the current step.
+        Args:
+            t (int): Current step.
+            stats (dict): Dictionary of statistics to log.
+        """
         for stat_name, stat_value in stats.items():
             if stat_name not in self.log:
                 self.log[stat_name] = []
             self.log[stat_name].append(stat_value)
 
     def _save_stats(self, output_folder):
+        """
+        Save statistics to a CSV file.
+        Args:
+            output_folder (str): Folder to save output files.
+        """
         stats = pd.DataFrame(self.log)
         file = os.path.join(output_folder, f"{self.controller_name}_stats.csv")
         stats.to_csv(file, index=False)
 
     def _plot_stats(self, output_folder):
+        """
+        Plot statistics and save the figure.
+        Args:
+            output_folder (str): Folder to save output files.
+        """
         file = os.path.join(output_folder, f"{self.controller_name}_stats.png")
         num_stats = len(self.log.keys())
         ncols = 3
@@ -138,6 +193,16 @@ class Evaluate:
 
 
 class RLEvaluate(Evaluate):
+    """
+    Class for evaluating traffic signal controllers using reinforcement learning.
+    Args:
+        scenario (str): Name of the scenario to evaluate.
+        simulator_backend (str): Simulator backend to use (e.g., "cityflow", "sumo").
+        controller_name (str): Name of the controller to evaluate.
+        add_env_args (dict): Additional arguments for the environment.
+        add_controller_args (dict): Additional arguments for the controller.
+        **kwargs: Additional keyword arguments.
+    """
     action_space = "phase_switch"
 
     def __init__(
@@ -159,11 +224,22 @@ class RLEvaluate(Evaluate):
         )
 
     def _init_controllers(self):
+        """
+        Initialize the controller for the network.
+        """
         self.controller = CONTROLLERS[self.controller_name](
             self.network, **self.add_controller_args
         )
 
     def run(self, hours, save_stats=False, plot_stats=False, output_folder=None):
+        """
+        Run the evaluation for a specified number of hours.
+        Args:
+            hours (int): Number of hours to evaluate.
+            save_stats (bool): Flag to save statistics.
+            plot_stats (bool): Flag to plot statistics.
+            output_folder (str): Folder to save output files.
+        """
         EnvLogger.log_info(f"Evaluating {self.controller_name} controller")
         output_folder = self._create_output_folder(output_folder)
         steps = int(hours * 3600 / self.delta_time)
@@ -184,5 +260,13 @@ class RLEvaluate(Evaluate):
             self._plot_stats(output_folder=output_folder)
 
     def _get_actions(self, hidden_states):
+        """
+        Get actions for each traffic signal in the network.
+        Args:
+            hidden_states (list): Hidden states for the controller.
+        Returns:
+            list: List of actions for each traffic signal.
+            list: Next hidden states for the controller.
+        """
         actions, next_hidden_states = self.controller.get_action(hidden_states)
         return actions.tolist(), next_hidden_states

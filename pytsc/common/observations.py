@@ -8,7 +8,14 @@ from pytsc.common.utils import pad_list
 
 class BaseObservationSpace(ABC):
     """
-    Standard observation space for traffic signal control.
+    Base class for observation spaces in traffic signal control.
+    This class defines the interface for different observation spaces
+    and provides common functionality for observation space management.
+    Args:
+        config (Config): Configuration object containing simulation parameters.
+        parsed_network (ParsedNetwork): Parsed network object containing network information.
+        traffic_signals (dict): Dictionary of traffic signals in the network.
+        simulator_backend (str): The simulator backend to be used (e.g., "cityflow", "sumo").    
     """
 
     def __init__(self, config, parsed_network, traffic_signals, simulator_backend):
@@ -62,6 +69,14 @@ class PositionMatrix(BaseObservationSpace):
         self.obs_noise_std = config.signal.get("obs_noise_std", 0.00)
 
     def _add_gaussian_noise(self, pos_mat, std=0.1):
+        """
+        Add Gaussian noise to the position matrix.
+        Args:
+            pos_mat (list): Position matrix of the lane.
+            std (float): Standard deviation of the Gaussian noise.
+        Returns:
+            list: Noisy position matrix.
+        """
         noisy = []
         for val in pos_mat:
             if val > 0:
@@ -72,6 +87,16 @@ class PositionMatrix(BaseObservationSpace):
         return noisy
 
     def _get_lane_features(self):
+        """
+        Get lane features for each lane in the network.
+        Lane features include:
+            - lane length (normalized)
+            - lane angle (normalized)
+            - lane max speed (normalized)
+            - one-hot encoding of lane index
+        Returns:
+            dict: Dictionary of lane features for each lane.
+        """
         self.lane_lengths = self.parsed_network.lane_lengths
         self.lane_indices = self.parsed_network.lane_indices
         self.lane_angles = self.parsed_network.lane_angles
@@ -91,6 +116,12 @@ class PositionMatrix(BaseObservationSpace):
         return lane_features
 
     def get_per_agent_lane_features(self):
+        """
+        Get lane features for each agent (traffic signal).
+        Each agent's lane features are padded to the maximum number of controlled lanes.
+        Returns:
+            list: List of lane features for each agent.
+        """
         per_agent_lane_features = []
         for ts in self.traffic_signals.values():
             lane_features = []
@@ -106,6 +137,13 @@ class PositionMatrix(BaseObservationSpace):
         return per_agent_lane_features
 
     def get_observations(self):
+        """
+        Get observations for each traffic signal.
+        Each observation includes the position matrix of each incoming lane
+        and the one-hot encoding of the current phase.
+        Returns:
+            list: List of observations for each traffic signal.
+        """
         observations = []
         for ts in self.traffic_signals.values():
             obs = []
@@ -121,6 +159,11 @@ class PositionMatrix(BaseObservationSpace):
         return observations
 
     def get_observation_info(self):
+        """
+        Get information about the observation space.
+        Returns:
+            dict: Dictionary containing information about the observation space.
+        """
         info = {
             "lane_obs_dim": 9 + self.visibility,
             "max_n_controlled_lanes": self.max_n_controlled_lanes,
@@ -129,9 +172,21 @@ class PositionMatrix(BaseObservationSpace):
         return info
 
     def get_size(self):
+        """
+        Get the size of the observation space.
+        Returns:    
+            int: Size of the observation space.
+        """
         return self.max_n_controlled_lanes * (self.visibility + 9) + self.max_phases
 
     def get_state(self):
+        """
+        Get the state for each traffic signal.
+        Each state includes the position matrix of each incoming lane
+        and the one-hot encoding of the current phase.
+        Returns:
+            list: List of states for each traffic signal.
+        """
         states = []
         for ts in self.traffic_signals.values():
             state = []
@@ -149,6 +204,11 @@ class PositionMatrix(BaseObservationSpace):
         return states
 
     def get_state_size(self):
+        """
+        Get the size of the state space.
+        Returns:
+            int: Size of the state space.
+        """
         return self.max_n_controlled_lanes * (3 + 9) + self.max_phases
 
 
@@ -182,12 +242,26 @@ class LaneFeatures(BaseObservationSpace):
         # self.dropout_prob lanes are dropped
 
     def reset_dropped_lanes(self):
+        """
+        Randomly drop lanes based on the dropout probability.
+        This method is called at the beginning of each episode.
+        """
         lanes = self.parsed_network.lanes
         self.dropped_lanes = np.random.choice(
             lanes, int(self.dropout_prob * len(lanes)), replace=False
         )
 
     def _get_lane_features(self):
+        """
+        Get lane features for each lane in the network.
+        Lane features include:
+            - lane length (normalized)
+            - lane angle (normalized)
+            - lane max speed (normalized)
+            - one-hot encoding of lane index
+        Returns:
+            dict: Dictionary of lane features for each lane.
+        """
         self.lane_lengths = self.parsed_network.lane_lengths
         self.lane_indices = self.parsed_network.lane_indices
         self.lane_angles = self.parsed_network.lane_angles
@@ -207,6 +281,12 @@ class LaneFeatures(BaseObservationSpace):
         return lane_features
 
     def get_per_agent_lane_features(self):
+        """
+        Get lane features for each agent (traffic signal).
+        Each agent's lane features are padded to the maximum number of controlled lanes.
+        Returns:
+            list: List of lane features for each agent.
+        """
         per_agent_lane_features = []
         for ts in self.traffic_signals.values():
             lane_features = []
@@ -222,6 +302,12 @@ class LaneFeatures(BaseObservationSpace):
         return per_agent_lane_features
 
     def get_observations(self):
+        """
+        Each observation includes the lane features of each incoming lane
+        and the one-hot encoding of the current phase.
+        Returns:
+            list: List of observations for each traffic signal.
+        """
         observations = []
         for ts in self.traffic_signals.values():
             observation = []
@@ -242,6 +328,11 @@ class LaneFeatures(BaseObservationSpace):
         return observations
 
     def get_observation_info(self):
+        """
+        Get information about the observation space.
+        Returns:
+            dict: Dictionary containing information about the observation space.
+        """
         info = {
             "lane_obs_dim": 9 + 3,
             "max_n_controlled_lanes": self.max_n_controlled_lanes,
@@ -250,9 +341,21 @@ class LaneFeatures(BaseObservationSpace):
         return info
 
     def get_size(self):
+        """
+        Get the size of the observation space.
+        Returns:
+            int: Size of the observation space.
+        """
         return self.max_n_controlled_lanes * (3 + 9) + self.max_phases
 
     def get_state(self):
+        """
+        Get the state for each traffic signal.
+        Each state includes the lane features of each incoming lane
+        and the one-hot encoding of the current phase.
+        Returns:
+            list: List of states for each traffic signal.
+        """
         states = []
         for ts in self.traffic_signals.values():
             state = []
@@ -270,4 +373,9 @@ class LaneFeatures(BaseObservationSpace):
         return states
 
     def get_state_size(self):
+        """
+        Get the size of the state space.
+        Returns:
+            int: Size of the state space.
+        """
         return self.max_n_controlled_lanes * (3 + 9) + self.max_phases

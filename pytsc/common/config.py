@@ -19,12 +19,28 @@ CONFIG_DIR = os.path.join(
 
 
 class BaseConfig(ABC):
+    """
+    Base class for configuration management in traffic signal control.
+    This class handles loading and merging configuration files for different
+    scenarios and simulator backends.
+    Args:
+        scenario (str): Name of the scenario for which the configuration is being loaded.
+        debug (bool): Flag to enable debug mode. If True, detailed logs will be printed.
+        **kwargs: Additional configuration parameters to override default values.
+    """
     def __init__(self, scenario, debug=False, **kwargs):
         self.debug = debug
         self.scenario = scenario
         self._additional_config = kwargs
 
     def _load_config(self, simulator_backend):
+        """
+        Load the configuration files for the specified scenario and simulator backend.
+        This method loads the default configuration, merges it with scenario-specific
+        configuration, and applies any additional configuration parameters provided.
+        Args:
+            simulator_backend (str): The simulator backend to be used (e.g., "cityflow", "sumo").
+        """
         # Load default config parameters
         default_file_path = os.path.join(CONFIG_DIR, "default", "config.yaml")
         with open(default_file_path, "r") as f:

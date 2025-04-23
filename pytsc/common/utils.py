@@ -7,6 +7,11 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 
 
 class EnvLogger:
+    """
+    A simple logger class to log messages to the console.
+    This class ensures that the logger is initialized only once and provides
+    methods to log messages at different levels (info, warning, etc.).
+    """
     logger = None
 
     @staticmethod
@@ -57,6 +62,9 @@ def sort_alphanumeric_ids(ids):
 
 
 def recursively_update_dict(d, u):
+    """
+    Recursively update a dictionary with another dictionary.
+    """
     for k, v in u.items():
         if isinstance(v, dict):
             d[k] = recursively_update_dict(d.get(k, {}), v)
@@ -66,6 +74,9 @@ def recursively_update_dict(d, u):
 
 
 def flatten_list(list_of_lists):
+    """
+    Flattens a list of lists into a single list.
+    """
     flat_list = []
     # Iterate through the outer list
     for element in list_of_lists:
@@ -93,10 +104,24 @@ def pad_array(array, size, pad_value=0):
 
 
 def pad_list(inp_list, size, pad_value=0):
+    """
+    Pads the given list with the specified padding value so that it has
+    the specified size. If the list is already larger than the specified size,
+    it is returned unmodified.
+    """
     return pad_array(np.array(inp_list), size, pad_value).tolist()
 
 
 def calculate_vehicle_bin_index(n_bins, lane_length, vehicle_position):
+    """
+    Calculate the bin index for a vehicle based on its position in the lane.
+    Args:
+        n_bins (int): Number of bins.
+        lane_length (float): Length of the lane.
+        vehicle_position (float): Position of the vehicle in the lane.
+    Returns:
+        int: Bin index for the vehicle.
+    """
     if vehicle_position < 0:
         vehicle_position = 0
     elif vehicle_position > lane_length:
@@ -109,6 +134,16 @@ def calculate_vehicle_bin_index(n_bins, lane_length, vehicle_position):
 
 
 def generate_weibull_flow_rates(shape, scale, max_rate, num_segments):
+    """
+    Generate flow rates based on a Weibull distribution.
+    Args:
+        shape (float): Shape parameter for the Weibull distribution.
+        scale (float): Scale parameter for the Weibull distribution.
+        max_rate (float): Maximum flow rate.
+        num_segments (int): Number of segments to divide the flow rates into.
+    Returns:
+        np.ndarray: Flow rates for each segment.
+    """
     inter_arrival_times = np.random.weibull(shape, 1000) * scale
     cumulative_times = np.cumsum(inter_arrival_times)
     cumulative_times = cumulative_times[cumulative_times <= 3600]

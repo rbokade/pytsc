@@ -19,7 +19,7 @@ git add .
 git commit -m "Deploy docs"
 
 # Push to gh-pages branch
-git push --force https://github.com/rbokade/pytsc.git main:gh-pages
+git push --force https://github.com/rbokade/pytsc.git HEAD:gh-pages
 
 # Cleanup
 cd ../..
