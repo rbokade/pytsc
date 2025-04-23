@@ -48,18 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">pytsc</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
@@ -192,25 +181,56 @@
 <dt class="sig sig-object py" id="pytsc.common.actions.BaseActionSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.actions.</span></span><span class="sig-name descname"><span class="pre">BaseActionSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#BaseActionSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.BaseActionSpace" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for action spaces in traffic signal control.
+This class defines the interface for different action spaces
+and provides common functionality for action space management.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.config.Config" title="pytsc.backends.cityflow.config.Config"><em>Config</em></a>) – Configuration object containing simulation parameters.</p></li>
+<li><p><strong>traffic_signals</strong> (<em>dict</em>) – Dictionary of traffic signals in the network.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.BaseActionSpace.apply">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#BaseActionSpace.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.BaseActionSpace.apply" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Apply the given actions to the traffic signals.
+:param actions: List of actions to be applied to the traffic signals.
+:type actions: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.BaseActionSpace.get_mask">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#BaseActionSpace.get_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.BaseActionSpace.get_mask" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the action mask for each traffic signal.
+:returns: List of action masks for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.BaseActionSpace.get_size">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#BaseActionSpace.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.BaseActionSpace.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the action space.
+:returns: Size of the action space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.BaseActionSpace.get_trad_controller_actions">
 <span class="sig-name descname"><span class="pre">get_trad_controller_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#BaseActionSpace.get_trad_controller_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.BaseActionSpace.get_trad_controller_actions" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the actions for traditional controllers.
+:param controller: The type of controller to get actions for.
+:type controller: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of actions for each traffic signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -218,25 +238,48 @@
 <dt class="sig sig-object py" id="pytsc.common.actions.CentralizedActionSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.actions.</span></span><span class="sig-name descname"><span class="pre">CentralizedActionSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">individual_action_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#CentralizedActionSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.CentralizedActionSpace" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.common.actions.BaseActionSpace" title="pytsc.common.actions.BaseActionSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.actions.BaseActionSpace</span></code></a></p>
+<p>In this child class, actions are the phase index to switch to for each traffic signal.
+:param individual_action_space: The action space for each traffic signal.
+:type individual_action_space: BaseActionSpace</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.CentralizedActionSpace.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#CentralizedActionSpace.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.CentralizedActionSpace.apply" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Apply the given action to the traffic signals.
+:param action: The action to be applied to the traffic signals.
+:type action: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.CentralizedActionSpace.decode_action">
 <span class="sig-name descname"><span class="pre">decode_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#CentralizedActionSpace.decode_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.CentralizedActionSpace.decode_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Decode the action into individual actions for each traffic signal.
+:param action: The action to be decoded.
+:type action: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of individual actions for each traffic signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.CentralizedActionSpace.get_mask">
 <span class="sig-name descname"><span class="pre">get_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#CentralizedActionSpace.get_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.CentralizedActionSpace.get_mask" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the action mask for each traffic signal.
+:returns: List of action masks for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.CentralizedActionSpace.get_size">
 <span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#CentralizedActionSpace.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.CentralizedActionSpace.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the action space.
+:returns: Size of the action space.
+:rtype: int</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -244,21 +287,34 @@
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSelectionActionSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.actions.</span></span><span class="sig-name descname"><span class="pre">PhaseSelectionActionSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSelectionActionSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSelectionActionSpace" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.common.actions.BaseActionSpace" title="pytsc.common.actions.BaseActionSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.actions.BaseActionSpace</span></code></a></p>
-<p>Actions are the phase index to switch to for each traffic signal.</p>
+<p>In this child class, actions are the phase index to switch to for each traffic signal.
+:param config: Configuration object containing simulation parameters.
+:type config: Config
+:param traffic_signals: Dictionary of traffic signals in the network.
+:type traffic_signals: dict</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSelectionActionSpace.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSelectionActionSpace.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSelectionActionSpace.apply" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Apply the given actions to the traffic signals.
+:param actions: List of actions to be applied to the traffic signals.
+:type actions: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSelectionActionSpace.get_mask">
 <span class="sig-name descname"><span class="pre">get_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSelectionActionSpace.get_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSelectionActionSpace.get_mask" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the action mask for each traffic signal.
+:returns: List of action masks for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSelectionActionSpace.get_size">
 <span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSelectionActionSpace.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSelectionActionSpace.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the action space.
+:returns: Size of the action space.
+:rtype: int</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -272,22 +328,42 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSwitchActionSpace.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSwitchActionSpace.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSwitchActionSpace.apply" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Apply the given actions to the traffic signals.
+:param actions: List of actions to be applied to the traffic signals.
+:type actions: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSwitchActionSpace.get_mask">
 <span class="sig-name descname"><span class="pre">get_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSwitchActionSpace.get_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSwitchActionSpace.get_mask" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the action mask for each traffic signal.
+:returns: List of action masks for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSwitchActionSpace.get_size">
 <span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSwitchActionSpace.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSwitchActionSpace.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the action space.
+:returns: Size of the action space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.actions.PhaseSwitchActionSpace.get_trad_controller_actions">
 <span class="sig-name descname"><span class="pre">get_trad_controller_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/actions.html#PhaseSwitchActionSpace.get_trad_controller_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.actions.PhaseSwitchActionSpace.get_trad_controller_actions" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the actions for traditional controllers.
+:param controller: The type of controller to get actions for.
+:type controller: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of actions for each traffic signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -298,6 +374,14 @@
 <dt class="sig sig-object py" id="pytsc.common.config.BaseConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.config.</span></span><span class="sig-name descname"><span class="pre">BaseConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/config.html#BaseConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.config.BaseConfig" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for configuration management in traffic signal control.
+This class handles loading and merging configuration files for different
+scenarios and simulator backends.
+:param scenario: Name of the scenario for which the configuration is being loaded.
+:type scenario: str
+:param debug: Flag to enable debug mode. If True, detailed logs will be printed.
+:type debug: bool
+:param **kwargs: Additional configuration parameters to override default values.</p>
 </dd></dl>
 
 </section>
@@ -307,10 +391,18 @@
 <dt class="sig sig-object py" id="pytsc.common.metrics.BaseMetricsParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.metrics.</span></span><span class="sig-name descname"><span class="pre">BaseMetricsParser</span></span><a class="reference internal" href="../../_modules/pytsc/common/metrics.html#BaseMetricsParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.metrics.BaseMetricsParser" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for metrics parsers in traffic signal control.
+This class defines the interface for different metrics parsers
+and provides common functionality for metrics management.
+:param parsed_network: Parsed network object containing network information.
+:type parsed_network: ParsedNetwork</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.metrics.BaseMetricsParser.get_step_stats">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_step_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/metrics.html#BaseMetricsParser.get_step_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.metrics.BaseMetricsParser.get_step_stats" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the statistics for the current simulation step.
+:returns: Dictionary containing the statistics for the current step.
+:rtype: dict</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -321,6 +413,13 @@
 <dt class="sig sig-object py" id="pytsc.common.network_parser.BaseNetworkParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.network_parser.</span></span><span class="sig-name descname"><span class="pre">BaseNetworkParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/network_parser.html#BaseNetworkParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.network_parser.BaseNetworkParser" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for network parsers in traffic signal control.
+This class defines the interface for different network parsers
+and provides common functionality for network management.
+:param config: Configuration object containing simulation parameters.
+:type config: Config
+:param traffic_signal_ids: List of traffic signal IDs in the network.
+:type traffic_signal_ids: list</p>
 </dd></dl>
 
 </section>
@@ -330,7 +429,17 @@
 <dt class="sig sig-object py" id="pytsc.common.observations.BaseObservationSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.observations.</span></span><span class="sig-name descname"><span class="pre">BaseObservationSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#BaseObservationSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.BaseObservationSpace" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Standard observation space for traffic signal control.</p>
+<p>Base class for observation spaces in traffic signal control.
+This class defines the interface for different observation spaces
+and provides common functionality for observation space management.
+:param config: Configuration object containing simulation parameters.
+:type config: Config
+:param parsed_network: Parsed network object containing network information.
+:type parsed_network: ParsedNetwork
+:param traffic_signals: Dictionary of traffic signals in the network.
+:type traffic_signals: dict
+:param simulator_backend: The simulator backend to be used (e.g., “cityflow”, “sumo”).
+:type simulator_backend: str</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.BaseObservationSpace.high">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#BaseObservationSpace.high"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.BaseObservationSpace.high" title="Permalink to this definition"></a></dt>
@@ -362,32 +471,54 @@ Observation:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_observation_info">
 <span class="sig-name descname"><span class="pre">get_observation_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_observation_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_observation_info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get information about the observation space.
+:returns: Dictionary containing information about the observation space.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_observations">
 <span class="sig-name descname"><span class="pre">get_observations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_observations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Each observation includes the lane features of each incoming lane
+and the one-hot encoding of the current phase.
+:returns: List of observations for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_per_agent_lane_features">
 <span class="sig-name descname"><span class="pre">get_per_agent_lane_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_per_agent_lane_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_per_agent_lane_features" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get lane features for each agent (traffic signal).
+Each agent’s lane features are padded to the maximum number of controlled lanes.
+:returns: List of lane features for each agent.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_size">
 <span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the observation space.
+:returns: Size of the observation space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_state">
 <span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_state" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the state for each traffic signal.
+Each state includes the lane features of each incoming lane
+and the one-hot encoding of the current phase.
+:returns: List of states for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.get_state_size">
 <span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.get_state_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the state space.
+:returns: Size of the state space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.max_lane_length">
@@ -417,7 +548,9 @@ Observation:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.LaneFeatures.reset_dropped_lanes">
 <span class="sig-name descname"><span class="pre">reset_dropped_lanes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#LaneFeatures.reset_dropped_lanes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.LaneFeatures.reset_dropped_lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Randomly drop lanes based on the dropout probability.
+This method is called at the beginning of each episode.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -440,32 +573,55 @@ Observation:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_observation_info">
 <span class="sig-name descname"><span class="pre">get_observation_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_observation_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_observation_info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get information about the observation space.
+:returns: Dictionary containing information about the observation space.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_observations">
 <span class="sig-name descname"><span class="pre">get_observations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_observations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get observations for each traffic signal.
+Each observation includes the position matrix of each incoming lane
+and the one-hot encoding of the current phase.
+:returns: List of observations for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_per_agent_lane_features">
 <span class="sig-name descname"><span class="pre">get_per_agent_lane_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_per_agent_lane_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_per_agent_lane_features" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get lane features for each agent (traffic signal).
+Each agent’s lane features are padded to the maximum number of controlled lanes.
+:returns: List of lane features for each agent.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_size">
 <span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the observation space.
+:returns: Size of the observation space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_state">
 <span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_state" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the state for each traffic signal.
+Each state includes the position matrix of each incoming lane
+and the one-hot encoding of the current phase.
+:returns: List of states for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.get_state_size">
 <span class="sig-name descname"><span class="pre">get_state_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/observations.html#PositionMatrix.get_state_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.observations.PositionMatrix.get_state_size" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the size of the state space.
+:returns: Size of the state space.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.common.observations.PositionMatrix.max_lane_length">
@@ -501,20 +657,34 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.retriever.BaseRetriever">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.retriever.</span></span><span class="sig-name descname"><span class="pre">BaseRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/retriever.html#BaseRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.retriever.BaseRetriever" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for data retrieval in traffic signal control.
+This class defines the interface for different data retrieval methods
+and provides common functionality for data management.
+:param simulator: Simulator object containing simulation parameters and network information.
+:type simulator: Simulator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.retriever.BaseRetriever.retrieve_lane_measurements">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_lane_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/retriever.html#BaseRetriever.retrieve_lane_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.retriever.BaseRetriever.retrieve_lane_measurements" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieve lane measurements from the simulator.
+:returns: Dictionary containing lane measurements.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.retriever.BaseRetriever.retrieve_sim_measurements">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_sim_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/retriever.html#BaseRetriever.retrieve_sim_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.retriever.BaseRetriever.retrieve_sim_measurements" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieve simulation measurements from the simulator.
+:returns: Dictionary containing simulation measurements.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.retriever.BaseRetriever.retrieve_ts_measurements">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_ts_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/retriever.html#BaseRetriever.retrieve_ts_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.retriever.BaseRetriever.retrieve_ts_measurements" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieve traffic signal measurements from the simulator.
+:returns: Dictionary containing traffic signal measurements.
+:rtype: dict</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -525,15 +695,28 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.reward.BaseRewardFunction">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.reward.</span></span><span class="sig-name descname"><span class="pre">BaseRewardFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#BaseRewardFunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.BaseRewardFunction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for reward functions in traffic signal control.
+This class defines the interface for different reward functions
+and provides common functionality for reward management.
+:param metrics: Metrics object containing simulation parameters.
+:type metrics: Metrics
+:param traffic_signals: Dictionary of traffic signals in the network.
+:type traffic_signals: dict</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.BaseRewardFunction.get_global_reward">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_global_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#BaseRewardFunction.get_global_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.BaseRewardFunction.get_global_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the global reward based on pressure and flickering.
+:returns: Global reward for the network.
+:rtype: float</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.BaseRewardFunction.get_local_reward">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_local_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#BaseRewardFunction.get_local_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.BaseRewardFunction.get_local_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the local reward for each traffic signal.
+:returns: List of local rewards for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -541,15 +724,26 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.reward.MaxPressure">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.reward.</span></span><span class="sig-name descname"><span class="pre">MaxPressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#MaxPressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.MaxPressure" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.common.reward.BaseRewardFunction" title="pytsc.common.reward.BaseRewardFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.reward.BaseRewardFunction</span></code></a></p>
+<p>Max Pressure reward function.
+:param metrics: Metrics object containing simulation parameters.
+:type metrics: Metrics
+:param traffic_signals: Dictionary of traffic signals in the network.
+:type traffic_signals: dict</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.MaxPressure.get_global_reward">
 <span class="sig-name descname"><span class="pre">get_global_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#MaxPressure.get_global_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.MaxPressure.get_global_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the global reward based on pressure and flickering.
+:returns: Global reward for the network.
+:rtype: float</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.MaxPressure.get_local_reward">
 <span class="sig-name descname"><span class="pre">get_local_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#MaxPressure.get_local_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.MaxPressure.get_local_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the local reward for each traffic signal based on pressure and flickering.
+:returns: List of local rewards for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -557,15 +751,26 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.reward.QueueLength">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.reward.</span></span><span class="sig-name descname"><span class="pre">QueueLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#QueueLength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.QueueLength" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.common.reward.BaseRewardFunction" title="pytsc.common.reward.BaseRewardFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.reward.BaseRewardFunction</span></code></a></p>
+<p>Queue Length reward function.
+:param metrics: Metrics object containing simulation parameters.
+:type metrics: Metrics
+:param traffic_signals: Dictionary of traffic signals in the network.
+:type traffic_signals: dict</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.QueueLength.get_global_reward">
 <span class="sig-name descname"><span class="pre">get_global_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#QueueLength.get_global_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.QueueLength.get_global_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the global reward based on pressure and flickering.
+:returns: Global reward for the network.
+:rtype: float</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.reward.QueueLength.get_local_reward">
 <span class="sig-name descname"><span class="pre">get_local_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/reward.html#QueueLength.get_local_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.reward.QueueLength.get_local_reward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the local reward for each traffic signal based on queue length and flickering.
+:returns: List of local rewards for each traffic signal.
+:rtype: list</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -576,30 +781,50 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.simulator.</span></span><span class="sig-name descname"><span class="pre">BaseSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for traffic signal control simulators.
+This class defines the interface for different simulators
+and provides common functionality for simulation management.
+:param parsed_network: Parsed network object containing network information.
+:type parsed_network: ParsedNetwork</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator.close_simulator">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator.close_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator.close_simulator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Close the simulator.
+:returns: True if the simulator closed successfully, False otherwise.
+:rtype: bool</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator.is_terminated">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_terminated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator.is_terminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator.is_terminated" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Check if the simulation has terminated.
+:returns: True if the simulation has terminated, False otherwise.
+:rtype: bool</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator.retrieve_step_measurements">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_step_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator.retrieve_step_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator.retrieve_step_measurements" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieve measurements for the current simulation step.
+:returns: Dictionary containing measurements for the current step.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator.simulator_step">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulator_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator.simulator_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator.simulator_step" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Perform a simulation step.
+:returns: True if the simulation step was successful, False otherwise.
+:rtype: bool</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.simulator.BaseSimulator.start_simulator">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/simulator.html#BaseSimulator.start_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.simulator.BaseSimulator.start_simulator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Start the simulator.
+:returns: True if the simulator started successfully, False otherwise.
+:rtype: bool</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -610,80 +835,130 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">BaseTSController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for traffic signal controllers.
+:param id: Unique identifier for the traffic signal controller.
+:type id: str
+:param config: Configuration dictionary containing traffic signal parameters.
+:type config: dict
+:param simulator: Simulator object containing simulation parameters and network information.
+:type simulator: Simulator</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.current_phase">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_phase</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.current_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the current phase of the traffic signal controller.
+:returns: Current phase of the traffic signal controller.
+:rtype: str</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.current_phase_index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_phase_index</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.current_phase_index" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the index of the current phase in the traffic signal controller.
+:returns: Index of the current phase in the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.get_allowable_phase_switches">
 <span class="sig-name descname"><span class="pre">get_allowable_phase_switches</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSController.get_allowable_phase_switches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.get_allowable_phase_switches" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the allowable phase switches based on the current phase and time spent on it.
+:returns: List of allowable phase switches for the traffic signal controller.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.green_phase_indices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">green_phase_indices</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.green_phase_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the green phase indices of the traffic signal controller.
+:returns: List of green phase indices in the traffic signal controller.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.n_phases">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_phases</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.n_phases" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the number of phases in the traffic signal controller.
+:returns: Number of phases in the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.next_green_phase_index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_green_phase_index</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.next_green_phase_index" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the index of the next green phase in the traffic signal controller.
+:returns: Index of the next green phase in the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.next_phase_index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_phase_index</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.next_phase_index" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the index of the next phase in the traffic signal controller.
+:returns: Index of the next phase in the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.norm_time_on_phase">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_time_on_phase</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.norm_time_on_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the normalized time spent on the current phase of the traffic signal controller.
+:returns: Normalized time spent on the current phase of the traffic signal controller.
+:rtype: float</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.phase_indices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_indices</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.phase_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the phase indices of the traffic signal controller.
+:returns: List of phase indices in the traffic signal controller.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.phase_one_hot">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_one_hot</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.phase_one_hot" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the one-hot encoding of the current phase of the traffic signal controller.
+:returns: One-hot encoding of the current phase of the traffic signal controller.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.phases_min_max_times">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phases_min_max_times</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.phases_min_max_times" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the minimum and maximum times for each phase in the traffic signal controller.
+:returns: Dictionary containing minimum and maximum times for each phase.
+:rtype: dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.switch_phase">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">switch_phase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSController.switch_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.switch_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Switch the phase of the traffic signal controller.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.time_on_phase">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_on_phase</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.time_on_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the time spent on the current phase of the traffic signal controller.
+:returns: Time spent on the current phase of the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.yellow_phase_indices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">yellow_phase_indices</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.yellow_phase_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the yellow phase indices of the traffic signal controller.
+:returns: List of yellow phase indices in the traffic signal controller.
+:rtype: list</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSController.yellow_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">yellow_time</span></span><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSController.yellow_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the yellow time of the traffic signal controller.
+:returns: Yellow time of the traffic signal controller.
+:rtype: int</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -691,15 +966,28 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSProgram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">BaseTSProgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSProgram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSProgram" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for traffic signal programs.
+:param id: Unique identifier for the traffic signal program.
+:type id: str
+:param config: Configuration dictionary containing traffic signal parameters.
+:type config: dict
+:param simulator: Simulator object containing simulation parameters and network information.
+:type simulator: Simulator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSProgram.set_initial_phase">
 <span class="sig-name descname"><span class="pre">set_initial_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSProgram.set_initial_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSProgram.set_initial_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set the initial phase of the traffic signal program.
+:param phase_index: Index of the initial phase.
+:type phase_index: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTSProgram.update_current_phase">
 <span class="sig-name descname"><span class="pre">update_current_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTSProgram.update_current_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTSProgram.update_current_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Update the current phase of the traffic signal program.
+:param phase_index: Index of the new phase.
+:type phase_index: int</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -707,20 +995,32 @@ Observation:</p>
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTrafficSignal">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">BaseTrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTrafficSignal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTrafficSignal" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for traffic signals in the network.
+:param id: Unique identifier for the traffic signal.
+:type id: str
+:param config: Configuration dictionary containing traffic signal parameters.
+:type config: dict
+:param simulator: Simulator object containing simulation parameters and network information.
+:type simulator: Simulator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTrafficSignal.action_to_phase">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_to_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTrafficSignal.action_to_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTrafficSignal.action_to_phase" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Convert action to phase index.
+:param action: Action index.
+:type action: int</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTrafficSignal.init_rule_based_controllers">
 <span class="sig-name descname"><span class="pre">init_rule_based_controllers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTrafficSignal.init_rule_based_controllers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTrafficSignal.init_rule_based_controllers" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialize rule-based controllers for the traffic signal.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.BaseTrafficSignal.update_stats">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#BaseTrafficSignal.update_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.BaseTrafficSignal.update_stats" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Update the statistics of the traffic signal.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -737,7 +1037,18 @@ by a yellow phase.
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.TLSFreePhaseSelectLogic.get_allowable_phase_switches">
 <span class="sig-name descname"><span class="pre">get_allowable_phase_switches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_on_phase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#TLSFreePhaseSelectLogic.get_allowable_phase_switches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.TLSFreePhaseSelectLogic.get_allowable_phase_switches" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the allowable phase switches based on the current phase and time spent on it.
+:param time_on_phase: Time spent on the current phase.
+:type time_on_phase: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of allowable phase switches for the traffic signal controller.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -745,10 +1056,24 @@ by a yellow phase.
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TLSRoundRobinPhaseSelectLogic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#TLSRoundRobinPhaseSelectLogic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.common.traffic_signal.TLSFreePhaseSelectLogic" title="pytsc.common.traffic_signal.TLSFreePhaseSelectLogic"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.TLSFreePhaseSelectLogic</span></code></a></p>
+<p>Round robin phase selection logic for traffic signal controllers.
+:param controller: Traffic signal controller object.
+:type controller: BaseTSController</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic.get_allowable_phase_switches">
 <span class="sig-name descname"><span class="pre">get_allowable_phase_switches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_on_phase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/traffic_signal.html#TLSRoundRobinPhaseSelectLogic.get_allowable_phase_switches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic.get_allowable_phase_switches" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the allowable phase switches based on the current phase and time spent on it.
+:param time_on_phase: Time spent on the current phase.
+:type time_on_phase: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of allowable phase switches for the traffic signal controller.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -759,10 +1084,14 @@ by a yellow phase.
 <dt class="sig sig-object py" id="pytsc.common.trip_generator.TripGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.trip_generator.</span></span><span class="sig-name descname"><span class="pre">TripGenerator</span></span><a class="reference internal" href="../../_modules/pytsc/common/trip_generator.html#TripGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.trip_generator.TripGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for trip generators in traffic signal control.
+This class defines the interface for different trip generators
+and provides common functionality for trip generation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.trip_generator.TripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/trip_generator.html#TripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.trip_generator.TripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generate flows for the trip generator.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -773,6 +1102,9 @@ by a yellow phase.
 <dt class="sig sig-object py" id="pytsc.common.utils.EnvLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">EnvLogger</span></span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#EnvLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.EnvLogger" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple logger class to log messages to the console.
+This class ensures that the logger is initialized only once and provides
+methods to log messages at different levels (info, warning, etc.).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.common.utils.EnvLogger.get_logger">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pytsc.common.utils'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#EnvLogger.get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.EnvLogger.get_logger" title="Permalink to this definition"></a></dt>
@@ -808,7 +1140,22 @@ by a yellow phase.
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.calculate_vehicle_bin_index">
 <span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_vehicle_bin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lane_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#calculate_vehicle_bin_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.calculate_vehicle_bin_index" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the bin index for a vehicle based on its position in the lane.
+:param n_bins: Number of bins.
+:type n_bins: int
+:param lane_length: Length of the lane.
+:type lane_length: float
+:param vehicle_position: Position of the vehicle in the lane.
+:type vehicle_position: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Bin index for the vehicle.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.compute_max_spanning_tree">
@@ -818,12 +1165,30 @@ by a yellow phase.
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.flatten_list">
 <span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">flatten_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#flatten_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.flatten_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Flattens a list of lists into a single list.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.generate_weibull_flow_rates">
 <span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">generate_weibull_flow_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_segments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#generate_weibull_flow_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.generate_weibull_flow_rates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generate flow rates based on a Weibull distribution.
+:param shape: Shape parameter for the Weibull distribution.
+:type shape: float
+:param scale: Scale parameter for the Weibull distribution.
+:type scale: float
+:param max_rate: Maximum flow rate.
+:type max_rate: float
+:param num_segments: Number of segments to divide the flow rates into.
+:type num_segments: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Flow rates for each segment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.pad_array">
@@ -836,12 +1201,16 @@ it is returned unmodified.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.pad_list">
 <span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">pad_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#pad_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.pad_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Pads the given list with the specified padding value so that it has
+the specified size. If the list is already larger than the specified size,
+it is returned unmodified.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.recursively_update_dict">
 <span class="sig-prename descclassname"><span class="pre">pytsc.common.utils.</span></span><span class="sig-name descname"><span class="pre">recursively_update_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/common/utils.html#recursively_update_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.common.utils.recursively_update_dict" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Recursively update a dictionary with another dictionary.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.common.utils.sort_alphanumeric_ids">

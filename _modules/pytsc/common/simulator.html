@@ -77,28 +77,60 @@
 
 
 <div class="viewcode-block" id="BaseSimulator"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator">[docs]</a><span class="k">class</span> <span class="nc">BaseSimulator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for traffic signal control simulators.</span>
+<span class="sd">    This class defines the interface for different simulators</span>
+<span class="sd">    and provides common functionality for simulation management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parsed_network (ParsedNetwork): Parsed network object containing network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">parsed_network</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">parsed_network</span><span class="o">.</span><span class="n">config</span>
 
 <div class="viewcode-block" id="BaseSimulator.retrieve_step_measurements"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator.retrieve_step_measurements">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">retrieve_step_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve measurements for the current simulation step.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing measurements for the current step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseSimulator.start_simulator"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator.start_simulator">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">start_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the simulator.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the simulator started successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseSimulator.simulator_step"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator.simulator_step">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">simulator_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a simulation step.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the simulation step was successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseSimulator.close_simulator"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator.close_simulator">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">close_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the simulator.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the simulator closed successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseSimulator.is_terminated"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.simulator.BaseSimulator.is_terminated">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">is_terminated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the simulation has terminated.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the simulation has terminated, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 

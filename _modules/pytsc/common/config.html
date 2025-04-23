@@ -94,12 +94,28 @@
 
 
 <div class="viewcode-block" id="BaseConfig"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.config.BaseConfig">[docs]</a><span class="k">class</span> <span class="nc">BaseConfig</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for configuration management in traffic signal control.</span>
+<span class="sd">    This class handles loading and merging configuration files for different</span>
+<span class="sd">    scenarios and simulator backends.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): Name of the scenario for which the configuration is being loaded.</span>
+<span class="sd">        debug (bool): Flag to enable debug mode. If True, detailed logs will be printed.</span>
+<span class="sd">        **kwargs: Additional configuration parameters to override default values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_additional_config</span> <span class="o">=</span> <span class="n">kwargs</span>
 
     <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator_backend</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the configuration files for the specified scenario and simulator backend.</span>
+<span class="sd">        This method loads the default configuration, merges it with scenario-specific</span>
+<span class="sd">        configuration, and applies any additional configuration parameters provided.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            simulator_backend (str): The simulator backend to be used (e.g., &quot;cityflow&quot;, &quot;sumo&quot;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Load default config parameters</span>
         <span class="n">default_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">default_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

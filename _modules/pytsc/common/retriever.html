@@ -77,6 +77,13 @@
 
 
 <div class="viewcode-block" id="BaseRetriever"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.retriever.BaseRetriever">[docs]</a><span class="k">class</span> <span class="nc">BaseRetriever</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for data retrieval in traffic signal control.</span>
+<span class="sd">    This class defines the interface for different data retrieval methods</span>
+<span class="sd">    and provides common functionality for data management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">parsed_network</span>
@@ -84,14 +91,29 @@
 
 <div class="viewcode-block" id="BaseRetriever.retrieve_lane_measurements"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.retriever.BaseRetriever.retrieve_lane_measurements">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">retrieve_lane_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve lane measurements from the simulator.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing lane measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseRetriever.retrieve_sim_measurements"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.retriever.BaseRetriever.retrieve_sim_measurements">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">retrieve_sim_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve simulation measurements from the simulator.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing simulation measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseRetriever.retrieve_ts_measurements"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.retriever.BaseRetriever.retrieve_ts_measurements">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">retrieve_ts_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve traffic signal measurements from the simulator.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing traffic signal measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 

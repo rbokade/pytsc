@@ -79,6 +79,15 @@
 
 
 <div class="viewcode-block" id="BaseController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.BaseController">[docs]</a><span class="k">class</span> <span class="nc">BaseController</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for traffic signal controllers.</span>
+<span class="sd">    This class defines the interface for different traffic signal controllers</span>
+<span class="sd">    and provides common functionality for controller management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">        round_robin (bool): Flag to indicate if round-robin scheduling is used.</span>
+<span class="sd">        **kwargs: Additional keyword arguments for controller configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">,</span> <span class="n">round_robin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span> <span class="o">=</span> <span class="n">traffic_signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">round_robin</span> <span class="o">=</span> <span class="n">round_robin</span>
@@ -89,12 +98,25 @@
 
 
 <div class="viewcode-block" id="FixedTimeController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.FixedTimeController">[docs]</a><span class="k">class</span> <span class="nc">FixedTimeController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fixed Time Controller.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">        green_time (int): Duration of the green phase in seconds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">,</span> <span class="n">green_time</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedTimeController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">traffic_signal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">green_time</span> <span class="o">=</span> <span class="n">green_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
 
 <div class="viewcode-block" id="FixedTimeController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.FixedTimeController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the next action based on fixed time intervals.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the selected action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">green_phase_indices</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">time_on_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">green_time</span>
@@ -105,11 +127,23 @@
 
 
 <div class="viewcode-block" id="GreedyController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.GreedyController">[docs]</a><span class="k">class</span> <span class="nc">GreedyController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Greedy Controller.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GreedyController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">traffic_signal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
 
 <div class="viewcode-block" id="GreedyController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.GreedyController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the next action based on the greedy algorithm.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the selected action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
         <span class="n">queues</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">green_phase_indices</span><span class="p">:</span>
@@ -127,6 +161,14 @@
         <span class="k">return</span> <span class="n">max_queue_phase_index</span></div>
 
     <span class="k">def</span> <span class="nf">_compute_queue_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the queue for a given phase.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase for which to compute the queue.</span>
+<span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of vehicles in the queue for the given phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">inc_vehicles</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">][</span><span class="n">phase_index</span><span class="p">]</span>
         <span class="n">phase_inc_out_lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phase_to_inc_out_lanes&quot;</span><span class="p">][</span>
@@ -140,11 +182,23 @@
 
 
 <div class="viewcode-block" id="MaxPressureController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.MaxPressureController">[docs]</a><span class="k">class</span> <span class="nc">MaxPressureController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Max Pressure Controller.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MaxPressureController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">traffic_signal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
 
 <div class="viewcode-block" id="MaxPressureController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.MaxPressureController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the next action based on the max pressure algorithm.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the selected action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
         <span class="n">pressures</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">green_phase_indices</span><span class="p">:</span>
@@ -165,7 +219,12 @@
 
     <span class="k">def</span> <span class="nf">_compute_pressure_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
+<span class="sd">        Compute the pressure for a given phase.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase for which to compute pressure.</span>
+<span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Pressure for the given phase.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pressure</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">][</span><span class="n">phase_index</span><span class="p">]</span>
@@ -201,6 +260,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
 
 <div class="viewcode-block" id="SOTLController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.SOTLController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the next action based on the SOTL algorithm.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">action_mask</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span><span class="p">]:</span>
             <span class="n">red_flow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_flow_for_phase</span><span class="p">(</span>
@@ -221,6 +285,12 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">next_phase_index</span></div>
 
     <span class="k">def</span> <span class="nf">_compute_flow_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the flow for a given phase.</span>
+<span class="sd">        Args::</span>
+<span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
+<span class="sd">            phase_index (int): Index of the phase for which to compute the flow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_vehicles</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">][</span><span class="n">phase_index</span><span class="p">]</span>
         <span class="n">phase_inc_out_lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phase_to_inc_out_lanes&quot;</span><span class="p">][</span>
@@ -232,51 +302,24 @@
         <span class="k">return</span> <span class="n">total_vehicles</span></div>
 
 
-<div class="viewcode-block" id="AnalyticPlusController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.AnalyticPlusController">[docs]</a><span class="k">class</span> <span class="nc">AnalyticPlusController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">AnalyticPlusController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">traffic_signal</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
-
-<div class="viewcode-block" id="AnalyticPlusController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.AnalyticPlusController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
-        <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
-        <span class="n">pressures</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">green_phase_indices</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">act</span><span class="p">,</span> <span class="n">available</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">action_mask</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">available</span><span class="p">:</span>
-                    <span class="n">pressure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_pressure_for_phase</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">pressure</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
-                <span class="n">pressures</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pressure</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
-            <span class="n">max_pressure_value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pressures</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">tied_actions</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">act</span> <span class="k">for</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">pressures</span> <span class="k">if</span> <span class="n">pressure</span> <span class="o">==</span> <span class="n">max_pressure_value</span>
-            <span class="p">]</span>
-            <span class="n">max_pressure_phase_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">tied_actions</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">max_pressure_phase_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">next_phase_index</span>
-        <span class="k">return</span> <span class="n">max_pressure_phase_index</span></div>
-
-    <span class="k">def</span> <span class="nf">_compute_pressure_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
-        <span class="n">pressure</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">][</span><span class="n">phase_index</span><span class="p">]</span>
-        <span class="n">phase_inc_out_lanes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phase_to_inc_out_lanes&quot;</span><span class="p">][</span>
-            <span class="n">phase</span>
-        <span class="p">]</span>
-        <span class="k">for</span> <span class="n">inc_lane</span><span class="p">,</span> <span class="n">out_lanes</span> <span class="ow">in</span> <span class="n">phase_inc_out_lanes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">inc_lane_vehicles</span> <span class="o">=</span> <span class="n">inp</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">][</span><span class="n">inc_lane</span><span class="p">][</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span>
-            <span class="n">out_lane_vehicles</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">out_lane</span> <span class="ow">in</span> <span class="n">out_lanes</span><span class="p">:</span>
-                <span class="n">out_lane_vehicles</span> <span class="o">+=</span> <span class="n">inp</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">][</span><span class="n">out_lane</span><span class="p">][</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span>
-            <span class="n">pressure</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">inc_lane_vehicles</span> <span class="o">-</span> <span class="n">out_lane_vehicles</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pressure</span></div>
-
-
 <div class="viewcode-block" id="RandomController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.RandomController">[docs]</a><span class="k">class</span> <span class="nc">RandomController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Randomly selects an action from the available actions.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RandomController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">traffic_signal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">traffic_signal</span><span class="o">.</span><span class="n">controller</span>
 
 <div class="viewcode-block" id="RandomController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.RandomController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select a random action from the available actions.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the selected action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">action_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
         <span class="n">available_actions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">action_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">available_actions</span><span class="p">)</span></div></div>

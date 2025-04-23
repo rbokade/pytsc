@@ -79,12 +79,23 @@
 
 
 <div class="viewcode-block" id="BaseNetworkParser"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.network_parser.BaseNetworkParser">[docs]</a><span class="k">class</span> <span class="nc">BaseNetworkParser</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for network parsers in traffic signal control.</span>
+<span class="sd">    This class defines the interface for different network parsers</span>
+<span class="sd">    and provides common functionality for network management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        config (Config): Configuration object containing simulation parameters.</span>
+<span class="sd">        traffic_signal_ids (list): List of traffic signal IDs in the network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
-    <span class="k">def</span> <span class="nf">_get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns adjacency matrix based on input neighbors</span>
+<span class="sd">        The adjacency matrix is a square matrix used to represent a finite graph.</span>
+<span class="sd">        The elements of the matrix indicate whether pairs of vertices are adjacent or not in the graph.</span>
+<span class="sd">        In the context of traffic signal control, the adjacency matrix can be used to represent the connections</span>
+<span class="sd">        between different traffic signals in the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">n_traffic_signals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">)</span>

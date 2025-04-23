@@ -48,18 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="modules.html">pytsc</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc">pytsc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#id1">pytsc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-pytsc.run_controllers">pytsc.run_controllers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pytsc.html#module-1">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">pytsc</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="pytsc.html">pytsc package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="pytsc.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="pytsc.backends.html">pytsc.backends package</a></li>
@@ -149,30 +138,43 @@
 <section id="module-pytsc.controllers.controllers">
 <span id="pytsc-controllers-controllers-module"></span><h2>pytsc.controllers.controllers module<a class="headerlink" href="#module-pytsc.controllers.controllers" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="pytsc.controllers.controllers.AnalyticPlusController">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">AnalyticPlusController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#AnalyticPlusController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.AnalyticPlusController" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pytsc.controllers.controllers.AnalyticPlusController.get_action">
-<span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#AnalyticPlusController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.AnalyticPlusController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.BaseController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">BaseController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_robin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#BaseController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.BaseController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class for traffic signal controllers.
+This class defines the interface for different traffic signal controllers
+and provides common functionality for controller management.
+:param traffic_signal: Traffic signal object containing simulation parameters and network information.
+:type traffic_signal: TrafficSignal
+:param round_robin: Flag to indicate if round-robin scheduling is used.
+:type round_robin: bool
+:param **kwargs: Additional keyword arguments for controller configuration.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.FixedTimeController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">FixedTimeController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#FixedTimeController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.FixedTimeController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<p>Fixed Time Controller.
+:param traffic_signal: Traffic signal object containing simulation parameters and network information.
+:type traffic_signal: TrafficSignal
+:param green_time: Duration of the green phase in seconds.
+:type green_time: int</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.FixedTimeController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#FixedTimeController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.FixedTimeController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Select the next action based on fixed time intervals.
+:param inp: Input data containing network and traffic signal information.
+:type inp: dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Index of the selected action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -180,10 +182,24 @@
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.GreedyController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">GreedyController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#GreedyController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.GreedyController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<p>Greedy Controller.
+:param traffic_signal: Traffic signal object containing simulation parameters and network information.
+:type traffic_signal: TrafficSignal</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.GreedyController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#GreedyController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.GreedyController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Select the next action based on the greedy algorithm.
+:param inp: Input data containing network and traffic signal information.
+:type inp: dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Index of the selected action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -191,10 +207,24 @@
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.MaxPressureController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">MaxPressureController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#MaxPressureController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.MaxPressureController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<p>Max Pressure Controller.
+:param traffic_signal: Traffic signal object containing simulation parameters and network information.
+:type traffic_signal: TrafficSignal</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.MaxPressureController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#MaxPressureController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.MaxPressureController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Select the next action based on the max pressure algorithm.
+:param inp: Input data containing network and traffic signal information.
+:type inp: dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Index of the selected action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -202,10 +232,24 @@
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">RandomController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
+<p>Randomly selects an action from the available actions.
+:param traffic_signal: Traffic signal object containing simulation parameters and network information.
+:type traffic_signal: TrafficSignal</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Select a random action from the available actions.
+:param inp: Input data containing network and traffic signal information.
+:type inp: dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Index of the selected action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -219,7 +263,10 @@ phi_min: minimum green time</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.SOTLController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#SOTLController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.SOTLController.get_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Select the next action based on the SOTL algorithm.
+:param inp: Input data containing network and traffic signal information.
+:type inp: dict</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -230,6 +277,18 @@ phi_min: minimum green time</p>
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.evaluate.</span></span><span class="sig-name descname"><span class="pre">Evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#Evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for evaluating traffic signal controllers.
+:param scenario: Name of the scenario to evaluate.
+:type scenario: str
+:param simulator_backend: Simulator backend to use (e.g., “cityflow”, “sumo”).
+:type simulator_backend: str
+:param controller_name: Name of the controller to evaluate.
+:type controller_name: str
+:param add_env_args: Additional arguments for the environment.
+:type add_env_args: dict
+:param add_controller_args: Additional arguments for the controller.
+:type add_controller_args: dict
+:param **kwargs: Additional keyword arguments.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate.action_space">
 <span class="sig-name descname"><span class="pre">action_space</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'phase_selection'</span></em><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate.action_space" title="Permalink to this definition"></a></dt>
@@ -238,7 +297,16 @@ phi_min: minimum green time</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.Evaluate.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#Evaluate.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.Evaluate.run" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Run the evaluation for a specified number of hours.
+:param hours: Number of hours to evaluate.
+:type hours: int
+:param save_stats: Flag to save statistics.
+:type save_stats: bool
+:param plot_stats: Flag to plot statistics.
+:type plot_stats: bool
+:param output_folder: Folder to save output files.
+:type output_folder: str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -246,6 +314,18 @@ phi_min: minimum green time</p>
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.evaluate.</span></span><span class="sig-name descname"><span class="pre">RLEvaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_env_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_controller_args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#RLEvaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.evaluate.Evaluate" title="pytsc.controllers.evaluate.Evaluate"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.evaluate.Evaluate</span></code></a></p>
+<p>Class for evaluating traffic signal controllers using reinforcement learning.
+:param scenario: Name of the scenario to evaluate.
+:type scenario: str
+:param simulator_backend: Simulator backend to use (e.g., “cityflow”, “sumo”).
+:type simulator_backend: str
+:param controller_name: Name of the controller to evaluate.
+:type controller_name: str
+:param add_env_args: Additional arguments for the environment.
+:type add_env_args: dict
+:param add_controller_args: Additional arguments for the controller.
+:type add_controller_args: dict
+:param **kwargs: Additional keyword arguments.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate.action_space">
 <span class="sig-name descname"><span class="pre">action_space</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'phase_switch'</span></em><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate.action_space" title="Permalink to this definition"></a></dt>
@@ -254,7 +334,16 @@ phi_min: minimum green time</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.evaluate.RLEvaluate.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/evaluate.html#RLEvaluate.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.evaluate.RLEvaluate.run" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Run the evaluation for a specified number of hours.
+:param hours: Number of hours to evaluate.
+:type hours: int
+:param save_stats: Flag to save statistics.
+:type save_stats: bool
+:param plot_stats: Flag to plot statistics.
+:type plot_stats: bool
+:param output_folder: Folder to save output files.
+:type output_folder: str</p>
+</dd></dl>
 
 </dd></dl>
 

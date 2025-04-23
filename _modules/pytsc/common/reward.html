@@ -79,6 +79,14 @@
 
 
 <div class="viewcode-block" id="BaseRewardFunction"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.BaseRewardFunction">[docs]</a><span class="k">class</span> <span class="nc">BaseRewardFunction</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for reward functions in traffic signal control.</span>
+<span class="sd">    This class defines the interface for different reward functions</span>
+<span class="sd">    and provides common functionality for reward management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        metrics (Metrics): Metrics object containing simulation parameters.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals in the network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span> <span class="o">=</span> <span class="n">traffic_signals</span>
@@ -87,18 +95,39 @@
 
 <div class="viewcode-block" id="BaseRewardFunction.get_global_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.BaseRewardFunction.get_global_reward">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_global_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the global reward based on pressure and flickering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Global reward for the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseRewardFunction.get_local_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.BaseRewardFunction.get_local_reward">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_local_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the local reward for each traffic signal.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of local rewards for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="QueueLength"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.QueueLength">[docs]</a><span class="k">class</span> <span class="nc">QueueLength</span><span class="p">(</span><span class="n">BaseRewardFunction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Queue Length reward function.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        metrics (Metrics): Metrics object containing simulation parameters.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals in the network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">QueueLength</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
 
 <div class="viewcode-block" id="QueueLength.get_global_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.QueueLength.get_global_reward">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the global reward based on pressure and flickering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Global reward for the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;flickering_coef&quot;</span><span class="p">]</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="mf">1e-6</span>
         <span class="n">reward</span> <span class="o">+=</span> <span class="n">fc</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">flickering_signal</span>
@@ -106,6 +135,11 @@
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">reward</span></div>
 
 <div class="viewcode-block" id="QueueLength.get_local_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.QueueLength.get_local_reward">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the local reward for each traffic signal based on queue length and flickering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of local rewards for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;flickering_coef&quot;</span><span class="p">]</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;reward_gamma&quot;</span><span class="p">]</span>
         <span class="n">k_hop_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">k_hop_neighbors</span>
@@ -124,10 +158,21 @@
 
 
 <div class="viewcode-block" id="MaxPressure"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.MaxPressure">[docs]</a><span class="k">class</span> <span class="nc">MaxPressure</span><span class="p">(</span><span class="n">BaseRewardFunction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Max Pressure reward function.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        metrics (Metrics): Metrics object containing simulation parameters.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals in the network.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MaxPressure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MaxPressure.get_global_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.MaxPressure.get_global_reward">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the global reward based on pressure and flickering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Global reward for the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;flickering_coef&quot;</span><span class="p">]</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="mf">1e-6</span>
         <span class="n">reward</span> <span class="o">-=</span> <span class="n">fc</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">flickering_signal</span>
@@ -135,6 +180,11 @@
         <span class="k">return</span> <span class="n">reward</span></div>
 
 <div class="viewcode-block" id="MaxPressure.get_local_reward"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.reward.MaxPressure.get_local_reward">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the local reward for each traffic signal based on pressure and flickering.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of local rewards for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;flickering_coef&quot;</span><span class="p">]</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;reward_gamma&quot;</span><span class="p">]</span>
         <span class="n">k_hop_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">k_hop_neighbors</span>

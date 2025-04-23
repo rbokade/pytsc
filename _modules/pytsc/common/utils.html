@@ -82,6 +82,11 @@
 
 
 <div class="viewcode-block" id="EnvLogger"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.EnvLogger">[docs]</a><span class="k">class</span> <span class="nc">EnvLogger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple logger class to log messages to the console.</span>
+<span class="sd">    This class ensures that the logger is initialized only once and provides</span>
+<span class="sd">    methods to log messages at different levels (info, warning, etc.).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
@@ -132,6 +137,9 @@
 
 
 <div class="viewcode-block" id="recursively_update_dict"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.recursively_update_dict">[docs]</a><span class="k">def</span> <span class="nf">recursively_update_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively update a dictionary with another dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursively_update_dict</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
@@ -141,6 +149,9 @@
 
 
 <div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flattens a list of lists into a single list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">flat_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># Iterate through the outer list</span>
     <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">list_of_lists</span><span class="p">:</span>
@@ -168,10 +179,24 @@
 
 
 <div class="viewcode-block" id="pad_list"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.pad_list">[docs]</a><span class="k">def</span> <span class="nf">pad_list</span><span class="p">(</span><span class="n">inp_list</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pads the given list with the specified padding value so that it has</span>
+<span class="sd">    the specified size. If the list is already larger than the specified size,</span>
+<span class="sd">    it is returned unmodified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inp_list</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="n">pad_value</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="calculate_vehicle_bin_index"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.calculate_vehicle_bin_index">[docs]</a><span class="k">def</span> <span class="nf">calculate_vehicle_bin_index</span><span class="p">(</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">lane_length</span><span class="p">,</span> <span class="n">vehicle_position</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the bin index for a vehicle based on its position in the lane.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        n_bins (int): Number of bins.</span>
+<span class="sd">        lane_length (float): Length of the lane.</span>
+<span class="sd">        vehicle_position (float): Position of the vehicle in the lane.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Bin index for the vehicle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">vehicle_position</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">vehicle_position</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="n">vehicle_position</span> <span class="o">&gt;</span> <span class="n">lane_length</span><span class="p">:</span>
@@ -184,6 +209,16 @@
 
 
 <div class="viewcode-block" id="generate_weibull_flow_rates"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.utils.generate_weibull_flow_rates">[docs]</a><span class="k">def</span> <span class="nf">generate_weibull_flow_rates</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">max_rate</span><span class="p">,</span> <span class="n">num_segments</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate flow rates based on a Weibull distribution.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        shape (float): Shape parameter for the Weibull distribution.</span>
+<span class="sd">        scale (float): Scale parameter for the Weibull distribution.</span>
+<span class="sd">        max_rate (float): Maximum flow rate.</span>
+<span class="sd">        num_segments (int): Number of segments to divide the flow rates into.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: Flow rates for each segment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inter_arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
     <span class="n">cumulative_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">inter_arrival_times</span><span class="p">)</span>
     <span class="n">cumulative_times</span> <span class="o">=</span> <span class="n">cumulative_times</span><span class="p">[</span><span class="n">cumulative_times</span> <span class="o">&lt;=</span> <span class="mi">3600</span><span class="p">]</span>

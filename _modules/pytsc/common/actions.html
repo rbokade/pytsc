@@ -81,12 +81,25 @@
 
 
 <div class="viewcode-block" id="BaseActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace">[docs]</a><span class="k">class</span> <span class="nc">BaseActionSpace</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for action spaces in traffic signal control.</span>
+<span class="sd">    This class defines the interface for different action spaces</span>
+<span class="sd">    and provides common functionality for action space management.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        config (Config): Configuration object containing simulation parameters.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals in the network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span> <span class="o">=</span> <span class="n">traffic_signals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ts_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">_check_actions_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if actions are in the correct format (list or numpy array).</span>
+<span class="sd">        If not, try to convert them to a list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -95,17 +108,39 @@
 
 <div class="viewcode-block" id="BaseActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.apply">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the given actions to the traffic signals.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            actions (list): List of actions to be applied to the traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_mask">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action mask for each traffic signal.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of action masks for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_size">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the size of the action space.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Size of the action space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseActionSpace.get_trad_controller_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.BaseActionSpace.get_trad_controller_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_trad_controller_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the actions for traditional controllers.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            controller (str): The type of controller to get actions for.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of actions for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -121,21 +156,39 @@
 
 <div class="viewcode-block" id="PhaseSelectionActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace">[docs]</a><span class="k">class</span> <span class="nc">PhaseSelectionActionSpace</span><span class="p">(</span><span class="n">BaseActionSpace</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Actions are the phase index to switch to for each traffic signal.</span>
+<span class="sd">    In this child class, actions are the phase index to switch to for each traffic signal.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        config (Config): Configuration object containing simulation parameters.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals in the network.        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PhaseSelectionActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhaseSelectionActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the given actions to the traffic signals.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            actions (list): List of actions to be applied to the traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># self._check_actions_type(actions)</span>
         <span class="k">for</span> <span class="n">ts_idx</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">action_to_phase</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="n">ts_idx</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PhaseSelectionActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the size of the action space.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Size of the action space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">n_phases</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
 
 <div class="viewcode-block" id="PhaseSelectionActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSelectionActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action mask for each traffic signal.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of action masks for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
@@ -155,6 +208,11 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">PhaseSwitchActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhaseSwitchActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the given actions to the traffic signals.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            actions (list): List of actions to be applied to the traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_actions_type</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ts_idx</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="n">current_phase</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase_index</span>
@@ -165,9 +223,19 @@
                 <span class="n">ts</span><span class="o">.</span><span class="n">action_to_phase</span><span class="p">(</span><span class="n">current_phase</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PhaseSwitchActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the size of the action space.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Size of the action space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">2</span></div>
 
 <div class="viewcode-block" id="PhaseSwitchActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action mask for each traffic signal.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of action masks for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">allowable_switches</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">()</span>
@@ -183,6 +251,13 @@
         <span class="k">return</span> <span class="n">masks</span></div>
 
 <div class="viewcode-block" id="PhaseSwitchActionSpace.get_trad_controller_actions"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.PhaseSwitchActionSpace.get_trad_controller_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_trad_controller_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the actions for traditional controllers.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            controller (str): The type of controller to get actions for.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of actions for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -198,6 +273,11 @@
 
 
 <div class="viewcode-block" id="CentralizedActionSpace"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace">[docs]</a><span class="k">class</span> <span class="nc">CentralizedActionSpace</span><span class="p">(</span><span class="n">BaseActionSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In this child class, actions are the phase index to switch to for each traffic signal.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        individual_action_space (BaseActionSpace): The action space for each traffic signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual_action_space</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CentralizedActionSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">individual_action_space</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
@@ -208,10 +288,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CentralizedActionSpace.apply"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the given action to the traffic signals.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            action (int): The action to be applied to the traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode_action</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CentralizedActionSpace.decode_action"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.decode_action">[docs]</a>    <span class="k">def</span> <span class="nf">decode_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decode the action into individual actions for each traffic signal.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            action (int): The action to be decoded.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of individual actions for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">current_action</span> <span class="o">=</span> <span class="n">action</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">):</span>
@@ -220,9 +312,19 @@
         <span class="k">return</span> <span class="n">actions</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="CentralizedActionSpace.get_size"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the size of the action space.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Size of the action space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span></div>
 
 <div class="viewcode-block" id="CentralizedActionSpace.get_mask"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.actions.CentralizedActionSpace.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action mask for each traffic signal.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of action masks for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">individual_masks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_action_space</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
         <span class="n">combinations</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_actions</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span><span class="p">)</span>
         <span class="n">joint_mask</span> <span class="o">=</span> <span class="p">[]</span>

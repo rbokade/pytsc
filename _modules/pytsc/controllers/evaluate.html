@@ -88,6 +88,16 @@
 
 
 <div class="viewcode-block" id="Evaluate"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.evaluate.Evaluate">[docs]</a><span class="k">class</span> <span class="nc">Evaluate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for evaluating traffic signal controllers.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): Name of the scenario to evaluate.</span>
+<span class="sd">        simulator_backend (str): Simulator backend to use (e.g., &quot;cityflow&quot;, &quot;sumo&quot;).</span>
+<span class="sd">        controller_name (str): Name of the controller to evaluate.</span>
+<span class="sd">        add_env_args (dict): Additional arguments for the environment.</span>
+<span class="sd">        add_controller_args (dict): Additional arguments for the controller.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">action_space</span> <span class="o">=</span> <span class="s2">&quot;phase_selection&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -124,6 +134,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">config</span>
 
     <span class="k">def</span> <span class="nf">_init_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize controllers for each traffic signal in the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ts_id</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span><span class="p">[</span><span class="n">ts_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONTROLLERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="p">](</span>
@@ -131,6 +144,14 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="Evaluate.run"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.evaluate.Evaluate.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">,</span> <span class="n">save_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the evaluation for a specified number of hours.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            hours (int): Number of hours to evaluate.</span>
+<span class="sd">            save_stats (bool): Flag to save statistics.</span>
+<span class="sd">            plot_stats (bool): Flag to plot statistics.</span>
+<span class="sd">            output_folder (str): Folder to save output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">EnvLogger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="si">}</span><span class="s2"> controller&quot;</span><span class="p">)</span>
         <span class="n">output_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_output_folder</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hours</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span><span class="p">)</span>
@@ -149,6 +170,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_plot_stats</span><span class="p">(</span><span class="n">output_folder</span><span class="o">=</span><span class="n">output_folder</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_create_output_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the output folder for saving results.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            output_folder (str): Folder to save output files.</span>
+<span class="sd">        Returns:    </span>
+<span class="sd">            str: Path to the output folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">output_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">output_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="s2">&quot;pytsc&quot;</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator_backend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span>
@@ -157,6 +185,11 @@
         <span class="k">return</span> <span class="n">output_folder</span>
 
     <span class="k">def</span> <span class="nf">_get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get actions for each traffic signal in the network.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of actions for each traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">ts_id</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_observations</span><span class="p">()</span>
@@ -166,6 +199,12 @@
         <span class="k">return</span> <span class="n">actions</span>
 
     <span class="k">def</span> <span class="nf">_get_controller_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">ts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the input for the controller.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            obs (list): Observation for the traffic signal.</span>
+<span class="sd">            ts (TrafficSignal): Traffic signal object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span>
         <span class="n">inp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
@@ -178,17 +217,33 @@
         <span class="k">return</span> <span class="n">inp</span>
 
     <span class="k">def</span> <span class="nf">_log_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">stats</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Log statistics for the current step.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            t (int): Current step.</span>
+<span class="sd">            stats (dict): Dictionary of statistics to log.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">stat_name</span><span class="p">,</span> <span class="n">stat_value</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">stat_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="n">stat_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="n">stat_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stat_value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_save_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save statistics to a CSV file.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            output_folder (str): Folder to save output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="si">}</span><span class="s2">_stats.csv&quot;</span><span class="p">)</span>
         <span class="n">stats</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_plot_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot statistics and save the figure.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            output_folder (str): Folder to save output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="si">}</span><span class="s2">_stats.png&quot;</span><span class="p">)</span>
         <span class="n">num_stats</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">ncols</span> <span class="o">=</span> <span class="mi">3</span>
@@ -213,6 +268,16 @@
 
 
 <div class="viewcode-block" id="RLEvaluate"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.evaluate.RLEvaluate">[docs]</a><span class="k">class</span> <span class="nc">RLEvaluate</span><span class="p">(</span><span class="n">Evaluate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for evaluating traffic signal controllers using reinforcement learning.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): Name of the scenario to evaluate.</span>
+<span class="sd">        simulator_backend (str): Simulator backend to use (e.g., &quot;cityflow&quot;, &quot;sumo&quot;).</span>
+<span class="sd">        controller_name (str): Name of the controller to evaluate.</span>
+<span class="sd">        add_env_args (dict): Additional arguments for the environment.</span>
+<span class="sd">        add_controller_args (dict): Additional arguments for the controller.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">action_space</span> <span class="o">=</span> <span class="s2">&quot;phase_switch&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -234,11 +299,22 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_init_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the controller for the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">CONTROLLERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="p">](</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_controller_args</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="RLEvaluate.run"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.evaluate.RLEvaluate.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">,</span> <span class="n">save_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the evaluation for a specified number of hours.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            hours (int): Number of hours to evaluate.</span>
+<span class="sd">            save_stats (bool): Flag to save statistics.</span>
+<span class="sd">            plot_stats (bool): Flag to plot statistics.</span>
+<span class="sd">            output_folder (str): Folder to save output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">EnvLogger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_name</span><span class="si">}</span><span class="s2"> controller&quot;</span><span class="p">)</span>
         <span class="n">output_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_output_folder</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hours</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_time</span><span class="p">)</span>
@@ -259,6 +335,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_plot_stats</span><span class="p">(</span><span class="n">output_folder</span><span class="o">=</span><span class="n">output_folder</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get actions for each traffic signal in the network.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            hidden_states (list): Hidden states for the controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of actions for each traffic signal.</span>
+<span class="sd">            list: Next hidden states for the controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">actions</span><span class="p">,</span> <span class="n">next_hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">actions</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">next_hidden_states</span></div>
 </pre></div>

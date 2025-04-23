@@ -77,8 +77,21 @@
 
 
 <div class="viewcode-block" id="BaseMetricsParser"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.metrics.BaseMetricsParser">[docs]</a><span class="k">class</span> <span class="nc">BaseMetricsParser</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for metrics parsers in traffic signal control.</span>
+<span class="sd">    This class defines the interface for different metrics parsers</span>
+<span class="sd">    and provides common functionality for metrics management.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parsed_network (ParsedNetwork): Parsed network object containing network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="BaseMetricsParser.get_step_stats"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.metrics.BaseMetricsParser.get_step_stats">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_step_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the statistics for the current simulation step.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing the statistics for the current step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 

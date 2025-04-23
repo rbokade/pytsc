@@ -86,6 +86,13 @@
 
 
 <div class="viewcode-block" id="BaseTrafficSignal"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal">[docs]</a><span class="k">class</span> <span class="nc">BaseTrafficSignal</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for traffic signals in the network.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Unique identifier for the traffic signal.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
@@ -97,13 +104,24 @@
 
 <div class="viewcode-block" id="BaseTrafficSignal.update_stats"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal.update_stats">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the statistics of the traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseTrafficSignal.action_to_phase"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal.action_to_phase">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">action_to_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert action to phase index.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            action (int): Action index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseTrafficSignal.init_rule_based_controllers"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal.init_rule_based_controllers">[docs]</a>    <span class="k">def</span> <span class="nf">init_rule_based_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize rule-based controllers for the traffic signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;fixed_time&quot;</span><span class="p">:</span> <span class="n">FixedTimeController</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
             <span class="s2">&quot;greedy&quot;</span><span class="p">:</span> <span class="n">GreedyController</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
@@ -116,6 +134,13 @@
 
 
 <div class="viewcode-block" id="BaseTSProgram"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSProgram">[docs]</a><span class="k">class</span> <span class="nc">BaseTSProgram</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for traffic signal programs.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Unique identifier for the traffic signal program.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">]</span>
@@ -125,15 +150,28 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_initialize_traffic_light_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the traffic light program.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="BaseTSProgram.set_initial_phase"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSProgram.set_initial_phase">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the initial phase of the traffic signal program.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the initial phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="o">=</span> <span class="n">phase_index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="n">phase_index</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_on_phase</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">norm_time_on_phase</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="BaseTSProgram.update_current_phase"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSProgram.update_current_phase">[docs]</a>    <span class="k">def</span> <span class="nf">update_current_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the current phase of the traffic signal program.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the new phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="n">phase_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">phase_changed</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time_on_phase</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yellow_time</span>
@@ -150,6 +188,13 @@
 
 
 <div class="viewcode-block" id="BaseTSController"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSController">[docs]</a><span class="k">class</span> <span class="nc">BaseTSController</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for traffic signal controllers.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Unique identifier for the traffic signal controller.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
@@ -158,30 +203,65 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of phases in the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of phases in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;n_phases&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phase_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the phase indices of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of phase indices in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phase_indices&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">green_phase_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the green phase indices of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of green phase indices in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;green_phase_indices&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">yellow_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the yellow time of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Yellow time of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;yellow_time&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">yellow_phase_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the yellow phase indices of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of yellow phase indices in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;yellow_phase_indices&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phases_min_max_times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the minimum and maximum times for each phase in the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing minimum and maximum times for each phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases_min_max_times&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current phase of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Current phase of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase</span>
         <span class="k">else</span><span class="p">:</span>
@@ -189,6 +269,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_phase_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the index of the current phase in the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the current phase in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">current_phase_index</span>
         <span class="k">else</span><span class="p">:</span>
@@ -196,6 +281,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">next_phase_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the index of the next phase in the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the next phase in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_phases</span>
         <span class="k">else</span><span class="p">:</span>
@@ -203,6 +293,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">next_green_phase_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the index of the next green phase in the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Index of the next green phase in the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_phases</span>
         <span class="k">else</span><span class="p">:</span>
@@ -210,6 +305,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">time_on_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the time spent on the current phase of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Time spent on the current phase of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">time_on_phase</span>
         <span class="k">else</span><span class="p">:</span>
@@ -217,6 +317,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">norm_time_on_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the normalized time spent on the current phase of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Normalized time spent on the current phase of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">norm_time_on_phase</span>
         <span class="k">else</span><span class="p">:</span>
@@ -224,22 +329,38 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">phase_one_hot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the one-hot encoding of the current phase of the traffic signal controller.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: One-hot encoding of the current phase of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">phase_one_hot</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_phases</span><span class="p">)]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">phase_one_hot</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_phase_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">phase_one_hot</span>
 
     <span class="k">def</span> <span class="nf">_instantiate_traffic_light_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the traffic light logic based on the configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;round_robin&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logic</span> <span class="o">=</span> <span class="n">TLSRoundRobinPhaseSelectLogic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logic</span> <span class="o">=</span> <span class="n">TLSFreePhaseSelectLogic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTSController.get_allowable_phase_switches"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSController.get_allowable_phase_switches">[docs]</a>    <span class="k">def</span> <span class="nf">get_allowable_phase_switches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the allowable phase switches based on the current phase and time spent on it.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of allowable phase switches for the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">get_allowable_phase_switches</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_on_phase</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseTSController.switch_phase"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.BaseTSController.switch_phase">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">switch_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch the phase of the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -267,6 +388,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">phases_min_max_times</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">phases_min_max_times</span>
 
 <div class="viewcode-block" id="TLSFreePhaseSelectLogic.get_allowable_phase_switches"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.TLSFreePhaseSelectLogic.get_allowable_phase_switches">[docs]</a>    <span class="k">def</span> <span class="nf">get_allowable_phase_switches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_on_phase</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the allowable phase switches based on the current phase and time spent on it.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            time_on_phase (int): Time spent on the current phase.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of allowable phase switches for the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_phases</span><span class="p">)]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">green_phase_indices</span><span class="p">:</span>
             <span class="n">min_max_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases_min_max_times</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase</span><span class="p">]</span>
@@ -293,11 +421,23 @@
 
 
 <div class="viewcode-block" id="TLSRoundRobinPhaseSelectLogic"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic">[docs]</a><span class="k">class</span> <span class="nc">TLSRoundRobinPhaseSelectLogic</span><span class="p">(</span><span class="n">TLSFreePhaseSelectLogic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Round robin phase selection logic for traffic signal controllers.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        controller (BaseTSController): Traffic signal controller object.        </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TLSRoundRobinPhaseSelectLogic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yellow_time</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">yellow_time</span>
 
 <div class="viewcode-block" id="TLSRoundRobinPhaseSelectLogic.get_allowable_phase_switches"><a class="viewcode-back" href="../../../api/generated/pytsc.common.html#pytsc.common.traffic_signal.TLSRoundRobinPhaseSelectLogic.get_allowable_phase_switches">[docs]</a>    <span class="k">def</span> <span class="nf">get_allowable_phase_switches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_on_phase</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the allowable phase switches based on the current phase and time spent on it.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            time_on_phase (int): Time spent on the current phase.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of allowable phase switches for the traffic signal controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_phases</span><span class="p">)]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">green_phase_indices</span><span class="p">:</span>
             <span class="n">min_max_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases_min_max_times</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">current_phase</span><span class="p">]</span>
