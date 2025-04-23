@@ -21,9 +21,9 @@ Welcome to PyTSC's documentation page!
    usage
    api
 
-.. sidebar:: Citation
+.. note:: Citation
 
-   If you use this repository for your research, please cite it using the following BibTeX entry: 
+   If you use this repository for your research, please cite it using the following BibTeX entry:
 
    .. code-block:: bibtex
 
@@ -37,4 +37,3 @@ Welcome to PyTSC's documentation page!
         year={2025},
         publisher={MDPI}
       }
-

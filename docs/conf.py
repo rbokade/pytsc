@@ -73,3 +73,7 @@ html_theme_options = {
     'logo_only': True,
     'display_version': False,
 }
+
+
+def setup(app):
+    app.add_css_file('custom.css')

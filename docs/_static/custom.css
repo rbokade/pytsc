@@ -2,3 +2,16 @@
     max-width: 95% !important;
     margin: 0 auto;
 }
+
+/* Ensure the note block takes the full width */
+div.note {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+div.note pre {
+    width: 100%;
+    white-space: pre-wrap; 
+    word-wrap: break-word;
+}
