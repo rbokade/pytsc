@@ -3,6 +3,16 @@
     margin: 0 auto;
 }
 
+/* Make the logo responsive */
+img.logo-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
 /* Ensure the note block takes the full width */
 div.note {
     width: 100%;
