@@ -98,6 +98,15 @@
 
 
 <div class="viewcode-block" id="detect_turn_direction"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.detect_turn_direction">[docs]</a><span class="k">def</span> <span class="nf">detect_turn_direction</span><span class="p">(</span><span class="n">prev_road</span><span class="p">,</span> <span class="n">curr_road</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detects the turn direction based on the previous and current road IDs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prev_road (str): ID of the previous road.</span>
+<span class="sd">        curr_road (str): ID of the current road.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Turn direction (&quot;turn_left&quot;, &quot;turn_right&quot;, &quot;go_straight&quot;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">prev_split</span> <span class="o">=</span> <span class="n">prev_road</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="n">curr_split</span> <span class="o">=</span> <span class="n">curr_road</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">prev_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">curr_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
@@ -122,7 +131,19 @@
         <span class="s2">&quot;headwayTime&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates vehicle flows for a CityFlow simulation scenario.</span>
 <span class="sd">    NOTE: Traffic signal network is assumed to be a grid network.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): The name of the scenario.</span>
+<span class="sd">        start_time (int): The start time for flow generation.</span>
+<span class="sd">        end_time (int): The end time for flow generation.</span>
+<span class="sd">        inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">        inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">        seed (int): Random seed for reproducibility.</span>
+<span class="sd">        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.</span>
+<span class="sd">        turn_probs (list): List of probabilities for turning left, right, or going straight.</span>
+<span class="sd">        **kwargs: Additional configuration parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -155,7 +176,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Max trip length is assumed to be the length traveled by a vehicle</span>
 <span class="sd">        that goes from one corner of the grid to the opposite corner.</span>
-<span class="sd">        (n - 1) + (m - 1) + 2</span>
+<span class="sd">        (n - 1) + (m - 1) + 2, where n and m are the number of intersections</span>
+<span class="sd">        in the grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Maximum trip length.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">_get_networkx_representation</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
@@ -171,6 +196,10 @@
 <span class="sd">        higher the probability of the vehicle turning into that lane.</span>
 <span class="sd">        NOTE: Edge implies a link between intersection i and j, such that it</span>
 <span class="sd">        includes both lanes_ij and lanes_ji</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_edge_weights (dict): Dictionary of edge weights. If None,</span>
+<span class="sd">                                        calculated based on lane max speeds.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_weights</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">input_edge_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -193,8 +222,14 @@
 
     <span class="k">def</span> <span class="nf">_find_fringe_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the incoming and outgoing fringe edges in the network.</span>
 <span class="sd">        NOTE: Fringe edges are based on the assumption that only one</span>
 <span class="sd">        incoming lane (from the boundary) is connected to the intersection.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing two lists:</span>
+<span class="sd">                - incoming_fringe_edges: List of incoming fringe edges.</span>
+<span class="sd">                - outgoing_fringe_edges: List of outgoing fringe edges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">outgoing_fringe_edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -219,6 +254,12 @@
         <span class="k">return</span> <span class="n">incoming_fringe_edges</span><span class="p">,</span> <span class="n">outgoing_fringe_edges</span>
 
     <span class="k">def</span> <span class="nf">_get_lane_connectivity_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a lane connectivity map based on the road network data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping each road to its connected roads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_connectivity_map</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Logic to build the lane_connectivity_map from the road network data</span>
         <span class="k">for</span> <span class="n">intersection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">intersections</span><span class="p">:</span>
@@ -232,6 +273,9 @@
         <span class="k">return</span> <span class="n">lane_connectivity_map</span>
 
     <span class="k">def</span> <span class="nf">_choose_next_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_edge</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">current_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lane_connectivity_map</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">next_edge_candidates</span> <span class="o">=</span> <span class="p">[]</span>
@@ -256,6 +300,9 @@
         <span class="k">return</span> <span class="n">next_edge</span>
 
     <span class="k">def</span> <span class="nf">_generate_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">outgoing_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">route</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_edge</span><span class="p">]</span>
         <span class="n">current_edge</span> <span class="o">=</span> <span class="n">start_edge</span>
@@ -277,6 +324,9 @@
         <span class="k">return</span> <span class="n">route</span>
 
 <div class="viewcode-block" id="CityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
@@ -312,6 +362,9 @@
 
 
 <div class="viewcode-block" id="LinkDisruptedCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">LinkDisruptedCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scenario</span><span class="p">,</span>
@@ -373,6 +426,9 @@
         <span class="k">return</span> <span class="n">next_edge</span>
 
 <div class="viewcode-block" id="LinkDisruptedCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
@@ -408,6 +464,9 @@
 
 
 <div class="viewcode-block" id="FlowDisruptedCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">FlowDisruptedCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scenario</span><span class="p">,</span>
@@ -454,6 +513,9 @@
         <span class="k">return</span> <span class="n">burst_timings</span>
 
 <div class="viewcode-block" id="FlowDisruptedCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
@@ -503,6 +565,9 @@
 
 
 <div class="viewcode-block" id="IntervalCityFlowTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.IntervalCityFlowTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">IntervalCityFlowTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="IntervalCityFlowTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.IntervalCityFlowTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filepath</span><span class="p">,</span>
@@ -565,6 +630,19 @@
 
 
 <div class="viewcode-block" id="VariableDemandTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">VariableDemandTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates vehicle flows for a CityFlow simulation scenario with variable demand.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): The name of the scenario.</span>
+<span class="sd">        start_time (int): The start time for flow generation.</span>
+<span class="sd">        end_time (int): The end time for flow generation.</span>
+<span class="sd">        inter_mus (dict): Dictionary of mean inter-arrival times for each edge.</span>
+<span class="sd">        inter_sigmas (dict): Dictionary of standard deviation of inter-arrival times for each edge.</span>
+<span class="sd">        disrupted (bool): Whether the network is disrupted or not.</span>
+<span class="sd">        turn_probs (list): List of probabilities for turning left, right, or going straight.</span>
+<span class="sd">        **kwargs: Additional configuration parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scenario</span><span class="p">,</span>
@@ -605,6 +683,15 @@
         <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_get_interarrival_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">current_time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the interarrival time for a given edge and current time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge_id (str): The ID of the edge.</span>
+<span class="sd">            current_time (int): The current time in seconds.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The interarrival time for the edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time_slot</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">%</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">//</span> <span class="mi">600</span>
         <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_mus</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">demand_profile</span><span class="p">[</span><span class="n">time_slot</span><span class="p">]</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_sigmas</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">demand_profile</span><span class="p">[</span><span class="n">time_slot</span><span class="p">]</span>
@@ -612,6 +699,13 @@
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interarrival_time</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VariableDemandTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Generate vehicle flows for the CityFlow simulation scenario.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): The path to save the generated flows.</span>
+<span class="sd">            replicate_no (int): The replicate number for the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
@@ -651,6 +745,21 @@
 
 
 <div class="viewcode-block" id="CityFlowOneWayTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowOneWayTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates vehicle flows for a CityFlow simulation scenario with one-way streets.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): The name of the scenario.</span>
+<span class="sd">        start_time (int): The start time for flow generation.</span>
+<span class="sd">        end_time (int): The end time for flow generation.</span>
+<span class="sd">        inter_mu_ns (float): The mean of the Gaussian distribution for inter-arrival times on north-south roads.</span>
+<span class="sd">        inter_sigma_ns (float): The standard deviation of the Gaussian distribution for inter-arrival times on north-south roads.</span>
+<span class="sd">        inter_mu_ew (float): The mean of the Gaussian distribution for inter-arrival times on east-west roads.</span>
+<span class="sd">        inter_sigma_ew (float): The standard deviation of the Gaussian distribution for inter-arrival times on east-west roads.</span>
+<span class="sd">        disrupted (bool): Whether the network is disrupted or not.</span>
+<span class="sd">        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.</span>
+<span class="sd">        **kwargs: Additional configuration parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scenario</span><span class="p">,</span>
@@ -681,16 +790,35 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_is_ns_road</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">road</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the road is a north-south road.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            road (dict): The road data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">end_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_is_ew_road</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">road</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the road is an east-west road.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            road (dict): The road data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">end_point</span> <span class="o">=</span> <span class="n">road</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">start_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">end_point</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="CityFlowOneWayTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate vehicle flows for the CityFlow simulation scenario with one-way streets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): The path to save the generated flows.</span>
+<span class="sd">            replicate_no (int): The replicate number for the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">ns_edges</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">road</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
@@ -705,6 +833,14 @@
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">def</span> <span class="nf">generate_flow_for_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">inter_mu</span><span class="p">,</span> <span class="n">inter_sigma</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generate vehicle flows for a list of edges.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                edges (list): List of edges to generate flows for.</span>
+<span class="sd">                inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">                inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">start_edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
                 <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
                 <span class="k">while</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
@@ -742,6 +878,20 @@
 
 
 <div class="viewcode-block" id="CityFlowRandomizedTripGenerator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator">[docs]</a><span class="k">class</span> <span class="nc">CityFlowRandomizedTripGenerator</span><span class="p">(</span><span class="n">CityFlowTripGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates vehicle flows for a CityFlow simulation scenario with randomized routes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): The name of the scenario.</span>
+<span class="sd">        start_time (int): The start time for flow generation.</span>
+<span class="sd">        end_time (int): The end time for flow generation.</span>
+<span class="sd">        inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">        inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.</span>
+<span class="sd">        seed (int): Random seed for reproducibility.</span>
+<span class="sd">        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.</span>
+<span class="sd">        turn_probs (list): List of probabilities for turning left, right, or going straight.</span>
+<span class="sd">        **kwargs: Additional configuration parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">turns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;turn_left&quot;</span><span class="p">,</span> <span class="s2">&quot;turn_right&quot;</span><span class="p">,</span> <span class="s2">&quot;go_straight&quot;</span><span class="p">]</span>
     <span class="n">vehicle_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
@@ -774,9 +924,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_edge_weights</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_max_trip_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Max trip length is assumed to be the length traveled by a vehicle</span>
+<span class="sd">        that goes from one corner of the grid to the opposite corner.</span>
+<span class="sd">        (n - 1) + (m - 1) + 2, where n and m are the number of intersections</span>
+<span class="sd">        in the grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Maximum trip length.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;max_route_length&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_info</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
 
 <div class="viewcode-block" id="CityFlowRandomizedTripGenerator.get_flow_rates"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.get_flow_rates">[docs]</a>    <span class="k">def</span> <span class="nf">get_flow_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get flow rates and route proportions for each road in the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">flow_file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;flow_file&quot;</span><span class="p">]</span>
         <span class="p">)</span>
@@ -861,6 +1023,15 @@
         <span class="k">return</span> <span class="n">turning_ratios</span><span class="p">,</span> <span class="n">combined_results</span><span class="p">,</span> <span class="n">stored_routes</span><span class="p">,</span> <span class="n">route_proportions</span></div>
 
 <div class="viewcode-block" id="CityFlowRandomizedTripGenerator.generate_flows"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.generate_flows">[docs]</a>    <span class="k">def</span> <span class="nf">generate_flows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">flow_type</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">replicate_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate vehicle flows for the CityFlow simulation scenario with</span>
+<span class="sd">        randomized routes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): The path to save the generated flows.</span>
+<span class="sd">            flow_type (str): The type of flow to generate (&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;).</span>
+<span class="sd">            replicate_no (int): The replicate number for the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_fringe_edges</span><span class="p">()</span>
         <span class="n">flows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">total_route_length</span> <span class="o">=</span> <span class="mi">0</span>

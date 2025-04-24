@@ -83,6 +83,14 @@
 
 
 <div class="viewcode-block" id="TSProgram"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TSProgram">[docs]</a><span class="k">class</span> <span class="nc">TSProgram</span><span class="p">(</span><span class="n">BaseTSProgram</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal program for CityFlow simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_phase_index</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
@@ -91,11 +99,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_traffic_light_program</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_initialize_traffic_light_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the traffic light program by setting the initial phase</span>
+<span class="sd">        and the phase duration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">set_tl_phase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_phase_index</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_phase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_phase_index</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TSController"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TSController">[docs]</a><span class="k">class</span> <span class="nc">TSController</span><span class="p">(</span><span class="n">BaseTSController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal controller for CityFlow simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TSController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">]</span>
@@ -104,11 +124,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_traffic_light_logic</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TSController.switch_phase"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TSController.switch_phase">[docs]</a>    <span class="k">def</span> <span class="nf">switch_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch the traffic light phase to the specified index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase to switch to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">set_tl_phase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="n">phase_index</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">update_current_phase</span><span class="p">(</span><span class="n">phase_index</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TrafficSignal"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TrafficSignal">[docs]</a><span class="k">class</span> <span class="nc">TrafficSignal</span><span class="p">(</span><span class="n">BaseTrafficSignal</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal class for CityFlow simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
@@ -121,6 +155,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_rule_based_controllers</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TrafficSignal.get_controller_action"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TrafficSignal.get_controller_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_controller_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action for the specified controller.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            controller (str): The type of controller to get actions for.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing the action for the specified controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span>
         <span class="n">inp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
@@ -132,6 +174,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">controllers</span><span class="p">[</span><span class="n">controller</span><span class="p">]</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TrafficSignal.update_stats"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TrafficSignal.update_stats">[docs]</a>    <span class="k">def</span> <span class="nf">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the traffic signal statistics based on the sub-results</span>
+<span class="sd">        from the simulator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sub_results (dict): Dictionary containing sub-results from the simulator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sub_results</span> <span class="o">=</span> <span class="n">sub_results</span>
         <span class="c1"># Compute intersection stats</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_queued</span> <span class="o">=</span> <span class="mi">0</span>
@@ -167,6 +216,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">/</span> <span class="mi">3600</span></div>
 
 <div class="viewcode-block" id="TrafficSignal.action_to_phase"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TrafficSignal.action_to_phase">[docs]</a>    <span class="k">def</span> <span class="nf">action_to_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the action to the corresponding phase index.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase to convert to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">switch_phase</span><span class="p">(</span><span class="n">phase_index</span><span class="p">)</span></div></div>
 </pre></div>
 

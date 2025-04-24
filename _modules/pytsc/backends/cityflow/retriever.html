@@ -78,6 +78,12 @@
 
 
 <div class="viewcode-block" id="Retriever"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.retriever.Retriever">[docs]</a><span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">BaseRetriever</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data retrieval class for the CityFlow simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulator (CityFlowSimulator): CityFlow simulator object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">simulator</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">engine</span>
@@ -87,6 +93,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
 
     <span class="k">def</span> <span class="nf">_compute_lane_position_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lane_sub_results</span><span class="p">,</span> <span class="n">lane</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the position matrix for a given lane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lane_sub_results (dict): Sub-results for the lane.</span>
+<span class="sd">            lane (str): Lane ID.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Position matrix for the lane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bin_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_size</span><span class="p">)</span>
         <span class="n">lane_vehicles</span> <span class="o">=</span> <span class="n">lane_sub_results</span><span class="p">[</span><span class="s2">&quot;lane_vehicles&quot;</span><span class="p">][</span><span class="n">lane</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">bin_count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">lane_vehicles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -112,6 +127,14 @@
         <span class="k">return</span> <span class="n">pos_mat</span>
 
     <span class="k">def</span> <span class="nf">_compute_lane_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lane_results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute lane measurements based on the results from the simulator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lane_results (dict): Results from the simulator for each lane.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing lane measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">v_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;veh_size_min_gap&quot;</span><span class="p">]</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">lane</span><span class="p">,</span> <span class="n">vehicles_on_lane</span> <span class="ow">in</span> <span class="n">lane_results</span><span class="p">[</span><span class="s2">&quot;lane_vehicles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -137,6 +160,12 @@
         <span class="k">return</span> <span class="n">lane_measurements</span>
 
 <div class="viewcode-block" id="Retriever.retrieve_lane_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.retriever.Retriever.retrieve_lane_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_lane_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute lane measurements based on the results from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing lane measurements.          </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_results</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;lane_n_queued&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_lane_waiting_vehicle_count</span><span class="p">(),</span>
             <span class="s2">&quot;lane_vehicles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_lane_vehicles</span><span class="p">(),</span>
@@ -145,6 +174,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_lane_measurements</span><span class="p">(</span><span class="n">lane_results</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Retriever.retrieve_sim_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.cityflow.html#pytsc.backends.cityflow.retriever.Retriever.retrieve_sim_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_sim_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute simulation measurements based on the results from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing simulation measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;n_vehicles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_vehicle_count</span><span class="p">(),</span>
             <span class="s2">&quot;average_travel_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_average_travel_time</span><span class="p">(),</span>

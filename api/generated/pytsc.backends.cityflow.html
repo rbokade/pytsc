@@ -242,10 +242,25 @@
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.grid_disruptor.</span></span><span class="sig-name descname"><span class="pre">CityFlowGridDisruptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disruption_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed_reduction_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/grid_disruptor.html#CityFlowGridDisruptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Disruptor for CityFlow grid networks.
+This class modifies the speed of lanes in a grid network based on a specified
+disruption ratio and speed reduction factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>disruption_ratio</strong> (<em>float</em>) – The ratio of traffic signals to disrupt.</p></li>
+<li><p><strong>speed_reduction_factor</strong> (<em>float</em>) – The factor by which to reduce the speed of disrupted lanes.</p></li>
+<li><p><strong>replicate_no</strong> (<em>int</em>) – The replicate number for the disrupted network.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor.generate_disrupted_network">
 <span class="sig-name descname"><span class="pre">generate_disrupted_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/grid_disruptor.html#CityFlowGridDisruptor.generate_disrupted_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.grid_disruptor.CityFlowGridDisruptor.generate_disrupted_network" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generate the disrupted network by selecting edges to disrupt,
+lowering their speed, and saving the disrupted network to a file.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -328,15 +343,17 @@
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.grid_generator.CityFlowOneWayGridNetworkGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.grid_generator.</span></span><span class="sig-name descname"><span class="pre">CityFlowOneWayGridNetworkGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cityflow_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_flow_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[600]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/grid_generator.html#CityFlowOneWayGridNetworkGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.grid_generator.CityFlowOneWayGridNetworkGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.backends.cityflow.grid_generator.CityFlowGridNetworkGenerator" title="pytsc.backends.cityflow.grid_generator.CityFlowGridNetworkGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.backends.cityflow.grid_generator.CityFlowGridNetworkGenerator</span></code></a></p>
-<p>Generates a one-way grid network for CityFlow simulation.
-:param cityflow_dir: Path to the CityFlow installation directory.
-:type cityflow_dir: str
-:param nrows: Number of rows in the grid.
-:type nrows: int
-:param ncols: Number of columns in the grid.
-:type ncols: int
-:param mean_flow_rates: List of mean flow rates for the arterial and side streets.
-:type mean_flow_rates: list</p>
+<p>Generates a one-way grid network for CityFlow simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cityflow_dir</strong> (<em>str</em>) – Path to the CityFlow installation directory.</p></li>
+<li><p><strong>nrows</strong> (<em>int</em>) – Number of rows in the grid.</p></li>
+<li><p><strong>ncols</strong> (<em>int</em>) – Number of columns in the grid.</p></li>
+<li><p><strong>mean_flow_rates</strong> (<em>list</em>) – List of mean flow rates for the arterial and side streets.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.grid_generator.CityFlowOneWayGridNetworkGenerator.col_distance">
 <span class="sig-name descname"><span class="pre">col_distance</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#pytsc.backends.cityflow.grid_generator.CityFlowOneWayGridNetworkGenerator.col_distance" title="Permalink to this definition"></a></dt>
@@ -419,80 +436,218 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.average_travel_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">average_travel_time</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.average_travel_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The average travel time of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The average travel time of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.density">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.density" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The density of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The density of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.density_map">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">density_map</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.density_map" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The density map is a matrix that represents the density of vehicles
+between traffic signals in the network. It is calculated based on
+the occupancy of lanes connecting the traffic signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The density map of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.flickering_signal">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flickering_signal</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.flickering_signal" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The flickering signal is the average of the phase changed signals
+of all traffic signals in the network. It indicates how often
+the traffic signals are changing phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The flickering signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.get_step_stats">
 <span class="sig-name descname"><span class="pre">get_step_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/metrics.html#MetricsParser.get_step_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.get_step_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Get the statistics for the current simulation step.
-:returns: Dictionary containing the statistics for the current step.
-:rtype: dict</p>
+<dd><p>Get the step statistics for the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing various statistics for the current step.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.mean_delay">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_delay</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.mean_delay" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The mean delay of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The mean delay of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.mean_speed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_speed</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.mean_speed" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The mean speed of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The mean speed of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.mst">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mst</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.mst" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The maximum spanning tree (MST) of the density map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The maximum spanning tree of the density map.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.n_queued">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_queued</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.n_queued" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The total number of queued vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The total number of queued vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.n_queued_norm">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_queued_norm</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.n_queued_norm" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The normalized number of queued vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The normalized number of queued vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.network_flow">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network_flow</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.network_flow" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The network flow is the product of the density and the normalized mean speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The network flow.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.norm_mean_speed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_mean_speed</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.norm_mean_speed" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The normalized mean speed of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The normalized mean speed of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.pressure">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pressure</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.pressure" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The pressure of the network is the sum of the pressure of all
+traffic signals in the network. It indicates the congestion level
+of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The pressure of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.pressures">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pressures</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.pressures" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The pressure of each traffic signal in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of pressure values for each traffic signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.metrics.MetricsParser.time_step">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_step</span></span><a class="headerlink" href="#pytsc.backends.cityflow.metrics.MetricsParser.time_step" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The time step of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The time step of the simulation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -513,120 +668,342 @@ and stores it in the config.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.adjacency_matrix">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency_matrix</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.adjacency_matrix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the adjacency matrix for the traffic signal network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A 2D array representing the adjacency matrix of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.directional_lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">directional_lanes</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.directional_lanes" title="Permalink to this definition"></a></dt>
 <dd><p>Extracts a dictionary of directional lanes for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A dictionary where keys are traffic signal IDs and values are dictionaries</dt><dd><p>mapping end intersection IDs to lists of lane IDs.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.distance_matrix">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">distance_matrix</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.distance_matrix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the distance matrix for the traffic signal network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A 2D array representing the distance between traffic signals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.edge_features">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edge_features</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.edge_features" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts edge features for the traffic signal network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A 3D array of edge features, where each element represents</dt><dd><p>the number of lanes and average lane length between traffic signals.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.in_degrees">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">in_degrees</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.in_degrees" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the in-degrees for each traffic signal in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A 1D array representing the in-degrees of traffic signals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.intersections">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersections</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.intersections" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts the intersections from the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A sorted list of intersection objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.k_hop_neighbors">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">k_hop_neighbors</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.k_hop_neighbors" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the k-hop neighbors for each traffic signal in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are traffic signal IDs and values are dictionaries</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.lane_angles">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_angles</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.lane_angles" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts angles for each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are lane IDs and values are angles in degrees.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.lane_indices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_indices</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.lane_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts lane indices for each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are lane IDs and values are lane indices.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.lane_lengths">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_lengths</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.lane_lengths" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts lengths for each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are lane IDs and values are lengths.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.lane_max_speeds">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_max_speeds</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.lane_max_speeds" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts maximum speeds for each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are lane IDs and values are maximum speeds.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lanes</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts the IDs of all lanes in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A sorted list of lane IDs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.neighbors_lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neighbors_lanes</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.neighbors_lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts a dictionary of neighbors and their connecting lanes for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A dictionary where keys are traffic signal IDs and values are dictionaries</dt><dd><p>mapping neighbor traffic signal IDs to lists of connecting lane IDs.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.neighbors_offsets">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neighbors_offsets</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.neighbors_offsets" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the offsets for each traffic signal based on the travel time
+to its neighbors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A dictionary where keys are traffic signal IDs and values are dictionaries</dt><dd><p>mapping neighbor traffic signal IDs to their respective offsets.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.network_boundary">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network_boundary</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.network_boundary" title="Permalink to this definition"></a></dt>
-<dd><p>Returns [max_x - min_x, max_y - min_y]</p>
+<dd><p>Returns the network boundary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple containing the minimum and maximum coordinates of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.norm_network_boundary">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_network_boundary</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.norm_network_boundary" title="Permalink to this definition"></a></dt>
-<dd><p>Returns [max_x - min_x, max_y - min_y]</p>
+<dd><p>Returns the normalized network boundary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list containing the width and height of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.out_degrees">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">out_degrees</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.out_degrees" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes the out-degrees for each traffic signal in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A 1D array representing the out-degrees of traffic signals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.plot_network">
 <span class="sig-name descname"><span class="pre">plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">12)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/network_parser.html#NetworkParser.plot_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.plot_network" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plots the network using NetworkX and Matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figsize</strong> (<em>tuple</em>) – Size of the figure to plot.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.roads">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">roads</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.roads" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts the roads from the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A sorted list of road objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.traffic_signal_ids">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">traffic_signal_ids</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.traffic_signal_ids" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts the IDs of all traffic signals in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A sorted list of traffic signal IDs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.ts_coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_coordinates</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.ts_coordinates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts coordinates for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are traffic signal IDs and values are lists of coordinates.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.ts_norm_coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_norm_coordinates</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.ts_norm_coordinates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts normalized coordinates for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary where keys are traffic signal IDs and values are lists of normalized coordinates.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.network_parser.NetworkParser.ts_phase_to_inc_out_lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_phase_to_inc_out_lanes</span></span><a class="headerlink" href="#pytsc.backends.cityflow.network_parser.NetworkParser.ts_phase_to_inc_out_lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Extracts the mapping of incoming lanes to outgoing lanes for each traffic signal phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A dictionary where keys are traffic signal IDs and values are dictionaries</dt><dd><p>mapping phase indices to dictionaries of incoming lanes and their corresponding outgoing lanes.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -640,28 +1017,52 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.retriever.Retriever">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.retriever.</span></span><span class="sig-name descname"><span class="pre">Retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/retriever.html#Retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.retriever.Retriever" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.retriever.BaseRetriever" title="pytsc.common.retriever.BaseRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.retriever.BaseRetriever</span></code></a></p>
+<p>Data retrieval class for the CityFlow simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulator</strong> (<em>CityFlowSimulator</em>) – CityFlow simulator object.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.retriever.Retriever.retrieve_lane_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_lane_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/retriever.html#Retriever.retrieve_lane_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.retriever.Retriever.retrieve_lane_measurements" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve lane measurements from the simulator.
-:returns: Dictionary containing lane measurements.
-:rtype: dict</p>
+<dd><p>Compute lane measurements based on the results from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing lane measurements.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.retriever.Retriever.retrieve_sim_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_sim_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/retriever.html#Retriever.retrieve_sim_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.retriever.Retriever.retrieve_sim_measurements" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve simulation measurements from the simulator.
-:returns: Dictionary containing simulation measurements.
-:rtype: dict</p>
+<dd><p>Compute simulation measurements based on the results from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing simulation measurements.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.retriever.Retriever.retrieve_ts_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_ts_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/retriever.html#Retriever.retrieve_ts_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.retriever.Retriever.retrieve_ts_measurements" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve traffic signal measurements from the simulator.
-:returns: Dictionary containing traffic signal measurements.
-:rtype: dict</p>
+<dd><p>Retrieve traffic signal measurements from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing traffic signal measurements.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -673,54 +1074,84 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.simulator.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/simulator.html#Simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.simulator.BaseSimulator" title="pytsc.common.simulator.BaseSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.simulator.BaseSimulator</span></code></a></p>
+<p>CityFlow simulator class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parsed_network</strong> (<em>ParsedNetwork</em>) – Parsed network object containing network information.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.close_simulator">
 <span class="sig-name descname"><span class="pre">close_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/simulator.html#Simulator.close_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.close_simulator" title="Permalink to this definition"></a></dt>
-<dd><p>Close the simulator.
-:returns: True if the simulator closed successfully, False otherwise.
-:rtype: bool</p>
+<dd><p>Close the CityFlow simulator.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.is_terminated">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_terminated</span></span><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.is_terminated" title="Permalink to this definition"></a></dt>
-<dd><p>Check if the simulation has terminated.
-:returns: True if the simulation has terminated, False otherwise.
-:rtype: bool</p>
+<dd><p>Check if the simulation is terminated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the simulation is terminated, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.retrieve_step_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_step_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/simulator.html#Simulator.retrieve_step_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.retrieve_step_measurements" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve measurements for the current simulation step.
-:returns: Dictionary containing measurements for the current step.
-:rtype: dict</p>
+<dd><p>Retrieve step measurements from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing step measurements.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.sim_step">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_step</span></span><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.sim_step" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the current simulation step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Current simulation step.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.sim_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_time</span></span><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.sim_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the current simulation time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Current simulation time.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.simulator_step">
 <span class="sig-name descname"><span class="pre">simulator_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/simulator.html#Simulator.simulator_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.simulator_step" title="Permalink to this definition"></a></dt>
-<dd><p>Perform a simulation step.
-:returns: True if the simulation step was successful, False otherwise.
-:rtype: bool</p>
+<dd><p>Perform a simulation step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.simulator.Simulator.start_simulator">
 <span class="sig-name descname"><span class="pre">start_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/simulator.html#Simulator.start_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.simulator.Simulator.start_simulator" title="Permalink to this definition"></a></dt>
-<dd><p>Start the simulator.
-:returns: True if the simulator started successfully, False otherwise.
-:rtype: bool</p>
+<dd><p>Start the CityFlow simulator.</p>
 </dd></dl>
 
 </dd></dl>
@@ -732,10 +1163,25 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TSController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TSController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TSController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TSController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTSController" title="pytsc.common.traffic_signal.BaseTSController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTSController</span></code></a></p>
+<p>Traffic signal controller for CityFlow simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TSController.switch_phase">
 <span class="sig-name descname"><span class="pre">switch_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TSController.switch_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TSController.switch_phase" title="Permalink to this definition"></a></dt>
-<dd><p>Switch the phase of the traffic signal controller.</p>
+<dd><p>Switch the traffic light phase to the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase_index</strong> (<em>int</em>) – Index of the phase to switch to.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -744,6 +1190,16 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TSProgram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TSProgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TSProgram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TSProgram" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTSProgram" title="pytsc.common.traffic_signal.BaseTSProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTSProgram</span></code></a></p>
+<p>Traffic signal program for CityFlow simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TSProgram.start_phase_index">
 <span class="sig-name descname"><span class="pre">start_phase_index</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TSProgram.start_phase_index" title="Permalink to this definition"></a></dt>
@@ -755,12 +1211,25 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TrafficSignal">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TrafficSignal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TrafficSignal" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal" title="pytsc.common.traffic_signal.BaseTrafficSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTrafficSignal</span></code></a></p>
+<p>Traffic signal class for CityFlow simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TrafficSignal.action_to_phase">
 <span class="sig-name descname"><span class="pre">action_to_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TrafficSignal.action_to_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TrafficSignal.action_to_phase" title="Permalink to this definition"></a></dt>
-<dd><p>Convert action to phase index.
-:param action: Action index.
-:type action: int</p>
+<dd><p>Convert the action to the corresponding phase index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase_index</strong> (<em>int</em>) – Index of the phase to convert to.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -771,12 +1240,30 @@ and stores it in the config.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TrafficSignal.get_controller_action">
 <span class="sig-name descname"><span class="pre">get_controller_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TrafficSignal.get_controller_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TrafficSignal.get_controller_action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the action for the specified controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>controller</strong> (<em>str</em>) – The type of controller to get actions for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing the action for the specified controller.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.traffic_signal.TrafficSignal.update_stats">
 <span class="sig-name descname"><span class="pre">update_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/traffic_signal.html#TrafficSignal.update_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.traffic_signal.TrafficSignal.update_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Update the statistics of the traffic signal.</p>
+<dd><p>Update the traffic signal statistics based on the sub-results
+from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sub_results</strong> (<em>dict</em>) – Dictionary containing sub-results from the simulator.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -788,10 +1275,35 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.trip_generator.</span></span><span class="sig-name descname"><span class="pre">CityFlowOneWayTripGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_mu_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_sigma_ns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_mu_ew</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_sigma_ew</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disrupted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowOneWayTripGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator" title="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator</span></code></a></p>
+<p>Generates vehicle flows for a CityFlow simulation scenario with one-way streets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>start_time</strong> (<em>int</em>) – The start time for flow generation.</p></li>
+<li><p><strong>end_time</strong> (<em>int</em>) – The end time for flow generation.</p></li>
+<li><p><strong>inter_mu_ns</strong> (<em>float</em>) – The mean of the Gaussian distribution for inter-arrival times on north-south roads.</p></li>
+<li><p><strong>inter_sigma_ns</strong> (<em>float</em>) – The standard deviation of the Gaussian distribution for inter-arrival times on north-south roads.</p></li>
+<li><p><strong>inter_mu_ew</strong> (<em>float</em>) – The mean of the Gaussian distribution for inter-arrival times on east-west roads.</p></li>
+<li><p><strong>inter_sigma_ew</strong> (<em>float</em>) – The standard deviation of the Gaussian distribution for inter-arrival times on east-west roads.</p></li>
+<li><p><strong>disrupted</strong> (<em>bool</em>) – Whether the network is disrupted or not.</p></li>
+<li><p><strong>edge_weights</strong> (<em>dict</em>) – Edge weights for route calculation. If None, calculated based on lane max speeds.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowOneWayTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowOneWayTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
+<dd><p>Generate vehicle flows for the CityFlow simulation scenario with one-way streets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The path to save the generated flows.</p></li>
+<li><p><strong>replicate_no</strong> (<em>int</em>) – The replicate number for the simulation.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -800,16 +1312,43 @@ and stores it in the config.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.trip_generator.</span></span><span class="sig-name descname"><span class="pre">CityFlowRandomizedTripGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowRandomizedTripGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator" title="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator</span></code></a></p>
+<p>Generates vehicle flows for a CityFlow simulation scenario with randomized routes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>start_time</strong> (<em>int</em>) – The start time for flow generation.</p></li>
+<li><p><strong>end_time</strong> (<em>int</em>) – The end time for flow generation.</p></li>
+<li><p><strong>inter_mu</strong> (<em>float</em>) – The mean of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>inter_sigma</strong> (<em>float</em>) – The standard deviation of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed for reproducibility.</p></li>
+<li><p><strong>edge_weights</strong> (<em>dict</em>) – Edge weights for route calculation. If None, calculated based on lane max speeds.</p></li>
+<li><p><strong>turn_probs</strong> (<em>list</em>) – List of probabilities for turning left, right, or going straight.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'low'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowRandomizedTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
+<dd><p>Generate vehicle flows for the CityFlow simulation scenario with
+randomized routes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The path to save the generated flows.</p></li>
+<li><p><strong>flow_type</strong> (<em>str</em>) – The type of flow to generate (“low”, “medium”, “high”).</p></li>
+<li><p><strong>replicate_no</strong> (<em>int</em>) – The replicate number for the simulation.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.get_flow_rates">
 <span class="sig-name descname"><span class="pre">get_flow_rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowRandomizedTripGenerator.get_flow_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.get_flow_rates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get flow rates and route proportions for each road in the network.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.turns">
@@ -819,10 +1358,21 @@ and stores it in the config.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.vehicle_data">
 <span class="sig-name descname"><span class="pre">vehicle_data</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'headwayTime':</span> <span class="pre">1.5,</span> <span class="pre">'length':</span> <span class="pre">5.0,</span> <span class="pre">'maxNegAcc':</span> <span class="pre">4.5,</span> <span class="pre">'maxPosAcc':</span> <span class="pre">2.0,</span> <span class="pre">'maxSpeed':</span> <span class="pre">11.11,</span> <span class="pre">'minGap':</span> <span class="pre">2.5,</span> <span class="pre">'usualNegAcc':</span> <span class="pre">4.5,</span> <span class="pre">'usualPosAcc':</span> <span class="pre">2.0,</span> <span class="pre">'width':</span> <span class="pre">2.0}</span></em><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowRandomizedTripGenerator.vehicle_data" title="Permalink to this definition"></a></dt>
-<dd><p>Traffic signal network is assumed to be a grid network.</p>
+<dd><p>Generates vehicle flows for a CityFlow simulation scenario.
+NOTE: Traffic signal network is assumed to be a grid network.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>NOTE</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>start_time</strong> (<em>int</em>) – The start time for flow generation.</p></li>
+<li><p><strong>end_time</strong> (<em>int</em>) – The end time for flow generation.</p></li>
+<li><p><strong>inter_mu</strong> (<em>float</em>) – The mean of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>inter_sigma</strong> (<em>float</em>) – The standard deviation of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed for reproducibility.</p></li>
+<li><p><strong>edge_weights</strong> (<em>dict</em>) – Edge weights for route calculation. If None, calculated based on lane max speeds.</p></li>
+<li><p><strong>turn_probs</strong> (<em>list</em>) – List of probabilities for turning left, right, or going straight.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -836,8 +1386,7 @@ and stores it in the config.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#CityFlowTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.turns">
@@ -847,10 +1396,21 @@ and stores it in the config.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.vehicle_data">
 <span class="sig-name descname"><span class="pre">vehicle_data</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'headwayTime':</span> <span class="pre">1.5,</span> <span class="pre">'length':</span> <span class="pre">5.0,</span> <span class="pre">'maxNegAcc':</span> <span class="pre">4.5,</span> <span class="pre">'maxPosAcc':</span> <span class="pre">2.0,</span> <span class="pre">'maxSpeed':</span> <span class="pre">11.11,</span> <span class="pre">'minGap':</span> <span class="pre">2.5,</span> <span class="pre">'usualNegAcc':</span> <span class="pre">4.5,</span> <span class="pre">'usualPosAcc':</span> <span class="pre">2.0,</span> <span class="pre">'width':</span> <span class="pre">2.0}</span></em><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator.vehicle_data" title="Permalink to this definition"></a></dt>
-<dd><p>Traffic signal network is assumed to be a grid network.</p>
+<dd><p>Generates vehicle flows for a CityFlow simulation scenario.
+NOTE: Traffic signal network is assumed to be a grid network.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>NOTE</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>start_time</strong> (<em>int</em>) – The start time for flow generation.</p></li>
+<li><p><strong>end_time</strong> (<em>int</em>) – The end time for flow generation.</p></li>
+<li><p><strong>inter_mu</strong> (<em>float</em>) – The mean of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>inter_sigma</strong> (<em>float</em>) – The standard deviation of the Gaussian distribution for inter-arrival times.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed for reproducibility.</p></li>
+<li><p><strong>edge_weights</strong> (<em>dict</em>) – Edge weights for route calculation. If None, calculated based on lane max speeds.</p></li>
+<li><p><strong>turn_probs</strong> (<em>list</em>) – List of probabilities for turning left, right, or going straight.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -864,8 +1424,7 @@ and stores it in the config.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#FlowDisruptedCityFlowTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.FlowDisruptedCityFlowTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
-</dd></dl>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -889,8 +1448,7 @@ interval_duration seconds.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#LinkDisruptedCityFlowTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.LinkDisruptedCityFlowTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
-</dd></dl>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -898,10 +1456,33 @@ interval_duration seconds.</p>
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.trip_generator.</span></span><span class="sig-name descname"><span class="pre">VariableDemandTripGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_mus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disrupted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.3333333333333333,</span> <span class="pre">0.3333333333333333,</span> <span class="pre">0.3333333333333333]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#VariableDemandTripGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator" title="pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.backends.cityflow.trip_generator.CityFlowTripGenerator</span></code></a></p>
+<p>Generates vehicle flows for a CityFlow simulation scenario with variable demand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – The name of the scenario.</p></li>
+<li><p><strong>start_time</strong> (<em>int</em>) – The start time for flow generation.</p></li>
+<li><p><strong>end_time</strong> (<em>int</em>) – The end time for flow generation.</p></li>
+<li><p><strong>inter_mus</strong> (<em>dict</em>) – Dictionary of mean inter-arrival times for each edge.</p></li>
+<li><p><strong>inter_sigmas</strong> (<em>dict</em>) – Dictionary of standard deviation of inter-arrival times for each edge.</p></li>
+<li><p><strong>disrupted</strong> (<em>bool</em>) – Whether the network is disrupted or not.</p></li>
+<li><p><strong>turn_probs</strong> (<em>list</em>) – List of probabilities for turning left, right, or going straight.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator.generate_flows">
 <span class="sig-name descname"><span class="pre">generate_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#VariableDemandTripGenerator.generate_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.VariableDemandTripGenerator.generate_flows" title="Permalink to this definition"></a></dt>
-<dd><p>Generate flows for the trip generator.</p>
+<dd><p>Generate vehicle flows for the CityFlow simulation scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The path to save the generated flows.</p></li>
+<li><p><strong>replicate_no</strong> (<em>int</em>) – The replicate number for the simulation.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -909,7 +1490,22 @@ interval_duration seconds.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pytsc.backends.cityflow.trip_generator.detect_turn_direction">
 <span class="sig-prename descclassname"><span class="pre">pytsc.backends.cityflow.trip_generator.</span></span><span class="sig-name descname"><span class="pre">detect_turn_direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_road</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_road</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/cityflow/trip_generator.html#detect_turn_direction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.cityflow.trip_generator.detect_turn_direction" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Detects the turn direction based on the previous and current road IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prev_road</strong> (<em>str</em>) – ID of the previous road.</p></li>
+<li><p><strong>curr_road</strong> (<em>str</em>) – ID of the current road.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Turn direction (“turn_left”, “turn_right”, “go_straight”).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-10">
