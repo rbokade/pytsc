@@ -91,7 +91,10 @@
 
 <div class="viewcode-block" id="Retriever"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.retriever.Retriever">[docs]</a><span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">BaseRetriever</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    For retrieving results from TraCI subscriptions.</span>
+<span class="sd">    Data retrieval class for the SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulator (SUMOSimulator): SUMO simulator object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tc</span> <span class="o">=</span> <span class="p">{</span>
@@ -121,10 +124,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
 
     <span class="k">def</span> <span class="nf">_subscribe_to_ts_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribe to traffic signal variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">trafficlight</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]])</span>
 
     <span class="k">def</span> <span class="nf">_subscribe_to_lane_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Subscribe to lane variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">lane</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
                 <span class="n">lane</span><span class="p">,</span>
@@ -140,6 +149,9 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_subscribe_to_sim_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribe to simulation variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">[</span><span class="s2">&quot;time_step&quot;</span><span class="p">],</span>
@@ -153,6 +165,15 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compute_lane_position_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lane_sub_results</span><span class="p">,</span> <span class="n">lane</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the position matrix for a given lane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lane_sub_results (dict): Results from the simulator for each lane.</span>
+<span class="sd">            lane (str): Lane ID.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Position matrix for the lane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bin_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lane_lengths</span><span class="p">[</span><span class="n">lane</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bin_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">pos_mat</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">bin_count</span>
@@ -176,6 +197,14 @@
         <span class="k">return</span> <span class="n">pos_mat</span>
 
     <span class="k">def</span> <span class="nf">_compute_lane_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lane_sub_results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute lane measurements based on the results from the simulator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lane_sub_results (dict): Results from the simulator for each lane.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing lane measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span><span class="p">:</span>
             <span class="n">position_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_lane_position_matrix</span><span class="p">(</span><span class="n">lane_sub_results</span><span class="p">,</span> <span class="n">lane</span><span class="p">)</span>
@@ -200,11 +229,20 @@
         <span class="k">return</span> <span class="n">lane_measurements</span>
 
 <div class="viewcode-block" id="Retriever.subscribe"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.retriever.Retriever.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribe to the necessary variables for data retrieval.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_subscribe_to_ts_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_subscribe_to_lane_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_subscribe_to_sim_vars</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Retriever.retrieve_lane_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.retriever.Retriever.retrieve_lane_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_lane_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve lane measurements from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing lane measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_sub_results</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">lane</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">lane</span><span class="o">.</span><span class="n">getSubscriptionResults</span><span class="p">(</span><span class="n">lane</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lanes</span>
@@ -212,6 +250,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_lane_measurements</span><span class="p">(</span><span class="n">lane_sub_results</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Retriever.retrieve_sim_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.retriever.Retriever.retrieve_sim_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_sim_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve simulation measurements from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing simulation measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sim_sub_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">getSubscriptionResults</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;time_step&quot;</span><span class="p">:</span> <span class="n">sim_sub_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">[</span><span class="s2">&quot;time_step&quot;</span><span class="p">]],</span>
@@ -224,6 +268,12 @@
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Retriever.retrieve_ts_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.retriever.Retriever.retrieve_ts_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_ts_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve traffic signal measurements from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing traffic signal measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ts_measurements</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">trafficlight</span><span class="o">.</span><span class="n">getSubscriptionResults</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>

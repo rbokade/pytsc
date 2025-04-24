@@ -93,6 +93,12 @@
 
 
 <div class="viewcode-block" id="Simulator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.simulator.Simulator">[docs]</a><span class="k">class</span> <span class="nc">Simulator</span><span class="p">(</span><span class="n">BaseSimulator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SUMO simulator class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parsed_network (ParsedNetwork): Parsed network object containing network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Simulator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parsed_network</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
@@ -101,6 +107,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_terminated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the simulation is terminated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the simulation is terminated, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;sim_length&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -108,6 +120,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sim_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current simulation step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Current simulation step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sim_step</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim_time</span>
             <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">begin_time</span>
@@ -117,9 +135,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sim_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current simulation time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Current simulation time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Simulator.retrieve_step_measurements"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.simulator.Simulator.retrieve_step_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_step_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve step measurements from the simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing step measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step_measurements</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci_retriever</span><span class="o">.</span><span class="n">retrieve_ts_measurements</span><span class="p">(),</span>
             <span class="s2">&quot;lane&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci_retriever</span><span class="o">.</span><span class="n">retrieve_lane_measurements</span><span class="p">(),</span>
@@ -127,6 +157,9 @@
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Simulator.start_simulator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.simulator.Simulator.start_simulator">[docs]</a>    <span class="k">def</span> <span class="nf">start_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the SUMO simulator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">getFreeSocketPort</span><span class="p">()</span>
         <span class="c1"># self.config.reset_config()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;render&quot;</span><span class="p">]:</span>
@@ -155,6 +188,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_step_measurements</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Simulator.simulator_step"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.simulator.Simulator.simulator_step">[docs]</a>    <span class="k">def</span> <span class="nf">simulator_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a simulation step.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_steps (int): Number of simulation steps to perform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">n_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;delta_time&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">n_steps</span><span class="p">:</span>
@@ -163,6 +202,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_step_measurements</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Simulator.close_simulator"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.simulator.Simulator.close_simulator">[docs]</a>    <span class="k">def</span> <span class="nf">close_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the SUMO simulator and clean up resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">traci</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>

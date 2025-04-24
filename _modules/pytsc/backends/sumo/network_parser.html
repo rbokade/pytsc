@@ -92,15 +92,27 @@
 
 
 <div class="viewcode-block" id="NetworkParser"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.network_parser.NetworkParser">[docs]</a><span class="k">class</span> <span class="nc">NetworkParser</span><span class="p">(</span><span class="n">BaseNetworkParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Network parser for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Config): Configuration object containing simulation parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_network</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_traffic_signals</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_load_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the SUMO network using the provided configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">readNet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">net_dir</span><span class="p">,</span> <span class="n">withPrograms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_initialize_traffic_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Initialize traffic signals in the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">(</span>
             <span class="n">inc_lane_map</span><span class="p">,</span>
             <span class="n">out_lane_map</span><span class="p">,</span>
@@ -136,6 +148,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The adjacency matrix is a square matrix used to represent a finite graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The adjacency matrix representing the connections between traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">nodes_with_tl</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">node</span>
@@ -159,6 +177,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">network_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The network boundary is the minimum and maximum coordinates of the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing the minimum and maximum coordinates of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getBoundary</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -168,12 +192,24 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">norm_network_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The normalized network boundary is the difference between the maximum and minimum coordinates of the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list containing the normalized width and height of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">),</span> <span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_boundary</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">traffic_signal_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The traffic signal IDs are the unique identifiers for each traffic signal in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of traffic signal IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">traffic_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getTrafficLights</span><span class="p">()</span>
         <span class="n">ts_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">traffic_signals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">getID</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traffic_signals</span><span class="p">))]</span>
         <span class="k">return</span> <span class="n">sort_alphanumeric_ids</span><span class="p">(</span><span class="n">ts_ids</span><span class="p">)</span>
@@ -181,6 +217,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lanes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lanes are the unique identifiers for each lane in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of lane IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lanes</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">getLanes</span><span class="p">()</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">()]</span>
         <span class="n">lanes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">lanes</span><span class="p">)))</span>
         <span class="n">lane_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">lane</span><span class="o">.</span><span class="n">getID</span><span class="p">()</span> <span class="k">for</span> <span class="n">lane</span> <span class="ow">in</span> <span class="n">lanes</span><span class="p">]</span>
@@ -189,6 +231,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lane_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lane lengths are the lengths of each lane in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping lane IDs to their lengths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_lengths</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
             <span class="n">lanes</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getLanes</span><span class="p">()</span>
@@ -200,6 +248,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lane_max_speeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lane maximum speeds are the maximum speeds of each lane in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping lane IDs to their maximum speeds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">getLanes</span><span class="p">()):</span>
@@ -210,7 +264,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lane_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        The lane indices are the indices of each lane in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping lane IDs to their indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_indices</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
             <span class="n">lanes</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getLanes</span><span class="p">()</span>
@@ -222,6 +281,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">lane_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The lane angles are the angles of each lane in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping lane IDs to their angles in degrees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_angles</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
             <span class="n">lanes</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getLanes</span><span class="p">()</span>
@@ -242,6 +307,13 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">ts_phase_to_inc_out_lanes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of incoming and outgoing lanes for</span>
+<span class="sd">        each phase for each traffic signal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping traffic signal IDs to their phases and the corresponding incoming and outgoing lanes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ts_phase_to_inc_out_lanes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getTrafficLights</span><span class="p">():</span>
             <span class="n">ts_id</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">getID</span><span class="p">()</span>
@@ -280,6 +352,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">k_hop_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of k-hop neighbors for each traffic signal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping traffic signal IDs to their k-hop neighbors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k_hop_neighbors</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">max_hops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">misc</span><span class="p">[</span><span class="s2">&quot;max_hops&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">ts_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signal_ids</span><span class="p">:</span>
@@ -291,6 +369,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">ts_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of the traffic signals in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping traffic signal IDs to their coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ts_coordinates</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getNodes</span><span class="p">()</span>
         <span class="n">node_coords</span> <span class="o">=</span> <span class="p">[]</span>
@@ -307,6 +391,12 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">ts_norm_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the normalized coordinates of the traffic signals in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary mapping traffic signal IDs to their normalized coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ts_norm_coordinates</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ts_id</span><span class="p">,</span> <span class="n">ts_coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_coordinates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">ts_norm_coordinates</span><span class="p">[</span><span class="n">ts_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -316,6 +406,15 @@
         <span class="k">return</span> <span class="n">ts_norm_coordinates</span>
 
     <span class="k">def</span> <span class="nf">_get_k_hop_neighbors_for_ts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_id</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        K-hop neighbors for a given traffic signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ts_id (str): The ID of the traffic signal.</span>
+<span class="sd">            k (int): The number of hops.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            k_hop_neighbors_ids (list): A list of</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="n">adjacency_matrix_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
@@ -327,6 +426,13 @@
         <span class="k">return</span> <span class="n">k_hop_neighbors_ids</span>
 
     <span class="k">def</span> <span class="nf">_get_lane_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of incoming and outgoing lanes for</span>
+<span class="sd">        each traffic signal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing three dictionaries:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">incoming_lane_map</span><span class="p">,</span> <span class="n">outgoing_lane_map</span><span class="p">,</span> <span class="n">inc_to_out_lane_map</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">getTrafficLights</span><span class="p">():</span>
             <span class="n">pairs_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">getConnections</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -344,6 +450,14 @@
         <span class="k">return</span> <span class="n">incoming_lane_map</span><span class="p">,</span> <span class="n">outgoing_lane_map</span><span class="p">,</span> <span class="n">inc_to_out_lane_map</span>
 
     <span class="k">def</span> <span class="nf">_map_ts_id_and_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maps traffic signal IDs to node IDs and vice versa.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing two dictionaries:</span>
+<span class="sd">                - ts_to_nodes: Mapping of traffic signal IDs to node IDs.</span>
+<span class="sd">                - nodes_to_ts: Mapping of node IDs to traffic signal IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ts_to_nodes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">nodes_to_ts</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Map ts to nodes</span>
@@ -362,6 +476,17 @@
         <span class="k">return</span> <span class="n">ts_to_nodes</span><span class="p">,</span> <span class="n">nodes_to_ts</span>
 
     <span class="k">def</span> <span class="nf">_get_traffic_light_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of phases for each traffic signal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing:</span>
+<span class="sd">                - phases: A dictionary mapping traffic signal IDs to their phases.</span>
+<span class="sd">                - phases_min_max_times: A dictionary mapping traffic signal IDs to their minimum and maximum times for each phase.</span>
+<span class="sd">                - phase_indices: A dictionary mapping traffic signal IDs to their phase indices.</span>
+<span class="sd">                - green_phase_indices: A dictionary mapping traffic signal IDs to their green phase indices.</span>
+<span class="sd">                - yellow_phase_indices: A dictionary mapping traffic signal IDs to their yellow phase indices.  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">phase_indices</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">green_phase_indices</span> <span class="o">=</span> <span class="p">{}</span>
@@ -402,6 +527,9 @@
 <div class="viewcode-block" id="NetworkParser.plot_network"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.network_parser.NetworkParser.plot_network">[docs]</a>    <span class="k">def</span> <span class="nf">plot_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the SUMO network with intersections and traffic signals.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            figsize (tuple): Size of the figure for plotting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>

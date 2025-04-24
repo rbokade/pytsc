@@ -178,10 +178,25 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.config.Config">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.config.Config" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.config.BaseConfig" title="pytsc.common.config.BaseConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.config.BaseConfig</span></code></a></p>
+<p>Configuration class for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>str</em>) – Name of the scenario for which the configuration is being loaded.</p></li>
+<li><p><strong>**kwargs</strong> – Additional configuration parameters to override default values.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.config.Config.reset_config">
 <span class="sig-name descname"><span class="pre">reset_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/config.html#Config.reset_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.config.Config.reset_config" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Reset the configuration for a new episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Additional configuration parameters to override default values.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -192,34 +207,81 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.metrics.</span></span><span class="sig-name descname"><span class="pre">MetricsParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traffic_signals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/metrics.html#MetricsParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.metrics.BaseMetricsParser" title="pytsc.common.metrics.BaseMetricsParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.metrics.BaseMetricsParser</span></code></a></p>
-<p>Network wide metrics</p>
+<p>Traffic signal network metrics parser for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parsed_network</strong> (<em>ParsedNetwork</em>) – Parsed network object.</p></li>
+<li><p><strong>simulator</strong> (<em>SUMOSimulator</em>) – SUMO simulator object.</p></li>
+<li><p><strong>traffic_signals</strong> (<em>dict</em>) – Dictionary of traffic signals.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.average_travel_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">average_travel_time</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.average_travel_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The average travel time of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The average travel time of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.average_wait_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">average_wait_time</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.average_wait_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The average wait time of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The average wait time of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.density">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.density" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The density of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The density of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.flickering_signal">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flickering_signal</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.flickering_signal" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The flickering signal is the average of the phase changed signals
+of all traffic signals in the network. It indicates how often
+the traffic signals are changing phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The flickering signal.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.get_step_stats">
 <span class="sig-name descname"><span class="pre">get_step_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/metrics.html#MetricsParser.get_step_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.get_step_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Get the statistics for the current simulation step.</p>
+<dd><p>Get the statistics of the current simulation step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dictionary containing the statistics for the current step.</p>
+<dd class="field-odd"><p>Dictionary containing the statistics of the current step.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
@@ -230,57 +292,156 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.mean_delay">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_delay</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.mean_delay" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The mean delay of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The mean delay of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.mean_speed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_speed</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.mean_speed" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The mean speed of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The mean speed of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_emergency_brakes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_emergency_brakes</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_emergency_brakes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of emergency brakes in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of emergency brakes.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_queued">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_queued</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_queued" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The total number of queued vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The total number of queued vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_queued_norm">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_queued_norm</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_queued_norm" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The normalized number of queued vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The normalized number of queued vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_teleported">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_teleported</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_teleported" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of teleported vehicles in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of teleported vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_vehicles_exited">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_vehicles_exited</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_vehicles_exited" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of vehicles that exited the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of vehicles that exited the simulation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.n_vehicles_inserted">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_vehicles_inserted</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.n_vehicles_inserted" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of vehicles that were inserted into the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of vehicles that were inserted into the simulation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.norm_mean_speed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_mean_speed</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.norm_mean_speed" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The normalized mean speed of vehicles in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The normalized mean speed of vehicles.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.pressure">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pressure</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.pressure" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The pressure of the traffic signals in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The pressure of the traffic signals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.metrics.MetricsParser.time_step">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_step</span></span><a class="headerlink" href="#pytsc.backends.sumo.metrics.MetricsParser.time_step" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The time step of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The time step of the simulation.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -291,76 +452,205 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.network_parser.</span></span><span class="sig-name descname"><span class="pre">NetworkParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/network_parser.html#NetworkParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.network_parser.BaseNetworkParser" title="pytsc.common.network_parser.BaseNetworkParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.network_parser.BaseNetworkParser</span></code></a></p>
+<p>Network parser for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.config.Config" title="pytsc.backends.cityflow.config.Config"><em>Config</em></a>) – Configuration object containing simulation parameters.</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.adjacency_matrix">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency_matrix</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.adjacency_matrix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The adjacency matrix is a square matrix used to represent a finite graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The adjacency matrix representing the connections between traffic signals.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.k_hop_neighbors">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">k_hop_neighbors</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.k_hop_neighbors" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a dictionary of k-hop neighbors for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping traffic signal IDs to their k-hop neighbors.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.lane_angles">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_angles</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.lane_angles" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The lane angles are the angles of each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping lane IDs to their angles in degrees.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.lane_indices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_indices</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.lane_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The lane indices are the indices of each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping lane IDs to their indices.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.lane_lengths">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_lengths</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.lane_lengths" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The lane lengths are the lengths of each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping lane IDs to their lengths.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.lane_max_speeds">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lane_max_speeds</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.lane_max_speeds" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The lane maximum speeds are the maximum speeds of each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping lane IDs to their maximum speeds.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lanes</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The lanes are the unique identifiers for each lane in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of lane IDs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.network_boundary">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network_boundary</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.network_boundary" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The network boundary is the minimum and maximum coordinates of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple containing the minimum and maximum coordinates of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.norm_network_boundary">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_network_boundary</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.norm_network_boundary" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The normalized network boundary is the difference between the maximum and minimum coordinates of the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list containing the normalized width and height of the network.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.plot_network">
 <span class="sig-name descname"><span class="pre">plot_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">12)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/network_parser.html#NetworkParser.plot_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.plot_network" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the SUMO network with intersections and traffic signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figsize</strong> (<em>tuple</em>) – Size of the figure for plotting.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.traffic_signal_ids">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">traffic_signal_ids</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.traffic_signal_ids" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The traffic signal IDs are the unique identifiers for each traffic signal in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of traffic signal IDs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.ts_coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_coordinates</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.ts_coordinates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the coordinates of the traffic signals in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping traffic signal IDs to their coordinates.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.ts_norm_coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_norm_coordinates</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.ts_norm_coordinates" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the normalized coordinates of the traffic signals in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping traffic signal IDs to their normalized coordinates.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.network_parser.NetworkParser.ts_phase_to_inc_out_lanes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ts_phase_to_inc_out_lanes</span></span><a class="headerlink" href="#pytsc.backends.sumo.network_parser.NetworkParser.ts_phase_to_inc_out_lanes" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a dictionary of incoming and outgoing lanes for
+each phase for each traffic signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary mapping traffic signal IDs to their phases and the corresponding incoming and outgoing lanes.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -371,7 +661,12 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.retriever.Retriever">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.retriever.</span></span><span class="sig-name descname"><span class="pre">Retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/retriever.html#Retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.retriever.Retriever" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.retriever.BaseRetriever" title="pytsc.common.retriever.BaseRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.retriever.BaseRetriever</span></code></a></p>
-<p>For retrieving results from TraCI subscriptions.</p>
+<p>Data retrieval class for the SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulator</strong> (<em>SUMOSimulator</em>) – SUMO simulator object.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.retriever.Retriever.retrieve_lane_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_lane_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/retriever.html#Retriever.retrieve_lane_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.retriever.Retriever.retrieve_lane_measurements" title="Permalink to this definition"></a></dt>
@@ -417,7 +712,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.retriever.Retriever.subscribe">
 <span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/retriever.html#Retriever.subscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.retriever.Retriever.subscribe" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Subscribe to the necessary variables for data retrieval.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.retriever.Retriever.tc">
@@ -433,27 +729,25 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.simulator.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/simulator.html#Simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.simulator.BaseSimulator" title="pytsc.common.simulator.BaseSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.simulator.BaseSimulator</span></code></a></p>
+<p>SUMO simulator class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parsed_network</strong> (<em>ParsedNetwork</em>) – Parsed network object containing network information.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.close_simulator">
 <span class="sig-name descname"><span class="pre">close_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/simulator.html#Simulator.close_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.close_simulator" title="Permalink to this definition"></a></dt>
-<dd><p>Close the simulator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the simulator closed successfully, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Close the SUMO simulator and clean up resources.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.is_terminated">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_terminated</span></span><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.is_terminated" title="Permalink to this definition"></a></dt>
-<dd><p>Check if the simulation has terminated.</p>
+<dd><p>Check if the simulation is terminated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the simulation has terminated, False otherwise.</p>
+<dd class="field-odd"><p>True if the simulation is terminated, False otherwise.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
@@ -464,10 +758,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.retrieve_step_measurements">
 <span class="sig-name descname"><span class="pre">retrieve_step_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/simulator.html#Simulator.retrieve_step_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.retrieve_step_measurements" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve measurements for the current simulation step.</p>
+<dd><p>Retrieve step measurements from the simulator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dictionary containing measurements for the current step.</p>
+<dd class="field-odd"><p>Dictionary containing step measurements.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
@@ -478,23 +772,38 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.sim_step">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_step</span></span><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.sim_step" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the current simulation step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Current simulation step.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.sim_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_time</span></span><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.sim_time" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the current simulation time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Current simulation time.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.simulator_step">
 <span class="sig-name descname"><span class="pre">simulator_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/simulator.html#Simulator.simulator_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.simulator_step" title="Permalink to this definition"></a></dt>
 <dd><p>Perform a simulation step.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the simulation step was successful, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_steps</strong> (<em>int</em>) – Number of simulation steps to perform.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -502,15 +811,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.simulator.Simulator.start_simulator">
 <span class="sig-name descname"><span class="pre">start_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/simulator.html#Simulator.start_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.simulator.Simulator.start_simulator" title="Permalink to this definition"></a></dt>
-<dd><p>Start the simulator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the simulator started successfully, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<dd><p>Start the SUMO simulator.</p>
 </dd></dl>
 
 </dd></dl>
@@ -522,10 +823,25 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TSController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TSController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TSController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TSController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTSController" title="pytsc.common.traffic_signal.BaseTSController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTSController</span></code></a></p>
+<p>Traffic signal controller for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TSController.switch_phase">
 <span class="sig-name descname"><span class="pre">switch_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TSController.switch_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TSController.switch_phase" title="Permalink to this definition"></a></dt>
-<dd><p>Switch the phase of the traffic signal controller.</p>
+<dd><p>Switch the traffic light phase to the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase_index</strong> (<em>int</em>) – Index of the phase to switch to.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -534,6 +850,16 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TSProgram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TSProgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TSProgram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TSProgram" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTSProgram" title="pytsc.common.traffic_signal.BaseTSProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTSProgram</span></code></a></p>
+<p>Traffic signal program for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TSProgram.start_phase_index">
 <span class="sig-name descname"><span class="pre">start_phase_index</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TSProgram.start_phase_index" title="Permalink to this definition"></a></dt>
@@ -545,18 +871,36 @@
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TrafficSignal">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.backends.sumo.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TrafficSignal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TrafficSignal" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pytsc.common.html#pytsc.common.traffic_signal.BaseTrafficSignal" title="pytsc.common.traffic_signal.BaseTrafficSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.common.traffic_signal.BaseTrafficSignal</span></code></a></p>
+<p>Traffic signal class for SUMO simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Traffic signal ID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing traffic signal parameters.</p></li>
+<li><p><strong>simulator</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.simulator.Simulator" title="pytsc.backends.cityflow.simulator.Simulator"><em>Simulator</em></a>) – Simulator object containing simulation parameters and network information.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TrafficSignal.action_to_phase">
 <span class="sig-name descname"><span class="pre">action_to_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TrafficSignal.action_to_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TrafficSignal.action_to_phase" title="Permalink to this definition"></a></dt>
-<dd><p>Convert action to phase index.
-:param action: Action index.
-:type action: int</p>
+<dd><p>Convert the action to the corresponding phase index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase_index</strong> (<em>int</em>) – Index of the phase to switch to.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.backends.sumo.traffic_signal.TrafficSignal.update_stats">
 <span class="sig-name descname"><span class="pre">update_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/backends/sumo/traffic_signal.html#TrafficSignal.update_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.backends.sumo.traffic_signal.TrafficSignal.update_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Update the statistics of the traffic signal.</p>
+<dd><p>Update the traffic signal statistics based on the sub-results from the simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sub_results</strong> (<em>dict</em>) – Sub-results from the simulator for each lane.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

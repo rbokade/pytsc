@@ -83,6 +83,7 @@
 <span class="sd">    Base class for traffic signal controllers.</span>
 <span class="sd">    This class defines the interface for different traffic signal controllers</span>
 <span class="sd">    and provides common functionality for controller management.</span>
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">        round_robin (bool): Flag to indicate if round-robin scheduling is used.</span>
@@ -100,6 +101,7 @@
 <div class="viewcode-block" id="FixedTimeController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.FixedTimeController">[docs]</a><span class="k">class</span> <span class="nc">FixedTimeController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fixed Time Controller.</span>
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">        green_time (int): Duration of the green phase in seconds.</span>
@@ -112,6 +114,7 @@
 <div class="viewcode-block" id="FixedTimeController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.FixedTimeController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the next action based on fixed time intervals.</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
 <span class="sd">        Returns:</span>
@@ -129,6 +132,7 @@
 <div class="viewcode-block" id="GreedyController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.GreedyController">[docs]</a><span class="k">class</span> <span class="nc">GreedyController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Greedy Controller.</span>
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -139,6 +143,7 @@
 <div class="viewcode-block" id="GreedyController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.GreedyController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the next action based on the greedy algorithm.</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
 <span class="sd">        Returns:</span>
@@ -163,6 +168,7 @@
     <span class="k">def</span> <span class="nf">_compute_queue_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the queue for a given phase.</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            phase_index (int): Index of the phase for which to compute the queue.</span>
 <span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
@@ -184,6 +190,7 @@
 <div class="viewcode-block" id="MaxPressureController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.MaxPressureController">[docs]</a><span class="k">class</span> <span class="nc">MaxPressureController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Max Pressure Controller.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -194,6 +201,7 @@
 <div class="viewcode-block" id="MaxPressureController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.MaxPressureController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the next action based on the max pressure algorithm.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
 <span class="sd">        Returns:</span>
@@ -220,6 +228,7 @@
     <span class="k">def</span> <span class="nf">_compute_pressure_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the pressure for a given phase.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            phase_index (int): Index of the phase for which to compute pressure.</span>
 <span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
@@ -246,9 +255,13 @@
 
 <div class="viewcode-block" id="SOTLController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.SOTLController">[docs]</a><span class="k">class</span> <span class="nc">SOTLController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    mu: threshold for vehicles on green phase lanes</span>
-<span class="sd">    theta: threshold for vehicles on red phase lanes</span>
-<span class="sd">    phi_min: minimum green time</span>
+<span class="sd">    SOTL (Saturation Over Time Limit) Controller.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
+<span class="sd">        theta (int): threshold for vehicles on red phase lanes</span>
+<span class="sd">        mu (int): threshold for vehicles on green phase lanes</span>
+<span class="sd">        phi_min (int): minimum green time</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traffic_signal</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">phi_min</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
@@ -262,6 +275,7 @@
 <div class="viewcode-block" id="SOTLController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.SOTLController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the next action based on the SOTL algorithm.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -287,6 +301,7 @@
     <span class="k">def</span> <span class="nf">_compute_flow_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the flow for a given phase.</span>
+
 <span class="sd">        Args::</span>
 <span class="sd">            inp (dict): network.simulator.step_measurements[&quot;lane&quot;]</span>
 <span class="sd">            phase_index (int): Index of the phase for which to compute the flow.</span>
@@ -305,7 +320,7 @@
 <div class="viewcode-block" id="RandomController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.RandomController">[docs]</a><span class="k">class</span> <span class="nc">RandomController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Randomly selects an action from the available actions.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

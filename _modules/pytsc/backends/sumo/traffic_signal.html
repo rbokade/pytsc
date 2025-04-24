@@ -85,6 +85,14 @@
 
 
 <div class="viewcode-block" id="TSProgram"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TSProgram">[docs]</a><span class="k">class</span> <span class="nc">TSProgram</span><span class="p">(</span><span class="n">BaseTSProgram</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal program for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_phase_index</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
@@ -95,11 +103,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_traffic_light_program</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_initialize_traffic_light_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the traffic light program by setting the initial phase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># self._set_caps_on_current_program(self.program)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">setPhase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_phase_index</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_phase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_phase_index</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_caps_on_current_program</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_program</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the capabilities of the current program based on the phase states.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_program (traci.trafficlight.Logic): Current program logic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">phase_definitions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">current_program</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;y&quot;</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
@@ -130,6 +147,14 @@
 
 
 <div class="viewcode-block" id="TSController"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TSController">[docs]</a><span class="k">class</span> <span class="nc">TSController</span><span class="p">(</span><span class="n">BaseTSController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal controller for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TSController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">=</span> <span class="n">TSProgram</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">)</span>
@@ -137,11 +162,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_traffic_light_logic</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TSController.switch_phase"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TSController.switch_phase">[docs]</a>    <span class="k">def</span> <span class="nf">switch_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch the traffic light phase to the specified index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase to switch to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traci</span><span class="o">.</span><span class="n">setPhase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases&quot;</span><span class="p">][</span><span class="n">phase_index</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">update_current_phase</span><span class="p">(</span><span class="n">phase_index</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TrafficSignal"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TrafficSignal">[docs]</a><span class="k">class</span> <span class="nc">TrafficSignal</span><span class="p">(</span><span class="n">BaseTrafficSignal</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traffic signal class for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): Traffic signal ID.</span>
+<span class="sd">        config (dict): Configuration dictionary containing traffic signal parameters.</span>
+<span class="sd">        simulator (Simulator): Simulator object containing simulation parameters and network information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TrafficSignal</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">TSController</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">simulator</span><span class="p">)</span>
@@ -150,6 +189,12 @@
         <span class="c1"># self.init_rule_based_controllers()</span>
 
 <div class="viewcode-block" id="TrafficSignal.update_stats"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TrafficSignal.update_stats">[docs]</a>    <span class="k">def</span> <span class="nf">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the traffic signal statistics based on the sub-results from the simulator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sub_results (dict): Sub-results from the simulator for each lane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sub_results</span> <span class="o">=</span> <span class="n">sub_results</span>
         <span class="c1"># Compute intersection stats</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_queued</span> <span class="o">=</span> <span class="mi">0</span>
@@ -191,6 +236,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">/</span> <span class="mi">3600</span></div>
 
 <div class="viewcode-block" id="TrafficSignal.action_to_phase"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.traffic_signal.TrafficSignal.action_to_phase">[docs]</a>    <span class="k">def</span> <span class="nf">action_to_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the action to the corresponding phase index.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            phase_index (int): Index of the phase to switch to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">switch_phase</span><span class="p">(</span><span class="n">phase_index</span><span class="p">)</span></div></div>
 </pre></div>
 

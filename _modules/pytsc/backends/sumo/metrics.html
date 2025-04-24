@@ -80,7 +80,12 @@
 
 <div class="viewcode-block" id="MetricsParser"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.metrics.MetricsParser">[docs]</a><span class="k">class</span> <span class="nc">MetricsParser</span><span class="p">(</span><span class="n">BaseMetricsParser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Network wide metrics</span>
+<span class="sd">    Traffic signal network metrics parser for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parsed_network (ParsedNetwork): Parsed network object.</span>
+<span class="sd">        simulator (SUMOSimulator): SUMO simulator object.</span>
+<span class="sd">        traffic_signals (dict): Dictionary of traffic signals.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_network</span><span class="p">,</span> <span class="n">simulator</span><span class="p">,</span> <span class="n">traffic_signals</span><span class="p">):</span>
@@ -91,6 +96,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">flickering_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The flickering signal is the average of the phase changed signals</span>
+<span class="sd">        of all traffic signals in the network. It indicates how often</span>
+<span class="sd">        the traffic signals are changing phases.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The flickering signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">phase_changed</span>
@@ -100,31 +113,73 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The time step of the simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The time step of the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">][</span><span class="s2">&quot;time_step&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_emergency_brakes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of emergency brakes in the simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of emergency brakes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">][</span><span class="s2">&quot;n_emergency_brakes&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_teleported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of teleported vehicles in the simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of teleported vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">][</span><span class="s2">&quot;n_teleported&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_vehicles_exited</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of vehicles that exited the simulation.</span>
+
+<span class="sd">        Returns:    </span>
+<span class="sd">            int: The number of vehicles that exited the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">][</span><span class="s2">&quot;n_arrived&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_vehicles_inserted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of vehicles that were inserted into the simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of vehicles that were inserted into the simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">][</span><span class="s2">&quot;n_departed&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_queued</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The total number of queued vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The total number of queued vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;n_queued&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_queued_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The normalized number of queued vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The normalized number of queued vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="n">n_queued_norm</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">lane_id</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -134,6 +189,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">average_wait_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The average wait time of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average wait time of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="n">data</span><span class="p">[</span><span class="s2">&quot;average_wait_time&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
@@ -141,6 +202,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">average_travel_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        The average travel time of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The average travel time of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="n">data</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
@@ -148,6 +215,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mean_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The mean speed of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The mean speed of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mean_speed&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span>
             <span class="n">lane_measurements</span>
@@ -155,6 +228,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The density of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The density of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;occupancy&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lane_measurements</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span>
             <span class="n">lane_measurements</span>
@@ -162,6 +241,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">norm_mean_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The normalized mean speed of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The normalized mean speed of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lane_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step_measurements</span><span class="p">[</span><span class="s2">&quot;lane&quot;</span><span class="p">]</span>
         <span class="n">lane_max_speeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_network</span><span class="o">.</span><span class="n">lane_max_speeds</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
@@ -171,13 +256,31 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mean_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The mean delay of vehicles in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The mean delay of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_mean_speed</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The pressure of the traffic signals in the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The pressure of the traffic signals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">ts</span><span class="o">.</span><span class="n">pressure</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_signals</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
 
 <div class="viewcode-block" id="MetricsParser.get_step_stats"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.metrics.MetricsParser.get_step_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the statistics of the current simulation step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary containing the statistics of the current step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">step_stats</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;time_step&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
             <span class="s2">&quot;n_emergency_brakes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_emergency_brakes</span><span class="p">,</span>

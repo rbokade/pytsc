@@ -93,6 +93,13 @@
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration class for SUMO simulator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scenario (str): Name of the scenario for which the configuration is being loaded.</span>
+<span class="sd">        **kwargs: Additional configuration parameters to override default values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="s2">&quot;sumo&quot;</span><span class="p">)</span>
@@ -118,15 +125,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_start_and_end_times</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Config.reset_config"><a class="viewcode-back" href="../../../../api/generated/pytsc.backends.sumo.html#pytsc.backends.sumo.config.Config.reset_config">[docs]</a>    <span class="k">def</span> <span class="nf">reset_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the configuration for a new episode.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Additional configuration parameters to override default values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;random_game&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sumo_cfg_dir</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_cfg_dirs</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_check_assertions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check assertions for the configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="s2">&quot;yellow_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">[</span><span class="s2">&quot;delta_time&quot;</span><span class="p">]</span>
         <span class="p">),</span> <span class="s2">&quot;Delta time and yellow times must be fixed to 5 seconds.&quot;</span>
 
     <span class="k">def</span> <span class="nf">_get_start_and_end_times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the start and end times from the SUMO configuration file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Load the XML file</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_cfg_dir</span><span class="p">)</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
@@ -136,6 +155,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_set_netdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">netfile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the network directory for the SUMO configuration.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            netfile (str): Name of the network file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">net_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="n">netfile</span><span class="p">)</span></div>
 </pre></div>
 
