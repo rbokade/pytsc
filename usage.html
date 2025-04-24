@@ -7,6 +7,7 @@
   <title>Usage &mdash; PyTSC 2025 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -132,6 +133,41 @@
         <span class="k">return</span> <span class="n">EPyMARLTrafficSignalNetwork</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="n">REGISTRY</span><span class="p">[</span><span class="s2">&quot;pytsc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pytsc_fn</span>
+</pre></div>
+</div>
+<p>Then, you can add config as such: [<cite>src/configs/envs/pasubio.yaml</cite>]</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pytsc</span>
+
+<span class="nt">env_args</span><span class="p">:</span>
+<span class="nt">scenario</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pasubio</span>
+<span class="nt">map_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pasubio</span>
+<span class="nt">simulator_backend</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sumo&quot;</span>
+<span class="nt">sumo</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">episode_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">360</span>
+<span class="nt">misc</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">reward_gamma</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">return_lane_stats</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">return_agent_stats</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="nt">signal</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">observation_space</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position_matrix</span>
+<span class="w">    </span><span class="nt">visibility</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="nt">network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">control_scheme</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decentralized</span>
+
+<span class="nt">agent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tsc</span>
+<span class="nt">test_greedy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">test_nepisode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w">  </span><span class="c1"># (10 episodes = 1 simulation hour, 1 episode = 72 pymarl steps)</span>
+<span class="nt">test_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">14400</span><span class="w">  </span><span class="c1"># after 20 episodes</span>
+<span class="nt">log_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1440</span><span class="w">  </span><span class="c1"># after 10 episodes</span>
+<span class="nt">runner_log_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1440</span>
+<span class="nt">learner_log_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1440</span>
+<span class="nt">save_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">save_model_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">144000</span><span class="w">  </span><span class="c1"># after 100 episodes</span>
+
+<span class="nt">t_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2880000</span>
+
+<span class="nt">use_cuda</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">use_tensorboard</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 </pre></div>
 </div>
 </section>
