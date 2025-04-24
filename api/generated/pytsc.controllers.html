@@ -243,21 +243,25 @@ and provides common functionality for controller management.
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytsc.controllers.controllers.</span></span><span class="sig-name descname"><span class="pre">RandomController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traffic_signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pytsc.controllers.controllers.BaseController" title="pytsc.controllers.controllers.BaseController"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytsc.controllers.controllers.BaseController</span></code></a></p>
-<p>Randomly selects an action from the available actions.
-:param traffic_signal: Traffic signal object containing simulation parameters and network information.
-:type traffic_signal: TrafficSignal</p>
+<p>Randomly selects an action from the available actions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>traffic_signal</strong> (<a class="reference internal" href="pytsc.backends.cityflow.html#pytsc.backends.cityflow.traffic_signal.TrafficSignal" title="pytsc.backends.cityflow.traffic_signal.TrafficSignal"><em>TrafficSignal</em></a>) – Traffic signal object containing simulation parameters and network information.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytsc.controllers.controllers.RandomController.get_action">
 <span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pytsc/controllers/controllers.html#RandomController.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytsc.controllers.controllers.RandomController.get_action" title="Permalink to this definition"></a></dt>
-<dd><p>Select a random action from the available actions.
-:param inp: Input data containing network and traffic signal information.
-:type inp: dict</p>
+<dd><p>Select a random action from the available actions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Index of the selected action.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inp</strong> (<em>dict</em>) – Input data containing network and traffic signal information.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>int</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Index of the selected action.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>

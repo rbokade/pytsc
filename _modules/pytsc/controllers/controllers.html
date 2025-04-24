@@ -305,6 +305,7 @@
 <div class="viewcode-block" id="RandomController"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.RandomController">[docs]</a><span class="k">class</span> <span class="nc">RandomController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Randomly selects an action from the available actions.</span>
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -315,8 +316,10 @@
 <div class="viewcode-block" id="RandomController.get_action"><a class="viewcode-back" href="../../../api/generated/pytsc.controllers.html#pytsc.controllers.controllers.RandomController.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select a random action from the available actions.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            inp (dict): Input data containing network and traffic signal information.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            int: Index of the selected action.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
