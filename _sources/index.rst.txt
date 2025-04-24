@@ -3,6 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+Home
+====
+
 .. image:: _static/pytsc_logo.png
    :alt: PyTSC Logo
    :class: logo-img
