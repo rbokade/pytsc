@@ -230,6 +230,7 @@ class SOTLController(BaseController):
 class RandomController(BaseController):
     """
     Randomly selects an action from the available actions.
+    
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
     """
@@ -240,8 +241,10 @@ class RandomController(BaseController):
     def get_action(self, inp):
         """
         Select a random action from the available actions.
+
         Args:
             inp (dict): Input data containing network and traffic signal information.
+
         Returns:
             int: Index of the selected action.
         """
