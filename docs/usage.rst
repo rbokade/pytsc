@@ -67,3 +67,39 @@ Here's an example of how to use PyTSC with EPyMARL. In `src/envs/__init__.py`, y
 
         REGISTRY["pytsc"] = pytsc_fn
 
+Then, you can add config as such: [`src/configs/envs/pasubio.yaml`]
+
+.. code-block:: yaml
+
+    env: pytsc
+    
+    env_args:
+    scenario: pasubio
+    map_name: pasubio
+    simulator_backend: "sumo"
+    sumo:
+        episode_limit: 360
+    misc:
+        reward_gamma: 0.0
+        return_lane_stats: False
+        return_agent_stats: False
+    signal: 
+        observation_space: position_matrix
+        visibility: 10
+    network:
+        control_scheme: decentralized
+
+    agent: tsc
+    test_greedy: True
+    test_nepisode: 10  # (10 episodes = 1 simulation hour, 1 episode = 72 pymarl steps)
+    test_interval: 14400  # after 20 episodes
+    log_interval: 1440  # after 10 episodes
+    runner_log_interval: 1440
+    learner_log_interval: 1440
+    save_model: True
+    save_model_interval: 144000  # after 100 episodes  
+
+    t_max: 2880000  
+
+    use_cuda: True
+    use_tensorboard: True
