@@ -8,6 +8,7 @@ class BaseController(ABC):
     Base class for traffic signal controllers.
     This class defines the interface for different traffic signal controllers
     and provides common functionality for controller management.
+    
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
         round_robin (bool): Flag to indicate if round-robin scheduling is used.
@@ -25,6 +26,7 @@ class BaseController(ABC):
 class FixedTimeController(BaseController):
     """
     Fixed Time Controller.
+    
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
         green_time (int): Duration of the green phase in seconds.
@@ -37,6 +39,7 @@ class FixedTimeController(BaseController):
     def get_action(self, inp):
         """
         Select the next action based on fixed time intervals.
+        
         Args:
             inp (dict): Input data containing network and traffic signal information.
         Returns:
@@ -54,6 +57,7 @@ class FixedTimeController(BaseController):
 class GreedyController(BaseController):
     """
     Greedy Controller.
+    
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
     """
@@ -64,6 +68,7 @@ class GreedyController(BaseController):
     def get_action(self, inp):
         """
         Select the next action based on the greedy algorithm.
+        
         Args:
             inp (dict): Input data containing network and traffic signal information.
         Returns:
@@ -88,6 +93,7 @@ class GreedyController(BaseController):
     def _compute_queue_for_phase(self, inp, phase_index):
         """
         Compute the queue for a given phase.
+        
         Args:
             phase_index (int): Index of the phase for which to compute the queue.
             inp (dict): network.simulator.step_measurements["lane"]
@@ -109,6 +115,7 @@ class GreedyController(BaseController):
 class MaxPressureController(BaseController):
     """
     Max Pressure Controller.
+
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
     """
@@ -119,6 +126,7 @@ class MaxPressureController(BaseController):
     def get_action(self, inp):
         """
         Select the next action based on the max pressure algorithm.
+
         Args:
             inp (dict): Input data containing network and traffic signal information.
         Returns:
@@ -145,6 +153,7 @@ class MaxPressureController(BaseController):
     def _compute_pressure_for_phase(self, inp, phase_index):
         """
         Compute the pressure for a given phase.
+
         Args:
             phase_index (int): Index of the phase for which to compute pressure.
             inp (dict): network.simulator.step_measurements["lane"]
@@ -171,9 +180,13 @@ class MaxPressureController(BaseController):
 
 class SOTLController(BaseController):
     """
-    mu: threshold for vehicles on green phase lanes
-    theta: threshold for vehicles on red phase lanes
-    phi_min: minimum green time
+    SOTL (Saturation Over Time Limit) Controller.
+
+        Args:
+        traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
+        theta (int): threshold for vehicles on red phase lanes
+        mu (int): threshold for vehicles on green phase lanes
+        phi_min (int): minimum green time
     """
 
     def __init__(self, traffic_signal, theta=3, mu=4, phi_min=5):
@@ -187,6 +200,7 @@ class SOTLController(BaseController):
     def get_action(self, inp):
         """
         Select the next action based on the SOTL algorithm.
+
         Args:
             inp (dict): Input data containing network and traffic signal information.
         """
@@ -212,6 +226,7 @@ class SOTLController(BaseController):
     def _compute_flow_for_phase(self, inp, phase_index):
         """
         Calculate the flow for a given phase.
+
         Args::
             inp (dict): network.simulator.step_measurements["lane"]
             phase_index (int): Index of the phase for which to compute the flow.
@@ -230,7 +245,7 @@ class SOTLController(BaseController):
 class RandomController(BaseController):
     """
     Randomly selects an action from the available actions.
-    
+
     Args:
         traffic_signal (TrafficSignal): Traffic signal object containing simulation parameters and network information.
     """

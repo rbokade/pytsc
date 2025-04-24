@@ -5,7 +5,12 @@ from pytsc.common.metrics import BaseMetricsParser
 
 class MetricsParser(BaseMetricsParser):
     """
-    Network wide metrics
+    Traffic signal network metrics parser for SUMO simulator.
+
+    Args:
+        parsed_network (ParsedNetwork): Parsed network object.
+        simulator (SUMOSimulator): SUMO simulator object.
+        traffic_signals (dict): Dictionary of traffic signals.
     """
 
     def __init__(self, parsed_network, simulator, traffic_signals):
@@ -16,6 +21,14 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def flickering_signal(self):
+        """
+        The flickering signal is the average of the phase changed signals
+        of all traffic signals in the network. It indicates how often
+        the traffic signals are changing phases.
+
+        Returns:
+            float: The flickering signal.
+        """
         return np.mean(
             [
                 ts.controller.program.phase_changed
@@ -25,31 +38,73 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def time_step(self):
+        """
+        The time step of the simulation.
+
+        Returns:
+            float: The time step of the simulation.
+        """
         return self.simulator.step_measurements["sim"]["time_step"]
 
     @property
     def n_emergency_brakes(self):
+        """
+        The number of emergency brakes in the simulation.
+
+        Returns:
+            int: The number of emergency brakes.
+        """
         return self.simulator.step_measurements["sim"]["n_emergency_brakes"]
 
     @property
     def n_teleported(self):
+        """
+        The number of teleported vehicles in the simulation.
+
+        Returns:
+            int: The number of teleported vehicles.
+        """
         return self.simulator.step_measurements["sim"]["n_teleported"]
 
     @property
     def n_vehicles_exited(self):
+        """
+        The number of vehicles that exited the simulation.
+
+        Returns:    
+            int: The number of vehicles that exited the simulation.
+        """
         return self.simulator.step_measurements["sim"]["n_arrived"]
 
     @property
     def n_vehicles_inserted(self):
+        """
+        The number of vehicles that were inserted into the simulation.
+
+        Returns:
+            int: The number of vehicles that were inserted into the simulation.
+        """
         return self.simulator.step_measurements["sim"]["n_departed"]
 
     @property
     def n_queued(self):
+        """
+        The total number of queued vehicles in the network.
+
+        Returns:
+            int: The total number of queued vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         return sum(data["n_queued"] for data in lane_measurements.values())
 
     @property
     def n_queued_norm(self):
+        """
+        The normalized number of queued vehicles in the network.
+
+        Returns:
+            float: The normalized number of queued vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         n_queued_norm = 0
         for lane_id, data in lane_measurements.items():
@@ -59,6 +114,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def average_wait_time(self):
+        """
+        The average wait time of vehicles in the network.
+
+        Returns:
+            float: The average wait time of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         return sum(
             data["average_wait_time"] for data in lane_measurements.values()
@@ -66,6 +127,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def average_travel_time(self):
+        """ 
+        The average travel time of vehicles in the network.
+
+        Returns:
+            float: The average travel time of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         return sum(
             data["average_travel_time"] for data in lane_measurements.values()
@@ -73,6 +140,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_speed(self):
+        """
+        The mean speed of vehicles in the network.
+
+        Returns:
+            float: The mean speed of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         return sum(data["mean_speed"] for data in lane_measurements.values()) / len(
             lane_measurements
@@ -80,6 +153,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def density(self):
+        """
+        The density of vehicles in the network.
+
+        Returns:
+            float: The density of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         return sum(data["occupancy"] for data in lane_measurements.values()) / len(
             lane_measurements
@@ -87,6 +166,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def norm_mean_speed(self):
+        """
+        The normalized mean speed of vehicles in the network.
+
+        Returns:
+            float: The normalized mean speed of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         lane_max_speeds = self.parsed_network.lane_max_speeds
         return sum(
@@ -96,13 +181,31 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_delay(self):
+        """
+        The mean delay of vehicles in the network.
+
+        Returns:
+            float: The mean delay of vehicles.
+        """
         return 1 - self.norm_mean_speed
 
     @property
     def pressure(self):
+        """
+        The pressure of the traffic signals in the network.
+
+        Returns:
+            float: The pressure of the traffic signals.
+        """
         return np.sum([ts.pressure for ts in self.traffic_signals.values()])
 
     def get_step_stats(self):
+        """
+        Get the statistics of the current simulation step.
+
+        Returns:
+            dict: Dictionary containing the statistics of the current step.
+        """
         step_stats = {
             "time_step": self.time_step,
             "n_emergency_brakes": self.n_emergency_brakes,

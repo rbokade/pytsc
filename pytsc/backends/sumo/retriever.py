@@ -16,7 +16,10 @@ from pytsc.common.retriever import BaseRetriever
 
 class Retriever(BaseRetriever):
     """
-    For retrieving results from TraCI subscriptions.
+    Data retrieval class for the SUMO simulator.
+
+    Args:
+        simulator (SUMOSimulator): SUMO simulator object.
     """
 
     tc = {
@@ -46,10 +49,16 @@ class Retriever(BaseRetriever):
         self.lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
 
     def _subscribe_to_ts_vars(self):
+        """
+        Subscribe to traffic signal variables.
+        """
         for ts in self.parsed_network.traffic_signal_ids:
             self.traci.trafficlight.subscribe(ts, [self.tc["phase"]])
 
     def _subscribe_to_lane_vars(self):
+        """ 
+        Subscribe to lane variables.
+        """
         for lane in self.parsed_network.lanes:
             self.traci.lane.subscribe(
                 lane,
@@ -65,6 +74,9 @@ class Retriever(BaseRetriever):
             )
 
     def _subscribe_to_sim_vars(self):
+        """
+        Subscribe to simulation variables.
+        """
         self.traci.simulation.subscribe(
             [
                 self.tc["time_step"],
@@ -78,6 +90,15 @@ class Retriever(BaseRetriever):
         )
 
     def _compute_lane_position_matrix(self, lane_sub_results, lane):
+        """
+        Compute the position matrix for a given lane.
+
+        Args:
+            lane_sub_results (dict): Results from the simulator for each lane.
+            lane (str): Lane ID.
+        Returns:
+            list: Position matrix for the lane.
+        """
         bin_count = int(self.lane_lengths[lane] / self.v_size)
         if bin_count > 0:
             pos_mat = [-1.0] * bin_count
@@ -101,6 +122,14 @@ class Retriever(BaseRetriever):
         return pos_mat
 
     def _compute_lane_measurements(self, lane_sub_results):
+        """
+        Compute lane measurements based on the results from the simulator.
+
+        Args:
+            lane_sub_results (dict): Results from the simulator for each lane.
+        Returns:
+            dict: Dictionary containing lane measurements.
+        """
         lane_measurements = {}
         for lane in self.parsed_network.lanes:
             position_matrix = self._compute_lane_position_matrix(lane_sub_results, lane)
@@ -125,11 +154,20 @@ class Retriever(BaseRetriever):
         return lane_measurements
 
     def subscribe(self):
+        """
+        Subscribe to the necessary variables for data retrieval.
+        """
         self._subscribe_to_ts_vars()
         self._subscribe_to_lane_vars()
         self._subscribe_to_sim_vars()
 
     def retrieve_lane_measurements(self):
+        """
+        Retrieve lane measurements from the simulator.
+
+        Returns:
+            dict: Dictionary containing lane measurements.
+        """
         lane_sub_results = {
             lane: self.traci.lane.getSubscriptionResults(lane)
             for lane in self.parsed_network.lanes
@@ -137,6 +175,12 @@ class Retriever(BaseRetriever):
         return self._compute_lane_measurements(lane_sub_results)
 
     def retrieve_sim_measurements(self):
+        """
+        Retrieve simulation measurements from the simulator.
+
+        Returns:
+            dict: Dictionary containing simulation measurements.
+        """
         sim_sub_results = self.traci.simulation.getSubscriptionResults()
         return {
             "time_step": sim_sub_results[self.tc["time_step"]],
@@ -149,6 +193,12 @@ class Retriever(BaseRetriever):
         }
 
     def retrieve_ts_measurements(self):
+        """
+        Retrieve traffic signal measurements from the simulator.
+
+        Returns:
+            dict: Dictionary containing traffic signal measurements.
+        """
         ts_measurements = {}
         for ts in self.parsed_network.traffic_signal_ids:
             results = self.traci.trafficlight.getSubscriptionResults(ts)

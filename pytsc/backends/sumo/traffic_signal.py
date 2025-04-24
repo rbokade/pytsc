@@ -10,6 +10,14 @@ from pytsc.common.traffic_signal import (
 
 
 class TSProgram(BaseTSProgram):
+    """
+    Traffic signal program for SUMO simulator.
+
+    Args:
+        id (str): Traffic signal ID.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """
     start_phase_index = 0
 
     def __init__(self, id, config, simulator):
@@ -20,11 +28,20 @@ class TSProgram(BaseTSProgram):
         self._initialize_traffic_light_program()
 
     def _initialize_traffic_light_program(self):
+        """
+        Initialize the traffic light program by setting the initial phase
+        """
         # self._set_caps_on_current_program(self.program)
         self.traci.setPhase(self.id, self.phases[self.start_phase_index])
         self.set_initial_phase(self.start_phase_index)
 
     def _set_caps_on_current_program(self, current_program):
+        """
+        Set the capabilities of the current program based on the phase states.
+
+        Args:
+            current_program (traci.trafficlight.Logic): Current program logic.
+        """
         phase_definitions = []
         for phase in current_program.phases:
             if "y" in phase.state:
@@ -55,6 +72,14 @@ class TSProgram(BaseTSProgram):
 
 
 class TSController(BaseTSController):
+    """
+    Traffic signal controller for SUMO simulator.
+
+    Args:
+        id (str): Traffic signal ID.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """
     def __init__(self, id, config, simulator):
         super(TSController, self).__init__(id, config, simulator)
         self.program = TSProgram(id, config, simulator)
@@ -62,11 +87,25 @@ class TSController(BaseTSController):
         self._instantiate_traffic_light_logic()
 
     def switch_phase(self, phase_index):
+        """
+        Switch the traffic light phase to the specified index.
+
+        Args:
+            phase_index (int): Index of the phase to switch to.
+        """
         self.traci.setPhase(self.id, self.config["phases"][phase_index])
         self.program.update_current_phase(phase_index)
 
 
 class TrafficSignal(BaseTrafficSignal):
+    """
+    Traffic signal class for SUMO simulator.
+
+    Args:
+        id (str): Traffic signal ID.
+        config (dict): Configuration dictionary containing traffic signal parameters.
+        simulator (Simulator): Simulator object containing simulation parameters and network information.
+    """
     def __init__(self, id, config, simulator):
         super(TrafficSignal, self).__init__(id, config, simulator)
         self.controller = TSController(id, config, simulator)
@@ -75,6 +114,12 @@ class TrafficSignal(BaseTrafficSignal):
         # self.init_rule_based_controllers()
 
     def update_stats(self, sub_results):
+        """
+        Update the traffic signal statistics based on the sub-results from the simulator.
+
+        Args:
+            sub_results (dict): Sub-results from the simulator for each lane.
+        """
         self.sub_results = sub_results
         # Compute intersection stats
         self.n_queued = 0
@@ -116,4 +161,10 @@ class TrafficSignal(BaseTrafficSignal):
         self.sim_step = self.simulator.sim_step / 3600
 
     def action_to_phase(self, phase_index):
+        """
+        Convert the action to the corresponding phase index.
+        
+        Args:
+            phase_index (int): Index of the phase to switch to.
+        """
         self.controller.switch_phase(phase_index)

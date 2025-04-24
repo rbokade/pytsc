@@ -18,6 +18,12 @@ from pytsc.common.simulator import BaseSimulator
 
 
 class Simulator(BaseSimulator):
+    """
+    SUMO simulator class.
+
+    Args:
+        parsed_network (ParsedNetwork): Parsed network object containing network information.
+    """
     def __init__(self, parsed_network):
         super(Simulator, self).__init__(parsed_network)
         self.port = None
@@ -26,6 +32,12 @@ class Simulator(BaseSimulator):
 
     @property
     def is_terminated(self):
+        """
+        Check if the simulation is terminated.
+
+        Returns:
+            bool: True if the simulation is terminated, False otherwise.
+        """
         if self.sim_step == self.config.simulator["sim_length"]:
             return True
         else:
@@ -33,6 +45,12 @@ class Simulator(BaseSimulator):
 
     @property
     def sim_step(self):
+        """
+        Get the current simulation step.
+
+        Returns:
+            int: Current simulation step.
+        """
         sim_step = (
             self.sim_time
             - self.parsed_network.config.begin_time
@@ -42,9 +60,21 @@ class Simulator(BaseSimulator):
 
     @property
     def sim_time(self):
+        """
+        Get the current simulation time.
+
+        Returns:
+            float: Current simulation time.
+        """
         return self.traci.simulation.getTime()
 
     def retrieve_step_measurements(self):
+        """
+        Retrieve step measurements from the simulator.
+
+        Returns:
+            dict: Dictionary containing step measurements.
+        """
         self.step_measurements = {
             "ts": self.traci_retriever.retrieve_ts_measurements(),
             "lane": self.traci_retriever.retrieve_lane_measurements(),
@@ -52,6 +82,9 @@ class Simulator(BaseSimulator):
         }
 
     def start_simulator(self):
+        """
+        Start the SUMO simulator.
+        """
         self.port = getFreeSocketPort()
         # self.config.reset_config()
         if self.config.simulator["render"]:
@@ -80,6 +113,12 @@ class Simulator(BaseSimulator):
         self.retrieve_step_measurements()
 
     def simulator_step(self, n_steps):
+        """
+        Perform a simulation step.
+
+        Args:
+            n_steps (int): Number of simulation steps to perform.
+        """
         if n_steps is None:
             n_steps = self.config.simulator["delta_time"]
         if n_steps:
@@ -88,6 +127,9 @@ class Simulator(BaseSimulator):
             self.retrieve_step_measurements()
 
     def close_simulator(self):
+        """
+        Close the SUMO simulator and clean up resources.
+        """
         if self.traci is not None:
             self.traci.close()
             gc.collect()

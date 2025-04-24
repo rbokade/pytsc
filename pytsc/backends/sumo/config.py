@@ -18,6 +18,13 @@ CONFIG_DIR = os.path.join(
 
 
 class Config(BaseConfig):
+    """
+    Configuration class for SUMO simulator.
+
+    Args:
+        scenario (str): Name of the scenario for which the configuration is being loaded.
+        **kwargs: Additional configuration parameters to override default values.
+    """
     def __init__(self, scenario, **kwargs):
         super().__init__(scenario, **kwargs)
         self._load_config("sumo")
@@ -43,15 +50,27 @@ class Config(BaseConfig):
         self._get_start_and_end_times()
 
     def reset_config(self, **kwargs):
+        """
+        Reset the configuration for a new episode.
+
+        Args:
+            **kwargs: Additional configuration parameters to override default values.
+        """
         if self.simulator["random_game"]:
             self.sumo_cfg_dir = random.choice(self.sumo_cfg_dirs)
 
     def _check_assertions(self):
+        """
+        Check assertions for the configuration.
+        """
         assert (
             self.signal["yellow_time"] == self.simulator["delta_time"]
         ), "Delta time and yellow times must be fixed to 5 seconds."
 
     def _get_start_and_end_times(self):
+        """
+        Extract the start and end times from the SUMO configuration file.
+        """
         # Load the XML file
         tree = ET.parse(self.sumo_cfg_dir)
         root = tree.getroot()
@@ -61,4 +80,10 @@ class Config(BaseConfig):
         self.end_time = int(time_element.find("end").get("value"))
 
     def _set_netdir(self, netfile):
+        """
+        Set the network directory for the SUMO configuration.
+        
+        Args:
+            netfile (str): Name of the network file.
+        """
         self.net_dir = os.path.join(CONFIG_DIR, self.scenario, netfile)
