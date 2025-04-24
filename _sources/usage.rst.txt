@@ -67,7 +67,9 @@ Here's an example of how to use PyTSC with EPyMARL. In `src/envs/__init__.py`, y
 
         REGISTRY["pytsc"] = pytsc_fn
 
-Then, you can add config as such: [`src/configs/envs/pasubio.yaml`]
+Then, you can add config as such: 
+
+Example: [`src/configs/envs/pasubio.yaml`]
 
 .. code-block:: yaml
 
