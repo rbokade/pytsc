@@ -8,6 +8,7 @@ class BaseNetworkParser(ABC):
     Base class for network parsers in traffic signal control.
     This class defines the interface for different network parsers
     and provides common functionality for network management.
+    
     Args:
         config (Config): Configuration object containing simulation parameters.
         traffic_signal_ids (list): List of traffic signal IDs in the network.

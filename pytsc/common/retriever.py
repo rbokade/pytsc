@@ -6,6 +6,7 @@ class BaseRetriever(ABC):
     Base class for data retrieval in traffic signal control.
     This class defines the interface for different data retrieval methods
     and provides common functionality for data management.
+    
     Args:
         simulator (Simulator): Simulator object containing simulation parameters and network information.
     """
@@ -18,6 +19,7 @@ class BaseRetriever(ABC):
     def retrieve_lane_measurements(self):
         """
         Retrieve lane measurements from the simulator.
+        
         Returns:
             dict: Dictionary containing lane measurements.
         """
@@ -27,6 +29,7 @@ class BaseRetriever(ABC):
     def retrieve_sim_measurements(self):
         """
         Retrieve simulation measurements from the simulator.
+        
         Returns:
             dict: Dictionary containing simulation measurements.
         """
@@ -36,6 +39,7 @@ class BaseRetriever(ABC):
     def retrieve_ts_measurements(self):
         """
         Retrieve traffic signal measurements from the simulator.
+        
         Returns:
             dict: Dictionary containing traffic signal measurements.
         """

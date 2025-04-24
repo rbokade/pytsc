@@ -11,6 +11,7 @@ class BaseObservationSpace(ABC):
     Base class for observation spaces in traffic signal control.
     This class defines the interface for different observation spaces
     and provides common functionality for observation space management.
+    
     Args:
         config (Config): Configuration object containing simulation parameters.
         parsed_network (ParsedNetwork): Parsed network object containing network information.

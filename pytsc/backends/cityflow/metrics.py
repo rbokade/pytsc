@@ -22,6 +22,14 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def flickering_signal(self):
+        """
+        The flickering signal is the average of the phase changed signals
+        of all traffic signals in the network. It indicates how often
+        the traffic signals are changing phases.
+
+        Returns:
+            float: The flickering signal.
+        """
         return np.mean(
             [
                 ts.controller.program.phase_changed
@@ -31,6 +39,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def n_queued(self):
+        """
+        The total number of queued vehicles in the network.
+
+        Returns:
+            int: The total number of queued vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         total_queued = 0
         for data in lane_measurements.values():
@@ -39,6 +53,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def n_queued_norm(self):
+        """
+        The normalized number of queued vehicles in the network.
+
+        Returns:
+            float: The normalized number of queued vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         n_queued_norm = 0
         for lane_id, data in lane_measurements.items():
@@ -48,6 +68,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_speed(self):
+        """
+        The mean speed of vehicles in the network.
+
+        Returns:
+            float: The mean speed of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         total_vehicles = sum(data["n_vehicles"] for data in lane_measurements.values())
         if total_vehicles == 0:
@@ -61,6 +87,12 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def density(self):
+        """
+        The density of vehicles in the network.
+
+        Returns:
+            float: The density of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         total_occupancy = sum(
             data["occupancy"] for data in lane_measurements.values()
@@ -69,10 +101,22 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def average_travel_time(self):
+        """
+        The average travel time of vehicles in the network.
+
+        Returns:
+            float: The average travel time of vehicles.
+        """
         return self.simulator.step_measurements["sim"]["average_travel_time"]
 
     @property
     def norm_mean_speed(self):
+        """
+        The normalized mean speed of vehicles in the network.
+
+        Returns:    
+            float: The normalized mean speed of vehicles.
+        """
         lane_measurements = self.simulator.step_measurements["lane"]
         lane_max_speeds = self.parsed_network.lane_max_speeds
         return sum(
@@ -82,22 +126,56 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mean_delay(self):
+        """
+        The mean delay of vehicles in the network.
+
+        Returns:
+            float: The mean delay of vehicles.
+        """
         return 1 - self.norm_mean_speed
 
     @property
     def time_step(self):
+        """
+        The time step of the simulation.
+
+        Returns:
+            float: The time step of the simulation.
+        """
         return self.simulator.step_measurements["sim"]["time_step"]
 
     @property
     def pressure(self):
+        """
+        The pressure of the network is the sum of the pressure of all
+        traffic signals in the network. It indicates the congestion level
+        of the network.
+
+        Returns:    
+            float: The pressure of the network.
+        """
         return np.sum([ts.pressure for ts in self.traffic_signals.values()]).item()
 
     @property
     def pressures(self):
+        """
+        The pressure of each traffic signal in the network.
+
+        Returns:
+            list: A list of pressure values for each traffic signal.
+        """
         return [ts.pressure for ts in self.traffic_signals.values()]
 
     @property
     def density_map(self):
+        """
+        The density map is a matrix that represents the density of vehicles
+        between traffic signals in the network. It is calculated based on
+        the occupancy of lanes connecting the traffic signals.
+
+        Returns:
+            np.ndarray: The density map of the network.
+        """
         neighbors_lanes = self.parsed_network.neighbors_lanes
         ts_ids = list(self.traffic_signals.keys())
         density_map = np.zeros((len(ts_ids), len(ts_ids)))
@@ -122,13 +200,31 @@ class MetricsParser(BaseMetricsParser):
 
     @property
     def mst(self):
+        """
+        The maximum spanning tree (MST) of the density map.
+
+        Returns:
+            np.ndarray: The maximum spanning tree of the density map.
+        """
         return compute_max_spanning_tree(self.density_map)
 
     @property
     def network_flow(self):
+        """
+        The network flow is the product of the density and the normalized mean speed.
+
+        Returns:
+            float: The network flow.
+        """
         return self.density * self.norm_mean_speed
 
     def get_step_stats(self):
+        """
+        Get the step statistics for the simulation.
+
+        Returns:
+            dict: A dictionary containing various statistics for the current step.
+        """
         step_stats = {
             "time_step": self.time_step,
             "average_travel_time": self.average_travel_time,

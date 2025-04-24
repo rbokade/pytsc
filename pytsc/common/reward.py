@@ -8,6 +8,7 @@ class BaseRewardFunction(ABC):
     Base class for reward functions in traffic signal control.
     This class defines the interface for different reward functions
     and provides common functionality for reward management.
+    
     Args:
         metrics (Metrics): Metrics object containing simulation parameters.
         traffic_signals (dict): Dictionary of traffic signals in the network.
@@ -22,6 +23,7 @@ class BaseRewardFunction(ABC):
     def get_global_reward(self):
         """
         Calculate the global reward based on pressure and flickering.
+        
         Returns:
             float: Global reward for the network.
         """
@@ -31,6 +33,7 @@ class BaseRewardFunction(ABC):
     def get_local_reward(self):
         """
         Get the local reward for each traffic signal.
+        
         Returns:
             list: List of local rewards for each traffic signal.
         """
@@ -40,6 +43,7 @@ class BaseRewardFunction(ABC):
 class QueueLength(BaseRewardFunction):
     """
     Queue Length reward function.
+    
     Args:
         metrics (Metrics): Metrics object containing simulation parameters.
         traffic_signals (dict): Dictionary of traffic signals in the network.
@@ -50,6 +54,7 @@ class QueueLength(BaseRewardFunction):
     def get_global_reward(self):
         """
         Calculate the global reward based on pressure and flickering.
+        
         Returns:
             float: Global reward for the network.
         """
@@ -62,6 +67,7 @@ class QueueLength(BaseRewardFunction):
     def get_local_reward(self):
         """
         Calculate the local reward for each traffic signal based on queue length and flickering.
+        
         Returns:
             list: List of local rewards for each traffic signal.
         """
@@ -85,6 +91,7 @@ class QueueLength(BaseRewardFunction):
 class MaxPressure(BaseRewardFunction):
     """
     Max Pressure reward function.
+    
     Args:
         metrics (Metrics): Metrics object containing simulation parameters.
         traffic_signals (dict): Dictionary of traffic signals in the network.    
@@ -95,6 +102,7 @@ class MaxPressure(BaseRewardFunction):
     def get_global_reward(self):
         """
         Calculate the global reward based on pressure and flickering.
+        
         Returns:
             float: Global reward for the network.
         """
@@ -107,6 +115,7 @@ class MaxPressure(BaseRewardFunction):
     def get_local_reward(self):
         """
         Calculate the local reward for each traffic signal based on pressure and flickering.
+        
         Returns:
             list: List of local rewards for each traffic signal.
         """

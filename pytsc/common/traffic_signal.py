@@ -130,6 +130,7 @@ class BaseTSController(ABC):
     def n_phases(self):
         """
         Get the number of phases in the traffic signal controller.
+        
         Returns:
             int: Number of phases in the traffic signal controller.
         """        
@@ -139,6 +140,7 @@ class BaseTSController(ABC):
     def phase_indices(self):
         """
         Get the phase indices of the traffic signal controller.
+        
         Returns:
             list: List of phase indices in the traffic signal controller.
         """        
@@ -148,6 +150,7 @@ class BaseTSController(ABC):
     def green_phase_indices(self):
         """
         Get the green phase indices of the traffic signal controller.
+        
         Returns:
             list: List of green phase indices in the traffic signal controller.
         """        
@@ -157,6 +160,7 @@ class BaseTSController(ABC):
     def yellow_time(self):
         """
         Get the yellow time of the traffic signal controller.
+        
         Returns:
             int: Yellow time of the traffic signal controller.
         """        
@@ -166,6 +170,7 @@ class BaseTSController(ABC):
     def yellow_phase_indices(self):
         """
         Get the yellow phase indices of the traffic signal controller.
+        
         Returns:
             list: List of yellow phase indices in the traffic signal controller.
         """        
@@ -175,6 +180,7 @@ class BaseTSController(ABC):
     def phases_min_max_times(self):
         """
         Get the minimum and maximum times for each phase in the traffic signal controller.
+        
         Returns:
             dict: Dictionary containing minimum and maximum times for each phase.
         """        
@@ -184,6 +190,7 @@ class BaseTSController(ABC):
     def current_phase(self):
         """
         Get the current phase of the traffic signal controller.
+        
         Returns:
             str: Current phase of the traffic signal controller.
         """        
@@ -196,6 +203,7 @@ class BaseTSController(ABC):
     def current_phase_index(self):
         """
         Get the index of the current phase in the traffic signal controller.
+        
         Returns:
             int: Index of the current phase in the traffic signal controller.
         """        
@@ -208,6 +216,7 @@ class BaseTSController(ABC):
     def next_phase_index(self):
         """
         Get the index of the next phase in the traffic signal controller.
+        
         Returns:
             int: Index of the next phase in the traffic signal controller.
         """        
@@ -220,6 +229,7 @@ class BaseTSController(ABC):
     def next_green_phase_index(self):
         """
         Get the index of the next green phase in the traffic signal controller.
+        
         Returns:
             int: Index of the next green phase in the traffic signal controller.
         """        
@@ -232,6 +242,7 @@ class BaseTSController(ABC):
     def time_on_phase(self):
         """
         Get the time spent on the current phase of the traffic signal controller.
+        
         Returns:
             int: Time spent on the current phase of the traffic signal controller.
         """        
@@ -244,6 +255,7 @@ class BaseTSController(ABC):
     def norm_time_on_phase(self):
         """
         Get the normalized time spent on the current phase of the traffic signal controller.
+        
         Returns:
             float: Normalized time spent on the current phase of the traffic signal controller.
         """        
@@ -256,6 +268,7 @@ class BaseTSController(ABC):
     def phase_one_hot(self):
         """
         Get the one-hot encoding of the current phase of the traffic signal controller.
+        
         Returns:
             list: One-hot encoding of the current phase of the traffic signal controller.
         """        
@@ -276,6 +289,7 @@ class BaseTSController(ABC):
     def get_allowable_phase_switches(self):
         """
         Get the allowable phase switches based on the current phase and time spent on it.
+        
         Returns:
             list: List of allowable phase switches for the traffic signal controller.
         """        
@@ -315,8 +329,10 @@ class TLSFreePhaseSelectLogic:
     def get_allowable_phase_switches(self, time_on_phase):
         """
         Get the allowable phase switches based on the current phase and time spent on it.
+        
         Args:
             time_on_phase (int): Time spent on the current phase.
+            
         Returns:
             list: List of allowable phase switches for the traffic signal controller.
         """        
@@ -348,6 +364,7 @@ class TLSFreePhaseSelectLogic:
 class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
     """
     Round robin phase selection logic for traffic signal controllers.
+    
     Args:
         controller (BaseTSController): Traffic signal controller object.        
     """    
@@ -358,8 +375,10 @@ class TLSRoundRobinPhaseSelectLogic(TLSFreePhaseSelectLogic):
     def get_allowable_phase_switches(self, time_on_phase):
         """
         Get the allowable phase switches based on the current phase and time spent on it.
+        
         Args:
             time_on_phase (int): Time spent on the current phase.
+            
         Returns:
             list: List of allowable phase switches for the traffic signal controller.
         """        

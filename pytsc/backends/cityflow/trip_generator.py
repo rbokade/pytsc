@@ -23,6 +23,15 @@ CONFIG_DIR = os.path.join(
 
 
 def detect_turn_direction(prev_road, curr_road):
+    """
+    Detects the turn direction based on the previous and current road IDs.
+
+    Args:
+        prev_road (str): ID of the previous road.
+        curr_road (str): ID of the current road.
+    Returns:
+        str: Turn direction ("turn_left", "turn_right", "go_straight").
+    """
     prev_split = prev_road.split("_")
     curr_split = curr_road.split("_")
     if prev_split[1] == curr_split[1]:
@@ -47,7 +56,19 @@ class CityFlowTripGenerator(TripGenerator):
         "headwayTime": 1.5,
     }
     """
+    Generates vehicle flows for a CityFlow simulation scenario.
     NOTE: Traffic signal network is assumed to be a grid network.
+
+    Args:
+        scenario (str): The name of the scenario.
+        start_time (int): The start time for flow generation.
+        end_time (int): The end time for flow generation.
+        inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.
+        inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.
+        seed (int): Random seed for reproducibility.
+        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.
+        turn_probs (list): List of probabilities for turning left, right, or going straight.
+        **kwargs: Additional configuration parameters.
     """
 
     def __init__(
@@ -80,7 +101,11 @@ class CityFlowTripGenerator(TripGenerator):
         """
         Max trip length is assumed to be the length traveled by a vehicle
         that goes from one corner of the grid to the opposite corner.
-        (n - 1) + (m - 1) + 2
+        (n - 1) + (m - 1) + 2, where n and m are the number of intersections
+        in the grid.
+
+        Returns:
+            int: Maximum trip length.
         """
         G = self.parsed_network._get_networkx_representation()
         try:
@@ -96,6 +121,10 @@ class CityFlowTripGenerator(TripGenerator):
         higher the probability of the vehicle turning into that lane.
         NOTE: Edge implies a link between intersection i and j, such that it
         includes both lanes_ij and lanes_ji
+
+        Args:
+            input_edge_weights (dict): Dictionary of edge weights. If None,
+                                        calculated based on lane max speeds.
         """
         self.edge_weights = {}
         if input_edge_weights is not None:
@@ -118,8 +147,14 @@ class CityFlowTripGenerator(TripGenerator):
 
     def _find_fringe_edges(self):
         """
+        Finds the incoming and outgoing fringe edges in the network.
         NOTE: Fringe edges are based on the assumption that only one
         incoming lane (from the boundary) is connected to the intersection.
+
+        Returns:
+            tuple: A tuple containing two lists:
+                - incoming_fringe_edges: List of incoming fringe edges.
+                - outgoing_fringe_edges: List of outgoing fringe edges.
         """
         incoming_fringe_edges = []
         outgoing_fringe_edges = []
@@ -144,6 +179,12 @@ class CityFlowTripGenerator(TripGenerator):
         return incoming_fringe_edges, outgoing_fringe_edges
 
     def _get_lane_connectivity_map(self):
+        """
+        Generates a lane connectivity map based on the road network data.
+
+        Returns:
+            dict: A dictionary mapping each road to its connected roads
+        """
         lane_connectivity_map = {}
         # Logic to build the lane_connectivity_map from the road network data
         for intersection in self.parsed_network.intersections:
@@ -157,6 +198,9 @@ class CityFlowTripGenerator(TripGenerator):
         return lane_connectivity_map
 
     def _choose_next_edge(self, current_edge):
+        """
+
+        """
         if current_edge not in self.lane_connectivity_map:
             return None
         next_edge_candidates = []
@@ -181,6 +225,9 @@ class CityFlowTripGenerator(TripGenerator):
         return next_edge
 
     def _generate_route(self, start_edge):
+        """
+
+        """
         _, outgoing_edges = self._find_fringe_edges()
         route = [start_edge]
         current_edge = start_edge
@@ -202,6 +249,9 @@ class CityFlowTripGenerator(TripGenerator):
         return route
 
     def generate_flows(self, filepath, replicate_no=None):
+        """
+
+        """
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         for start_edge in incoming_edges:
@@ -237,6 +287,9 @@ class CityFlowTripGenerator(TripGenerator):
 
 
 class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
+    """
+
+    """
     def __init__(
         self,
         scenario,
@@ -298,6 +351,9 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
         return next_edge
 
     def generate_flows(self, filepath, replicate_no=None):
+        """
+
+        """
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         for start_edge in incoming_edges:
@@ -333,6 +389,9 @@ class LinkDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
 
 
 class FlowDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
+    """
+
+    """
     def __init__(
         self,
         scenario,
@@ -379,6 +438,9 @@ class FlowDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
         return burst_timings
 
     def generate_flows(self, filepath, replicate_no=None):
+        """
+
+        """
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         for start_edge in incoming_edges:
@@ -428,6 +490,9 @@ class FlowDisruptedCityFlowTripGenerator(CityFlowTripGenerator):
 
 
 class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
+    """
+
+    """
     def generate_flows(
         self,
         filepath,
@@ -490,6 +555,19 @@ class IntervalCityFlowTripGenerator(CityFlowTripGenerator):
 
 
 class VariableDemandTripGenerator(CityFlowTripGenerator):
+    """
+    Generates vehicle flows for a CityFlow simulation scenario with variable demand.
+
+    Args:
+        scenario (str): The name of the scenario.
+        start_time (int): The start time for flow generation.
+        end_time (int): The end time for flow generation.
+        inter_mus (dict): Dictionary of mean inter-arrival times for each edge.
+        inter_sigmas (dict): Dictionary of standard deviation of inter-arrival times for each edge.
+        disrupted (bool): Whether the network is disrupted or not.
+        turn_probs (list): List of probabilities for turning left, right, or going straight.
+        **kwargs: Additional configuration parameters.
+    """
     def __init__(
         self,
         scenario,
@@ -530,6 +608,15 @@ class VariableDemandTripGenerator(CityFlowTripGenerator):
         ]
 
     def _get_interarrival_time(self, edge_id, current_time):
+        """
+        Calculate the interarrival time for a given edge and current time.
+
+        Args:
+            edge_id (str): The ID of the edge.
+            current_time (int): The current time in seconds.
+        Returns:
+            float: The interarrival time for the edge.
+        """
         time_slot = (current_time % 3600) // 600
         mu = self.inter_mus[edge_id] / self.demand_profile[time_slot]
         sigma = self.inter_sigmas[edge_id] / self.demand_profile[time_slot]
@@ -537,6 +624,13 @@ class VariableDemandTripGenerator(CityFlowTripGenerator):
         return max(0, interarrival_time)
 
     def generate_flows(self, filepath, replicate_no=None):
+        """ 
+        Generate vehicle flows for the CityFlow simulation scenario.
+
+        Args:
+            filepath (str): The path to save the generated flows.
+            replicate_no (int): The replicate number for the simulation.
+        """
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         for start_edge in incoming_edges:
@@ -576,6 +670,21 @@ class VariableDemandTripGenerator(CityFlowTripGenerator):
 
 
 class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
+    """
+    Generates vehicle flows for a CityFlow simulation scenario with one-way streets.
+
+    Args:
+        scenario (str): The name of the scenario.
+        start_time (int): The start time for flow generation.
+        end_time (int): The end time for flow generation.
+        inter_mu_ns (float): The mean of the Gaussian distribution for inter-arrival times on north-south roads.
+        inter_sigma_ns (float): The standard deviation of the Gaussian distribution for inter-arrival times on north-south roads.
+        inter_mu_ew (float): The mean of the Gaussian distribution for inter-arrival times on east-west roads.
+        inter_sigma_ew (float): The standard deviation of the Gaussian distribution for inter-arrival times on east-west roads.
+        disrupted (bool): Whether the network is disrupted or not.
+        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.
+        **kwargs: Additional configuration parameters.
+    """
     def __init__(
         self,
         scenario,
@@ -606,16 +715,35 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
         )
 
     def _is_ns_road(self, road):
+        """
+        Check if the road is a north-south road.
+
+        Args:
+            road (dict): The road data.
+        """
         start_point = road["points"][0]
         end_point = road["points"][-1]
         return start_point["x"] == end_point["x"] and start_point["y"] > end_point["y"]
 
     def _is_ew_road(self, road):
+        """
+        Check if the road is an east-west road.
+
+        Args:
+            road (dict): The road data.
+        """
         start_point = road["points"][0]
         end_point = road["points"][-1]
         return start_point["y"] == end_point["y"] and start_point["x"] > end_point["x"]
 
     def generate_flows(self, filepath, replicate_no=None):
+        """
+        Generate vehicle flows for the CityFlow simulation scenario with one-way streets.
+
+        Args:
+            filepath (str): The path to save the generated flows.
+            replicate_no (int): The replicate number for the simulation.
+        """
         incoming_edges, _ = self._find_fringe_edges()
         ns_edges = [
             road["id"]
@@ -630,6 +758,14 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
         flows = []
 
         def generate_flow_for_edges(edges, inter_mu, inter_sigma):
+            """
+            Generate vehicle flows for a list of edges.
+
+            Args:
+                edges (list): List of edges to generate flows for.
+                inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.
+                inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.
+            """
             for start_edge in edges:
                 current_time = self.start_time
                 while current_time < self.end_time:
@@ -667,6 +803,20 @@ class CityFlowOneWayTripGenerator(CityFlowTripGenerator):
 
 
 class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
+    """
+    Generates vehicle flows for a CityFlow simulation scenario with randomized routes.
+
+    Args:
+        scenario (str): The name of the scenario.
+        start_time (int): The start time for flow generation.
+        end_time (int): The end time for flow generation.
+        inter_mu (float): The mean of the Gaussian distribution for inter-arrival times.
+        inter_sigma (float): The standard deviation of the Gaussian distribution for inter-arrival times.
+        seed (int): Random seed for reproducibility.
+        edge_weights (dict): Edge weights for route calculation. If None, calculated based on lane max speeds.
+        turn_probs (list): List of probabilities for turning left, right, or going straight.
+        **kwargs: Additional configuration parameters.
+    """
     turns = ["turn_left", "turn_right", "go_straight"]
     vehicle_data = {
         "length": 5.0,
@@ -699,9 +849,21 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         self._set_edge_weights(None)
 
     def _get_max_trip_length(self):
+        """
+        Max trip length is assumed to be the length traveled by a vehicle
+        that goes from one corner of the grid to the opposite corner.
+        (n - 1) + (m - 1) + 2, where n and m are the number of intersections
+        in the grid.
+
+        Returns:
+            int: Maximum trip length.
+        """
         return max([v["max_route_length"] for v in self.flow_info.values()])
 
     def get_flow_rates(self):
+        """ 
+        Get flow rates and route proportions for each road in the network.
+        """
         flow_file_dir = os.path.join(
             CONFIG_DIR, self.scenario, self.config.simulator["flow_file"]
         )
@@ -786,6 +948,15 @@ class CityFlowRandomizedTripGenerator(CityFlowTripGenerator):
         return turning_ratios, combined_results, stored_routes, route_proportions
 
     def generate_flows(self, filepath, flow_type="low", replicate_no=None):
+        """
+        Generate vehicle flows for the CityFlow simulation scenario with
+        randomized routes.
+
+        Args:
+            filepath (str): The path to save the generated flows.
+            flow_type (str): The type of flow to generate ("low", "medium", "high").
+            replicate_no (int): The replicate number for the simulation.
+        """
         incoming_edges, _ = self._find_fringe_edges()
         flows = []
         total_route_length = 0

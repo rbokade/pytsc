@@ -23,6 +23,7 @@ class BaseConfig(ABC):
     Base class for configuration management in traffic signal control.
     This class handles loading and merging configuration files for different
     scenarios and simulator backends.
+    
     Args:
         scenario (str): Name of the scenario for which the configuration is being loaded.
         debug (bool): Flag to enable debug mode. If True, detailed logs will be printed.
@@ -38,6 +39,7 @@ class BaseConfig(ABC):
         Load the configuration files for the specified scenario and simulator backend.
         This method loads the default configuration, merges it with scenario-specific
         configuration, and applies any additional configuration parameters provided.
+        
         Args:
             simulator_backend (str): The simulator backend to be used (e.g., "cityflow", "sumo").
         """

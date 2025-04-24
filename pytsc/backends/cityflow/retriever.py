@@ -3,6 +3,12 @@ from pytsc.common.utils import calculate_vehicle_bin_index
 
 
 class Retriever(BaseRetriever):
+    """
+    Data retrieval class for the CityFlow simulator.
+
+    Args:
+        simulator (CityFlowSimulator): CityFlow simulator object.
+    """
     def __init__(self, simulator):
         super().__init__(simulator)
         self.engine = simulator.engine
@@ -12,6 +18,15 @@ class Retriever(BaseRetriever):
         self.lane_max_speeds = self.simulator.parsed_network.lane_max_speeds
 
     def _compute_lane_position_matrix(self, lane_sub_results, lane):
+        """
+        Compute the position matrix for a given lane.
+
+        Args:
+            lane_sub_results (dict): Sub-results for the lane.
+            lane (str): Lane ID.
+        Returns:
+            list: Position matrix for the lane.
+        """
         bin_count = int(self.lane_lengths[lane] / self.v_size)
         lane_vehicles = lane_sub_results["lane_vehicles"][lane]
         if bin_count > 0 and len(lane_vehicles) > 0:
@@ -37,6 +52,14 @@ class Retriever(BaseRetriever):
         return pos_mat
 
     def _compute_lane_measurements(self, lane_results):
+        """
+        Compute lane measurements based on the results from the simulator.
+
+        Args:
+            lane_results (dict): Results from the simulator for each lane.
+        Returns:
+            dict: Dictionary containing lane measurements.
+        """
         v_size = self.config.simulator["veh_size_min_gap"]
         lane_measurements = {}
         for lane, vehicles_on_lane in lane_results["lane_vehicles"].items():
@@ -62,6 +85,12 @@ class Retriever(BaseRetriever):
         return lane_measurements
 
     def retrieve_lane_measurements(self):
+        """
+        Compute lane measurements based on the results from the simulator.
+
+        Returns:
+            dict: Dictionary containing lane measurements.          
+        """
         lane_results = {
             "lane_n_queued": self.engine.get_lane_waiting_vehicle_count(),
             "lane_vehicles": self.engine.get_lane_vehicles(),
@@ -70,6 +99,12 @@ class Retriever(BaseRetriever):
         return self._compute_lane_measurements(lane_results)
 
     def retrieve_sim_measurements(self):
+        """
+        Compute simulation measurements based on the results from the simulator.
+
+        Returns:
+            dict: Dictionary containing simulation measurements.
+        """
         return {
             "n_vehicles": self.engine.get_vehicle_count(),
             "average_travel_time": self.engine.get_average_travel_time(),

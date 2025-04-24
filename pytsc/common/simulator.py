@@ -6,6 +6,7 @@ class BaseSimulator(ABC):
     Base class for traffic signal control simulators.
     This class defines the interface for different simulators
     and provides common functionality for simulation management.
+    
     Args:
         parsed_network (ParsedNetwork): Parsed network object containing network information.
     """
@@ -17,6 +18,7 @@ class BaseSimulator(ABC):
     def retrieve_step_measurements(self):
         """
         Retrieve measurements for the current simulation step.
+        
         Returns:
             dict: Dictionary containing measurements for the current step.
         """
@@ -26,6 +28,7 @@ class BaseSimulator(ABC):
     def start_simulator(self):
         """
         Start the simulator.
+        
         Returns:
             bool: True if the simulator started successfully, False otherwise.
         """
@@ -35,6 +38,7 @@ class BaseSimulator(ABC):
     def simulator_step(self):
         """
         Perform a simulation step.
+        
         Returns:
             bool: True if the simulation step was successful, False otherwise.
         """
@@ -44,6 +48,7 @@ class BaseSimulator(ABC):
     def close_simulator(self):
         """
         Close the simulator.
+        
         Returns:
             bool: True if the simulator closed successfully, False otherwise.
         """
@@ -53,6 +58,7 @@ class BaseSimulator(ABC):
     def is_terminated(self):
         """
         Check if the simulation has terminated.
+        
         Returns:
             bool: True if the simulation has terminated, False otherwise.
         """

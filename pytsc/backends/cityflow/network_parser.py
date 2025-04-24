@@ -22,11 +22,17 @@ class NetworkParser(BaseNetworkParser):
         self._load_network()
 
     def _load_network(self):
+        """
+        Load the network file and extract essential information.
+        """
         with open(self.config.cityflow_roadnet_file, "r") as f:
             self.net = json.load(f)
         self._initialize_traffic_signals()
 
     def _initialize_traffic_signals(self):
+        """
+        Initialize traffic signals and their properties.
+        """
         (
             inc_lane_map,
             out_lane_map,
@@ -74,16 +80,34 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def intersections(self):
+        """
+        Extracts the intersections from the network.
+
+        Returns:
+            list: A sorted list of intersection objects.
+        """
         return self.net["intersections"]
 
     @property
     @lru_cache(maxsize=None)
     def roads(self):
+        """
+        Extracts the roads from the network.
+
+        Returns:
+            list: A sorted list of road objects.
+        """
         return self.net["roads"]
 
     @property
     @lru_cache(maxsize=None)
     def lanes(self):
+        """
+        Extracts the IDs of all lanes in the network.
+
+        Returns:
+            list: A sorted list of lane IDs.
+        """
         lane_ids = []
         for road in self.roads:
             road_id = road["id"]
@@ -96,6 +120,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def traffic_signal_ids(self):
+        """
+        Extracts the IDs of all traffic signals in the network.
+
+        Returns:
+            list: A sorted list of traffic signal IDs.
+        """
         traffic_signal_ids = [
             intersection["id"]
             for intersection in self.intersections
@@ -106,6 +136,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def adjacency_matrix(self):
+        """
+        Computes the adjacency matrix for the traffic signal network.
+
+        Returns:
+            np.ndarray: A 2D array representing the adjacency matrix of the network.
+        """
         if "neighbors" not in self.config.network.keys():
             n_traffic_signals = len(self.traffic_signal_ids)
             adjacency_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
@@ -129,6 +165,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def k_hop_neighbors(self):
+        """
+        Computes the k-hop neighbors for each traffic signal in the network.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are dictionaries
+        """
         k_hop_neighbors = {}
         max_hops = self.config.misc["max_hops"]
         for ts_id in self.traffic_signal_ids:
@@ -141,7 +183,10 @@ class NetworkParser(BaseNetworkParser):
     @lru_cache(maxsize=None)
     def network_boundary(self):
         """
-        Returns [max_x - min_x, max_y - min_y]
+        Returns the network boundary.
+
+        Returns:
+            tuple: A tuple containing the minimum and maximum coordinates of the network.
         """
         points = [p["point"] for p in self.net["intersections"]]
         x_values = [p["x"] for p in points]
@@ -152,7 +197,10 @@ class NetworkParser(BaseNetworkParser):
     @lru_cache(maxsize=None)
     def norm_network_boundary(self):
         """
-        Returns [max_x - min_x, max_y - min_y]
+        Returns the normalized network boundary.
+
+        Returns:
+            list: A list containing the width and height of the network.
         """
         points = [p["point"] for p in self.net["intersections"]]
         x_values = [p["x"] for p in points]
@@ -162,6 +210,13 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def ts_phase_to_inc_out_lanes(self):
+        """
+        Extracts the mapping of incoming lanes to outgoing lanes for each traffic signal phase.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are dictionaries
+                  mapping phase indices to dictionaries of incoming lanes and their corresponding outgoing lanes.
+        """
         ts_phase_to_inc_out_lanes = {}
         for intersection in self.intersections:
             if not intersection["virtual"] and "trafficLight" in intersection:
@@ -204,6 +259,13 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def neighbors_lanes(self):
+        """
+        Extracts a dictionary of neighbors and their connecting lanes for each traffic signal.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are dictionaries
+                  mapping neighbor traffic signal IDs to lists of connecting lane IDs.
+        """
         if "neighbors_lanes" not in self.config.network.keys():
             neighbors_lanes = {}
             for ts_id in self.traffic_signal_ids:
@@ -231,6 +293,14 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def neighbors_offsets(self):
+        """
+        Computes the offsets for each traffic signal based on the travel time
+        to its neighbors.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are dictionaries
+                  mapping neighbor traffic signal IDs to their respective offsets.
+        """
         neighbors_offsets = {ts_id: {} for ts_id in self.traffic_signal_ids}
         for i, ts_id in enumerate(self.traffic_signal_ids):
             neighbors_lanes = self.neighbors_lanes[ts_id]
@@ -253,6 +323,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def lane_lengths(self):
+        """
+        Extracts lengths for each lane in the network.
+
+        Returns:
+            dict: A dictionary where keys are lane IDs and values are lengths.
+        """
         lane_lengths = {}
         for road in self.roads:
             start_intersection = self._id_to_intersection(road["startIntersection"])
@@ -278,6 +354,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def lane_max_speeds(self):
+        """
+        Extracts maximum speeds for each lane in the network.
+
+        Returns:
+            dict: A dictionary where keys are lane IDs and values are maximum speeds.
+        """
         lane_max_speeds = {}
         for road in self.roads:
             for i, lane in enumerate(road["lanes"]):
@@ -288,6 +370,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def lane_indices(self):
+        """
+        Extracts lane indices for each lane in the network.
+
+        Returns:
+            dict: A dictionary where keys are lane IDs and values are lane indices.
+        """
         lane_indices = {}
         for road in self.roads:
             num_lanes = len(road["lanes"])
@@ -299,6 +387,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def lane_angles(self):
+        """
+        Extracts angles for each lane in the network.
+
+        Returns:
+            dict: A dictionary where keys are lane IDs and values are angles in degrees.
+        """
         lane_angles = {}
         for road in self.roads:
             start_intersection = self._id_to_intersection(road["startIntersection"])
@@ -316,6 +410,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def ts_coordinates(self):
+        """
+        Extracts coordinates for each traffic signal.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are lists of coordinates.
+        """
         ts_coordinates = {}
         for intersection in self.intersections:
             if not intersection["virtual"]:
@@ -329,6 +429,12 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def ts_norm_coordinates(self):
+        """
+        Extracts normalized coordinates for each traffic signal.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are lists of normalized coordinates.
+        """
         ts_norm_coordinates = {}
         for intersection in self.intersections:
             if not intersection["virtual"]:
@@ -344,6 +450,10 @@ class NetworkParser(BaseNetworkParser):
     def directional_lanes(self):
         """
         Extracts a dictionary of directional lanes for each traffic signal.
+
+        Returns:
+            dict: A dictionary where keys are traffic signal IDs and values are dictionaries
+                  mapping end intersection IDs to lists of lane IDs.
         """
         directional_lanes = {}
         for ts_id in self.traffic_signal_ids:
@@ -379,18 +489,36 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def in_degrees(self):
+        """
+        Computes the in-degrees for each traffic signal in the network.
+
+        Returns:
+            np.ndarray: A 1D array representing the in-degrees of traffic signals.
+        """
         in_degrees = np.sum(self.adjacency_matrix, axis=0)
         return in_degrees
 
     @property
     @lru_cache(maxsize=None)
     def out_degrees(self):
+        """
+        Computes the out-degrees for each traffic signal in the network.
+
+        Returns:
+            np.ndarray: A 1D array representing the out-degrees of traffic signals.
+        """
         out_degrees = np.sum(self.adjacency_matrix, axis=1)
         return out_degrees
 
     @property
     @lru_cache(maxsize=None)
     def distance_matrix(self):
+        """
+        Computes the distance matrix for the traffic signal network.
+
+        Returns:
+            np.ndarray: A 2D array representing the distance between traffic signals.
+        """
         G = nx.from_numpy_array(self.adjacency_matrix, create_using=nx.DiGraph)
         n_traffic_signals = len(self.traffic_signal_ids)
         distance_matrix = np.zeros((n_traffic_signals, n_traffic_signals))
@@ -403,6 +531,13 @@ class NetworkParser(BaseNetworkParser):
     @property
     @lru_cache(maxsize=None)
     def edge_features(self):
+        """
+        Extracts edge features for the traffic signal network.
+
+        Returns:
+            np.ndarray: A 3D array of edge features, where each element represents
+                        the number of lanes and average lane length between traffic signals.
+        """
         n_traffic_signals = len(self.traffic_signal_ids)
         edge_features = np.zeros((n_traffic_signals, n_traffic_signals, 2))
         for road in self.roads:
@@ -429,12 +564,29 @@ class NetworkParser(BaseNetworkParser):
         return edge_features
 
     def _id_to_intersection(self, intersection_id):
+        """
+        Converts an intersection ID to its corresponding intersection object.
+
+        Args:
+            intersection_id (str): The ID of the intersection.
+        Returns:
+            intersection (dict): The intersection object corresponding to the ID.
+        """
         for intersection in self.intersections:
             if intersection["id"] == intersection_id:
                 return intersection
         raise ValueError(f"Intersection {intersection_id} not found")
 
     def _get_k_hop_neighbors_for_ts(self, ts_id, k):
+        """
+        Computes the k-hop neighbors for a given traffic signal ID.
+
+        Args:
+            ts_id (str): The ID of the traffic signal.
+            k (int): The number of hops.
+        Returns:  
+            k_hop_neighbors_ids (list): List of k-hop neighbor traffic signal IDs. 
+        """
         adjacency_matrix_power = np.linalg.matrix_power(self.adjacency_matrix, k)
         ts_index = self.traffic_signal_ids.index(ts_id)
         k_hop_neighbors_indices = np.where(adjacency_matrix_power[ts_index] > 0)[0]
@@ -444,6 +596,15 @@ class NetworkParser(BaseNetworkParser):
         return k_hop_neighbors_ids
 
     def _get_lane_mappings(self):
+        """
+        Extracts the incoming and outgoing lane mappings for each intersection.
+
+        Returns:
+            tuple: A tuple containing:
+                - incoming_lane_map: A dictionary mapping intersection IDs to their incoming lanes.
+                - outgoing_lane_map: A dictionary mapping intersection IDs to their outgoing lanes.
+                - inc_to_out_lane_map: A dictionary mapping intersection IDs to a mapping of incoming lanes to outgoing lanes.
+        """
         incoming_lane_map, outgoing_lane_map, inc_to_out_lane_map = {}, {}, {}
         for intersection in self.intersections:
             intersection_id = intersection["id"]
@@ -469,7 +630,15 @@ class NetworkParser(BaseNetworkParser):
 
     def _get_traffic_light_phases(self):
         """
-        Returns phases for each traffic light
+        Extracts the traffic light phases and their timings for each intersection.
+
+        Returns:
+            tuple: A tuple containing:
+                - phases: A dictionary mapping intersection IDs to their traffic light phases.
+                - phases_min_max_times: A dictionary mapping intersection IDs to the minimum and maximum times for each phase.
+                - phase_indices: A dictionary mapping intersection IDs to the indices of their phases.
+                - green_phase_indices: A dictionary mapping intersection IDs to the indices of their green phases.
+                - yellow_phase_indices: A dictionary mapping intersection IDs to the indices of their yellow phases.
         """
         phases = {}
         phase_indices = {}
@@ -534,6 +703,12 @@ class NetworkParser(BaseNetworkParser):
         )
 
     def _get_networkx_representation(self):
+        """
+        Converts the network into a NetworkX directed graph representation.
+
+        Returns:
+            G (networkx.DiGraph): A directed graph representation of the network.
+        """
         G = nx.DiGraph()
         for intersection in self.intersections:
             G.add_node(
@@ -550,6 +725,12 @@ class NetworkParser(BaseNetworkParser):
         return G
 
     def plot_network(self, figsize=(12, 12)):
+        """
+        Plots the network using NetworkX and Matplotlib.
+
+        Args:
+            figsize (tuple): Size of the figure to plot.
+        """
         import matplotlib.pyplot as plt
 
         G = self._get_networkx_representation()
