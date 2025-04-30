@@ -18,6 +18,7 @@ PyTSC is a Python library for training reinforcement learning (RL) models for tr
    :caption: Contents:
 
    installation
+   architecture
    usage
    api
 
